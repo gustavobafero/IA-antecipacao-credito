@@ -1,3 +1,4 @@
+
 import streamlit as st
 from openai import OpenAI, RateLimitError
 from datetime import datetime
@@ -29,7 +30,8 @@ def gerar_pdf(data_dict, explicacao):
     return pdf_output
 
 st.header("1. Informações da Operação")
-with st.form("formulario_operacao"):
+form = st.form("formulario_operacao")
+with form:
     nome_cliente = st.text_input("Nome do cliente")
     cnpj_cliente = st.text_input("CNPJ do cliente (opcional)")
     valor = st.number_input("Valor da operação (R$)", min_value=0.0, format="%.2f")
@@ -48,6 +50,7 @@ with st.form("formulario_operacao"):
     protestos = st.selectbox("Possui protestos ou dívidas públicas?", ["Não", "Sim"])
     faturamento = st.number_input("Último faturamento declarado (R$)", min_value=0.0, format="%.2f")
     data_faturamento = st.date_input("Data do último faturamento")
+
     enviar = st.form_submit_button("Simular")
 
 if enviar:
