@@ -125,12 +125,18 @@ if enviar:
         ax.set_ylabel("Retorno Esperado (R$)")
         ax.set_title("Risco x Retorno")
         ax.grid(True)
-        st.pyplot(fig)
 
+        # Salva a imagem como PNG e exibe
+        buffer = BytesIO()
+        fig.savefig(buffer, format="png")
+        buffer.seek(0)
+        st.image(buffer, caption="Análise Gráfica: Risco x Retorno", use_column_width=True)
+
+        # Geração do PDF
         pdf_bytes = gerar_pdf(dados_relatorio, explicacao)
         st.download_button("📄 Baixar relatório em PDF", data=pdf_bytes, file_name="relatorio_credito.pdf")
 
     except RateLimitError:
-        st.error("A OpenAI está com excesso de requisições no momento. Por favor, aguarde alguns instantes e tente novamente.")
+        st.warning("⚠️ A OpenAI está com excesso de requisições no momento. Aguarde alguns instantes e tente novamente.")
     except Exception as e:
         st.error(f"Ocorreu um erro inesperado ao chamar a IA: {e}")
