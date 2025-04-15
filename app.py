@@ -119,6 +119,7 @@ if enviar:
         st.markdown("### Justificativa da IA")
         st.success(explicacao)
 
+        # Gera gráfico matplotlib
         fig, ax = plt.subplots()
         ax.scatter(risco_total, retorno_esperado, color="blue", s=100)
         ax.set_xlabel("Risco de Inadimplência (%)")
@@ -126,13 +127,16 @@ if enviar:
         ax.set_title("Risco x Retorno")
         ax.grid(True)
 
-        # Salva a imagem como PNG e exibe
+        # Exibe com st.pyplot
+        st.pyplot(fig)
+
+        # Também salva como PNG e exibe como imagem
         buffer = BytesIO()
         fig.savefig(buffer, format="png")
         buffer.seek(0)
-        st.image(buffer, caption="Análise Gráfica: Risco x Retorno", use_column_width=True)
+        st.image(buffer, caption="Análise Gráfica (PNG): Risco x Retorno", use_column_width=True)
 
-        # Geração do PDF
+        # PDF download
         pdf_bytes = gerar_pdf(dados_relatorio, explicacao)
         st.download_button("📄 Baixar relatório em PDF", data=pdf_bytes, file_name="relatorio_credito.pdf")
 
