@@ -1,6 +1,5 @@
-
 import streamlit as st
-from openai import OpenAI
+from openai import OpenAI, RateLimitError
 from datetime import datetime
 from dateutil import parser
 
@@ -22,18 +21,12 @@ with st.form("formulario_operacao"):
 
 if enviar:
     prazo = (data_vencimento - data_operacao).days
-    risco = (100 - rating) / 100  # risco de 0 (seguro) a 1 (muito arriscado)
-
-    # Ajuste por valor da operação: quanto maior, menor o impacto (até -0.5%)
+    risco = (100 - rating) / 100
     ajuste_valor = max(0.5 - (valor / 100000), 0)
-
-    # Novo cálculo da taxa ideal
     taxa_ideal = round(custo_capital + margem_desejada + (risco * 2.0) + ajuste_valor, 2)
-
     margem_estimada = round(taxa_ideal - custo_capital, 2)
     retorno_esperado = round((taxa_ideal - custo_capital) / 100 * valor, 2)
 
-    # Comparação realista com a taxa da concorrência
     if taxa_ideal > taxa_concorrencia + 0.05:
         status = "Acima do mercado"
     elif taxa_ideal < taxa_concorrencia - 0.05:
@@ -66,13 +59,18 @@ if enviar:
         Gere uma explicação curta e profissional para justificar essa taxa sugerida, levando em conta risco x retorno.
         """
 
-        resposta = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
-            max_tokens=250
-        )
+        try:
+            resposta = client.chat.completions.create(
+                model="gpt-4-1106-preview",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                max_tokens=250
+            )
+            explicacao = resposta.choices[0].message.content
+            st.markdown("### Justificativa da IA")
+            st.success(explicacao)
 
-        explicacao = resposta.choices[0].message.content
-        st.markdown("### Justificativa da IA")
-        st.success(explicacao)
+        except RateLimitError:
+            st.error("A OpenAI está com excesso de requisições no momento. Por favor, aguarde alguns instantes e tente novamente.")
+        except Exception as e:
+            st.error(f"Ocorreu um erro inesperado ao chamar a IA: {e}")
