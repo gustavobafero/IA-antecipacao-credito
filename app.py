@@ -145,10 +145,3 @@ if enviar:
         st.warning("⚠️ A OpenAI está com excesso de requisições no momento. Aguarde alguns instantes e tente novamente.")
     except Exception as e:
         st.error(f"Ocorreu um erro inesperado ao chamar a IA: {e}")
-
-# Salvar o arquivo final de app.py
-caminho_final_app = "/mnt/data/app.py"
-with open(caminho_final_app, "w") as f:
-    f.write(codigo_completo_corrigido)
-
-caminho_final_app
