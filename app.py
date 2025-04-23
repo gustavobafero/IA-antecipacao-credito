@@ -210,7 +210,7 @@ if enviar:
                           fontsize=10,
                           bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
     ax_risco.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
-    ax_risco.set_title("Análise de Risco de Inadimplência", fontsize=13, fontweight='bold')
+    ax_risco.set_title("Análise de Fatores de Risco", fontsize=13, fontweight='bold')
     fig_risco.subplots_adjust(top=0.85)
     ax_risco.yaxis.set_major_formatter(PercentFormatter())
     ax_risco.grid(True, linestyle="--", alpha=0.6, zorder=0)
