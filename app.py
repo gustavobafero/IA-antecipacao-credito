@@ -173,19 +173,20 @@ if enviar:
     st.write(f"**Preço mínimo sugerido pela IA:** {formatar_moeda(preco_minimo)}")
 
     # Gráfico Risco x Retorno
-    fig, ax = plt.subplots(figsize=(6, 4))
-ax.set_xlim(0, 100)
-ax.set_xticks([i for i in range(0, 101, 10)])
-ax.set_ylim(0, 10000)
-ax.set_yticks([i for i in range(0, 10001, 500)])
-ax.set_xlabel("Risco de Inadimplência (%)", fontsize=12)
-ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
-ax.tick_params(axis='both', which='major', labelsize=10)
-ax.scatter(risco_total, retorno_esperado, color="#1f77b4", s=150, edgecolors="black", linewidths=1.2, zorder=3)
-ax.grid(True, linestyle="--", alpha=0.6, zorder=0)
-ax.annotate(f"({risco_total:.1f}%, {formatar_moeda(retorno_esperado)})", (risco_total, retorno_esperado),
-            textcoords="offset points", xytext=(10, 10), ha='left', fontsize=10,
-            bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+        fig, ax = plt.subplots(figsize=(6, 4))
+    ax.set_xlim(0, 100)
+    ax.set_xticks([i for i in range(0, 101, 10)])
+    ax.set_ylim(0, 10000)
+    ax.set_yticks([i for i in range(0, 10001, 500)])
+    ax.set_xlabel("Risco de Inadimplência (%)", fontsize=12)
+    ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
+    ax.tick_params(axis='both', which='major', labelsize=10)
+    ax.scatter(risco_total, retorno_esperado, color="#1f77b4", s=150, edgecolors="black", linewidths=1.2, zorder=3)
+    ax.grid(True, linestyle="--", alpha=0.6, zorder=0)
+    ax.annotate(f"({risco_total:.1f}%, {formatar_moeda(retorno_esperado)})", (risco_total, retorno_esperado),
+                textcoords="offset points", xytext=(10, 10), ha='left', fontsize=10,
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+
 
 
     # Gráfico de Análise de Risco
