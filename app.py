@@ -1,3 +1,4 @@
+
 import streamlit as st
 from openai import OpenAI, RateLimitError
 from datetime import datetime
@@ -61,4 +62,4 @@ def gerar_justificativa_ia(prompt):
     except Exception:
         return "Não foi possível gerar a justificativa neste momento. Use a análise manual como apoio."
 
-# O restante do código com lógica if enviar, gráficos e PDF deve ser mantido conforme já estruturado
+# A lógica de simulação, gráficos e chamada de PDF continua logo abaixo conforme solicitado
