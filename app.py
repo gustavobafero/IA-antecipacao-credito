@@ -186,6 +186,11 @@ if enviar:
     ax.annotate(f"({risco_total:.1f}%, {formatar_moeda(retorno_esperado)})", (risco_total, retorno_esperado),
                 textcoords="offset points", xytext=(10, 10), ha='left', fontsize=10,
                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+    buffer = BytesIO()
+    fig.savefig(buffer, format="png", bbox_inches="tight")
+    buffer.seek(0)
+    st.pyplot(fig)
+
 
 
 
