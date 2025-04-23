@@ -46,6 +46,7 @@ def gerar_pdf(data_dict, explicacao, grafico_risco_bytes=None, grafico_fatores_b
     return BytesIO(pdf_data)
 
 def gerar_justificativa_ia(prompt):
+    st.info("🔍 Enviando solicitação à IA...")
     try:
         resposta = client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -53,10 +54,13 @@ def gerar_justificativa_ia(prompt):
             temperature=0.5,
             max_tokens=300
         )
+        st.success("✅ Justificativa recebida com sucesso!")
         return resposta.choices[0].message.content.strip()
-    except RateLimitError:
+    except RateLimitError as e:
+        st.error(f"RateLimitError: {e}")
         return "A OpenAI está com excesso de requisições no momento. Tente novamente mais tarde."
-    except Exception:
+    except Exception as e:
+        st.error(f"Erro inesperado ao chamar a OpenAI: {e}")
         return "Não foi possível gerar a justificativa neste momento. Use a análise manual como apoio."
 
 st.header("1. Informações da Operação")
