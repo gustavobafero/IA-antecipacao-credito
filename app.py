@@ -4,7 +4,7 @@ from datetime import datetime
 import pandas as pd
 import os
 import matplotlib
-matplotlib.use('Agg')  # Forçando o backend sem interface gráfica
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from io import BytesIO
 from fpdf import FPDF
@@ -50,7 +50,7 @@ with form:
     idade_empresa = st.number_input("Idade da empresa (anos)", min_value=0, value=5)
     protestos = st.selectbox("Possui protestos ou dívidas públicas?", ["Não", "Sim"])
     faturamento = st.number_input("Último faturamento declarado (R$)", min_value=0.0, format="%.2f")
-    data_faturamento = st.date_input("Data do último faturamento")
+    data_faturamento = st.date_input("Data do último faturamento", format="DD/MM/YYYY")
     
     enviar = st.form_submit_button("Simular")
 
@@ -97,7 +97,8 @@ if enviar:
         "Margem (%)": margem_estimada,
         "Retorno Esperado (R$)": retorno_esperado,
         "Status Concorrência": status,
-        "Risco de inadimplência": f"{risco_total}% ({cor_risco})"
+        "Risco de inadimplência": f"{risco_total}% ({cor_risco})",
+        "Data do último faturamento": data_faturamento.strftime('%d/%m/%Y')
     }
 
     try:
@@ -120,8 +121,8 @@ if enviar:
         st.markdown("### Justificativa da IA")
         st.success(explicacao)
 
-        # Gerar gráfico de Risco x Retorno
-        st.write("🔍 Tentando gerar o gráfico...")
+        # Gráfico Risco x Retorno
+        st.write("🔍 Tentando gerar o gráfico Risco x Retorno...")
         fig, ax = plt.subplots()
         ax.scatter(risco_total, retorno_esperado, color="blue", s=100)
         ax.set_xlabel("Risco de Inadimplência (%)")
@@ -129,15 +130,28 @@ if enviar:
         ax.set_title("Risco x Retorno")
         ax.grid(True)
         st.pyplot(fig)
-        st.write("✅ st.pyplot exibido com sucesso")
-
-        # Salvar o gráfico como PNG e exibir com st.image
         buffer = BytesIO()
         fig.savefig(buffer, format="png")
         buffer.seek(0)
         st.image(buffer, caption="Análise Gráfica (PNG): Risco x Retorno", use_column_width=True)
 
-        # Gerar PDF com os dados
+        # Gráfico de Análise de Risco
+        st.markdown("### Gráfico de Análise de Risco de Inadimplência (Manual)")
+        fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
+        pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
+
+        fig_risco, ax_risco = plt.subplots()
+        ax_risco.barh(fatores, pesos, color="orange")
+        ax_risco.set_xlabel("Peso na Composição do Risco")
+        ax_risco.set_title("Contribuição de Fatores no Risco de Inadimplência")
+        st.pyplot(fig_risco)
+
+        buffer_risco = BytesIO()
+        fig_risco.savefig(buffer_risco, format="png")
+        buffer_risco.seek(0)
+        st.image(buffer_risco, caption="Composição do Risco de Inadimplência", use_column_width=True)
+
+        # PDF final
         pdf_bytes = gerar_pdf(dados_relatorio, explicacao)
         st.download_button("📄 Baixar relatório em PDF", data=pdf_bytes, file_name="relatorio_credito.pdf")
 
