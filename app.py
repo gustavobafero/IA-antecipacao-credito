@@ -16,20 +16,28 @@ st.title("IA para Precificação de Antecipação de Crédito")
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 storage_file = "simulacoes_credito.csv"
 
+import unicodedata
+
+def clean_text(text):
+    """Remove acentos e emojis para garantir compatibilidade com FPDF (latin-1)"""
+    return unicodedata.normalize('NFKD', text).encode('latin1', 'ignore').decode('latin1')
+
 def gerar_pdf(data_dict, explicacao):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, txt="Relatório de Precificação e Risco de Crédito", ln=True, align='C')
+    pdf.cell(200, 10, txt="Relatorio de Precificacao e Risco de Credito", ln=True, align='C')
     pdf.ln(10)
     for chave, valor in data_dict.items():
-        pdf.cell(200, 10, txt=f"{chave}: {valor}", ln=True)
+        linha = f"{chave}: {valor}"
+        pdf.cell(200, 10, txt=clean_text(linha), ln=True)
     pdf.ln(10)
-    pdf.multi_cell(200, 10, txt="Justificativa da IA: " + explicacao)
+    pdf.multi_cell(200, 10, txt=clean_text("Justificativa da IA: " + explicacao))
     pdf_output = BytesIO()
     pdf.output(pdf_output)
     pdf_output.seek(0)
     return pdf_output
+
 
 st.header("1. Informações da Operação")
 form = st.form("formulario_operacao")
