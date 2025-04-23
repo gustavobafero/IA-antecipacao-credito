@@ -49,6 +49,15 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
         linha = f"{chave}: {valor}"
         pdf.cell(200, 10, txt=clean_text(linha), ln=True)
 
+    # Explicação infantil sobre o preço mínimo
+    pdf.ln(5)
+    pdf.set_font("Arial", style='I', size=11)
+    pdf.multi_cell(0, 8, clean_text(
+        "Como a IA chegou no preço mínimo?"
+        "Você vai emprestar um montante que é bem valioso, correto? Você quer garantir que se ele não honrarem o combinado, você ainda possa se beneficiar certo?"
+        "É exatamente assim que a IA pensa! Ela pega o valor do empréstimo, aumenta um pouquinho para se proteger do risco de não receber, e depois coloca um pedacinho a mais como lucro."
+        "O preço final é o mínimo justo pra que tudo fique seguro, e ainda valha a pena."))
+
     # Página 1: Gráfico Risco x Retorno
     pdf.add_page()
     pdf.set_font("Arial", style='I', size=11)
