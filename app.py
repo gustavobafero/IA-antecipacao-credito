@@ -63,7 +63,7 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
         "Quanto mais para cima, melhor o retorno. Quanto mais para a direita, maior o risco. O ideal é ficar no alto e à esquerda: muito retorno com pouco risco."
     ))
 
-    # Página 2: Gráfico Análise de Fatores de Risco
+    # Página 2: Gráfico: Análise de Fatores de Risco
     pdf.add_page()
     pdf.set_font("Arial", style='I', size=11)
     if grafico_fatores_bytes:
@@ -81,6 +81,13 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
 
     pdf_data = pdf.output(dest='S').encode('latin1')
     return BytesIO(pdf_data)
+
+# Atualização no gráfico dentro do app (colocar no ponto onde o gráfico é criado no app.py):
+# Após: fig, ax = plt.subplots(figsize=(6, 4))
+# Adicionar:
+# ax.set_xlim(0, 100)
+# ax.set_ylim(0, 10000)
+
 def gerar_justificativa_ia(prompt):
     st.info("🔍 Enviando solicitação à IA...")
     try:
