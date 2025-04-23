@@ -88,19 +88,7 @@ if enviar:
     st.write(f"**Classificação de risco (IA):** {'Baixo' if rating >= 80 else 'Moderado' if rating >= 60 else 'Alto'}")
     st.write(f"**Risco de inadimplência (manual):** {cor_risco} ({risco_total}%)")
 
-    dados_relatorio = {
-        "Cliente": nome_cliente,
-        "CNPJ": cnpj_cliente,
-        "Valor da operação": f"R$ {valor:.2f}",
-        "Prazo (dias)": prazo,
-        "Taxa Ideal (%)": taxa_ideal,
-        "Margem (%)": margem_estimada,
-        "Retorno Esperado (R$)": retorno_esperado,
-        "Status Concorrência": status,
-        "Risco de inadimplência": f"{risco_total}% ({cor_risco})",
-        "Data do último faturamento": data_faturamento.strftime('%d/%m/%Y')
-    }
-
+    # Tenta gerar explicação da IA
     try:
         prompt = (
             f"Considere uma operação de antecipação de crédito no valor de R$ {valor:.2f}, com prazo de {prazo} dias. "
@@ -120,42 +108,51 @@ if enviar:
         explicacao = resposta.choices[0].message.content
         st.markdown("### Justificativa da IA")
         st.success(explicacao)
+    except Exception:
+        explicacao = "Justificativa não gerada devido a falha na API da OpenAI."
+        st.warning("⚠️ A OpenAI está com excesso de requisições no momento. Os gráficos foram gerados normalmente.")
 
-        # Gráfico Risco x Retorno
-        st.write("🔍 Tentando gerar o gráfico Risco x Retorno...")
-        fig, ax = plt.subplots()
-        ax.scatter(risco_total, retorno_esperado, color="blue", s=100)
-        ax.set_xlabel("Risco de Inadimplência (%)")
-        ax.set_ylabel("Retorno Esperado (R$)")
-        ax.set_title("Risco x Retorno")
-        ax.grid(True)
-        st.pyplot(fig)
-        buffer = BytesIO()
-        fig.savefig(buffer, format="png")
-        buffer.seek(0)
-        st.image(buffer, caption="Análise Gráfica (PNG): Risco x Retorno", use_column_width=True)
+    # Gráfico Risco x Retorno
+    fig, ax = plt.subplots()
+    ax.scatter(risco_total, retorno_esperado, color="blue", s=100)
+    ax.set_xlabel("Risco de Inadimplência (%)")
+    ax.set_ylabel("Retorno Esperado (R$)")
+    ax.set_title("Risco x Retorno")
+    ax.grid(True)
+    st.pyplot(fig)
+    buffer = BytesIO()
+    fig.savefig(buffer, format="png")
+    buffer.seek(0)
+    st.image(buffer, caption="Análise Gráfica (PNG): Risco x Retorno", use_column_width=True)
 
-        # Gráfico de Análise de Risco
-        st.markdown("### Gráfico de Análise de Risco de Inadimplência (Manual)")
-        fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
-        pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
+    # Gráfico de Análise de Risco
+    st.markdown("### Gráfico de Análise de Risco de Inadimplência (Manual)")
+    fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
+    pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
 
-        fig_risco, ax_risco = plt.subplots()
-        ax_risco.barh(fatores, pesos, color="orange")
-        ax_risco.set_xlabel("Peso na Composição do Risco")
-        ax_risco.set_title("Contribuição de Fatores no Risco de Inadimplência")
-        st.pyplot(fig_risco)
+    fig_risco, ax_risco = plt.subplots()
+    ax_risco.barh(fatores, pesos, color="orange")
+    ax_risco.set_xlabel("Peso na Composição do Risco")
+    ax_risco.set_title("Contribuição de Fatores no Risco de Inadimplência")
+    st.pyplot(fig_risco)
+    buffer_risco = BytesIO()
+    fig_risco.savefig(buffer_risco, format="png")
+    buffer_risco.seek(0)
+    st.image(buffer_risco, caption="Composição do Risco de Inadimplência", use_column_width=True)
 
-        buffer_risco = BytesIO()
-        fig_risco.savefig(buffer_risco, format="png")
-        buffer_risco.seek(0)
-        st.image(buffer_risco, caption="Composição do Risco de Inadimplência", use_column_width=True)
+    # PDF final
+    dados_relatorio = {
+        "Cliente": nome_cliente,
+        "CNPJ": cnpj_cliente,
+        "Valor da operação": f"R$ {valor:.2f}",
+        "Prazo (dias)": prazo,
+        "Taxa Ideal (%)": taxa_ideal,
+        "Margem (%)": margem_estimada,
+        "Retorno Esperado (R$)": retorno_esperado,
+        "Status Concorrência": status,
+        "Risco de inadimplência": f"{risco_total}% ({cor_risco})",
+        "Data do último faturamento": data_faturamento.strftime('%d/%m/%Y')
+    }
 
-        # PDF final
-        pdf_bytes = gerar_pdf(dados_relatorio, explicacao)
-        st.download_button("📄 Baixar relatório em PDF", data=pdf_bytes, file_name="relatorio_credito.pdf")
-
-    except RateLimitError:
-        st.warning("⚠️ A OpenAI está com excesso de requisições no momento. Aguarde alguns instantes e tente novamente.")
-    except Exception as e:
-        st.error(f"Ocorreu um erro inesperado ao chamar a IA: {e}")
+    pdf_bytes = gerar_pdf(dados_relatorio, explicacao)
+    st.download_button("📄 Baixar relatório em PDF", data=pdf_bytes, file_name="relatorio_credito.pdf")
