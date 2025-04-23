@@ -86,7 +86,9 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
 # Após: fig, ax = plt.subplots(figsize=(6, 4))
 # Adicionar:
 # ax.set_xlim(0, 100)
+# ax.set_xticks(range(0, 101, 10))
 # ax.set_ylim(0, 10000)
+# ax.set_yticks(range(0, 10001, 500))
 
 def gerar_justificativa_ia(prompt):
     st.info("🔍 Enviando solicitação à IA...")
