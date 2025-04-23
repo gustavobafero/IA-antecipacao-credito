@@ -6,6 +6,7 @@ import os
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from matplotlib.ticker import PercentFormatter
 from io import BytesIO
 from fpdf import FPDF
 
