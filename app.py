@@ -139,7 +139,7 @@ if enviar:
     ajuste_valor = max(0.5 - (valor / 100000), 0)
     taxa_ideal = round(custo_capital + margem_desejada + (risco * 2.0) + ajuste_valor, 2)
     margem_estimada = round(taxa_ideal - custo_capital, 2)
-    retorno_esperado = round(valor * (margem_estimada / 100), 2)
+    retorno_esperado = round(valor * (margem_estimada), 2)
 
     if taxa_ideal > taxa_concorrencia + 0.05:
         status = "Acima do mercado"
