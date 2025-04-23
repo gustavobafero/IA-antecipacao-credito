@@ -123,22 +123,22 @@ if enviar:
     buffer = BytesIO()
     fig.savefig(buffer, format="png")
     buffer.seek(0)
-    st.image(buffer, caption="Análise Gráfica (PNG): Risco x Retorno", use_column_width=True)
+    st.image(buffer, caption="Análise Gráfica (PNG): Risco x Retorno", use_container_width=True)
 
-    # Gráfico de Análise de Risco
+    # Gráfico de Análise de Risco (colunas)
     st.markdown("### Gráfico de Análise de Risco de Inadimplência (Manual)")
     fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
     pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
 
     fig_risco, ax_risco = plt.subplots()
-    ax_risco.barh(fatores, pesos, color="orange")
-    ax_risco.set_xlabel("Peso na Composição do Risco")
+    ax_risco.bar(fatores, pesos, color="orange")
+    ax_risco.set_ylabel("Peso na Composição do Risco")
     ax_risco.set_title("Contribuição de Fatores no Risco de Inadimplência")
     st.pyplot(fig_risco)
     buffer_risco = BytesIO()
     fig_risco.savefig(buffer_risco, format="png")
     buffer_risco.seek(0)
-    st.image(buffer_risco, caption="Composição do Risco de Inadimplência", use_column_width=True)
+    st.image(buffer_risco, caption="Composição do Risco de Inadimplência", use_container_width=True)
 
     # PDF final
     dados_relatorio = {
