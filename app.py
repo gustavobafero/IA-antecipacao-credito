@@ -113,54 +113,54 @@ if enviar:
         st.warning("⚠️ A OpenAI está com excesso de requisições no momento. Os gráficos foram gerados normalmente.")
 
     # Gráfico Risco x Retorno (padronizado)
-fig, ax = plt.subplots(figsize=(6, 4))
-ax.scatter(risco_total, retorno_esperado, color="#1f77b4", s=150, edgecolors="black", linewidths=1.2, zorder=3)
-ax.set_xlabel("Risco de Inadimplência (%)", fontsize=12)
-ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
-ax.set_title("Risco x Retorno", fontsize=13, fontweight='bold')
-ax.grid(True, linestyle="--", alpha=0.6, zorder=0)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.scatter(risco_total, retorno_esperado, color="#1f77b4", s=150, edgecolors="black", linewidths=1.2, zorder=3)
+    ax.set_xlabel("Risco de Inadimplência (%)", fontsize=12)
+    ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
+    ax.set_title("Risco x Retorno", fontsize=13, fontweight='bold')
+    ax.grid(True, linestyle="--", alpha=0.6, zorder=0)
 
-ax.annotate(f"({risco_total:.1f}%, R$ {retorno_esperado:.2f})", 
-            (risco_total, retorno_esperado), 
-            textcoords="offset points", 
-            xytext=(10, 10), 
-            ha='left', fontsize=10,
-            bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+    ax.annotate(f"({risco_total:.1f}%, R$ {retorno_esperado:.2f})", 
+                (risco_total, retorno_esperado), 
+                textcoords="offset points", 
+                xytext=(10, 10), 
+                ha='left', fontsize=10,
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
 
-st.pyplot(fig)
-buffer = BytesIO()
-fig.savefig(buffer, format="png", bbox_inches="tight")
-buffer.seek(0)
-st.image(buffer, caption="Análise Gráfica (PNG): Risco x Retorno", use_container_width=True)
+    st.pyplot(fig)
+    buffer = BytesIO()
+    fig.savefig(buffer, format="png", bbox_inches="tight")
+    buffer.seek(0)
+    st.image(buffer, caption="Análise Gráfica (PNG): Risco x Retorno", use_container_width=True)
 
-# Gráfico de Análise de Risco (padronizado)
-st.markdown("### Gráfico de Análise de Risco de Inadimplência (Manual)")
-fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
-pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
-pesos = [p * 100 for p in pesos]
+    # Gráfico de Análise de Risco (padronizado)
+    st.markdown("### Gráfico de Análise de Risco de Inadimplência (Manual)")
+    fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
+    pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
+    pesos = [p * 100 for p in pesos]
 
-fig_risco, ax_risco = plt.subplots(figsize=(6, 4))
-bars = ax_risco.bar(fatores, pesos, color="#1f77b4", edgecolor="black", zorder=3)
+    fig_risco, ax_risco = plt.subplots(figsize=(6, 4))
+    bars = ax_risco.bar(fatores, pesos, color="#1f77b4", edgecolor="black", zorder=3)
 
-for bar in bars:
-    height = bar.get_height()
-    ax_risco.annotate(f'{height:.1f}%',
-                      xy=(bar.get_x() + bar.get_width() / 2, height),
-                      xytext=(0, 5),
-                      textcoords="offset points",
-                      ha='center', va='bottom',
-                      fontsize=10,
-                      bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+    for bar in bars:
+        height = bar.get_height()
+        ax_risco.annotate(f'{height:.1f}%',
+                          xy=(bar.get_x() + bar.get_width() / 2, height),
+                          xytext=(0, 5),
+                          textcoords="offset points",
+                          ha='center', va='bottom',
+                          fontsize=10,
+                          bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
 
-ax_risco.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
-ax_risco.set_title("Contribuição de Fatores no Risco de Inadimplência", fontsize=13, fontweight='bold')
-ax_risco.yaxis.set_major_formatter(PercentFormatter())
-ax_risco.grid(True, linestyle="--", alpha=0.6, zorder=0)
-st.pyplot(fig_risco)
-buffer_risco = BytesIO()
-fig_risco.savefig(buffer_risco, format="png", bbox_inches="tight")
-buffer_risco.seek(0)
-st.image(buffer_risco, caption="Composição do Risco de Inadimplência", use_container_width=True)
+    ax_risco.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
+    ax_risco.set_title("Contribuição de Fatores no Risco de Inadimplência", fontsize=13, fontweight='bold')
+    ax_risco.yaxis.set_major_formatter(PercentFormatter())
+    ax_risco.grid(True, linestyle="--", alpha=0.6, zorder=0)
+    st.pyplot(fig_risco)
+    buffer_risco = BytesIO()
+    fig_risco.savefig(buffer_risco, format="png", bbox_inches="tight")
+    buffer_risco.seek(0)
+    st.image(buffer_risco, caption="Composição do Risco de Inadimplência", use_container_width=True)
 
     # PDF final
     dados_relatorio = {
@@ -178,3 +178,4 @@ st.image(buffer_risco, caption="Composição do Risco de Inadimplência", use_co
 
     pdf_bytes = gerar_pdf(dados_relatorio, explicacao)
     st.download_button("📄 Baixar relatório em PDF", data=pdf_bytes, file_name="relatorio_credito.pdf")
+
