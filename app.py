@@ -82,8 +82,7 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
     pdf_data = pdf.output(dest='S').encode('latin1')
     return BytesIO(pdf_data)
 
-# Atualização no gráfico dentro do app (colocar no ponto onde o gráfico é criado no app.py):
-# Após: fig, ax = plt.subplots(figsize=(6, 4))
+
 ax.set_xlim(0, 100)
 ax.set_xticks([i for i in range(0, 101, 10)])
 ax.set_ylim(0, 10000)
@@ -91,6 +90,7 @@ ax.set_yticks([i for i in range(0, 10001, 500)])
 ax.set_xlabel("Risco de Inadimplência (%)", fontsize=12)
 ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
 ax.tick_params(axis='both', which='major', labelsize=10)
+
 
 
 def gerar_justificativa_ia(prompt):
