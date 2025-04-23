@@ -33,10 +33,10 @@ def gerar_pdf(data_dict, explicacao):
         pdf.cell(200, 10, txt=clean_text(linha), ln=True)
     pdf.ln(10)
     pdf.multi_cell(200, 10, txt=clean_text("Justificativa da IA: " + explicacao))
-    pdf_output = BytesIO()
-    pdf.output(pdf_output)
-    pdf_output.seek(0)
-    return pdf_output
+    
+    # 🔄 Correção: gerar string e converter para bytes
+    pdf_data = pdf.output(dest='S').encode('latin1')
+    return BytesIO(pdf_data)
 
 
 st.header("1. Informações da Operação")
