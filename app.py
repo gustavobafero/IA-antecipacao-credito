@@ -170,7 +170,7 @@ if enviar:
     st.write(f"**Risco de inadimplência (manual):** {cor_risco} ({risco_total}%)")
     st.write(f"**Preço mínimo sugerido pela IA:** {formatar_moeda(preco_minimo)}")
 
-    # Gráfico Risco x Retorno
+    # Gráfico de Risco x Retorno
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.set_xlim(0, 100)
     ax.set_xticks([i for i in range(0, 101, 20)])
@@ -193,8 +193,8 @@ if enviar:
 
 
 
-    # Gráfico de Análise de Risco
-    st.markdown("### Análise de Risco de Inadimplência")
+    # Gráfico de Análise de Fatores de Risco
+    st.markdown("### Análise de Fatores de Risco")
     fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
     pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
     pesos = [p * 100 for p in pesos]
