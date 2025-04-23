@@ -10,6 +10,25 @@ from io import BytesIO
 from fpdf import FPDF
 import unicodedata
 import tempfile
+import locale
+
+# Configura localização para formatação brasileira
+try:
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+except:
+    pass
+
+def formatar_moeda(valor):
+    try:
+        return locale.currency(valor, grouping=True)
+    except:
+        return f"R$ {valor:,.2f}".replace(",", "v").replace(".", ",").replace("v", ".")
+
+def calcular_preco_minimo(custo_base, risco_inadimplencia, margem_desejada_percentual):
+    ajuste_risco = 1 + risco_inadimplencia
+    margem = 1 + (margem_desejada_percentual / 100)
+    preco_final = custo_base * ajuste_risco * margem
+    return preco_final
 
 st.set_page_config(page_title="IA Crédito + Risco de Inadimplência", layout="centered")
 st.title("IA para Precificação de Antecipação de Crédito")
@@ -112,16 +131,18 @@ if enviar:
 
     cor_risco = "🟢 Baixo" if risco_total <= 30 else "🟡 Moderado" if risco_total <= 60 else "🔴 Alto"
 
+    preco_minimo = calcular_preco_minimo(valor, risco, margem_desejada)
+
     st.markdown("## Resultado da Simulação")
     st.write(f"**Prazo da operação:** {prazo} dias")
     st.write(f"**Taxa ideal sugerida:** {taxa_ideal}%")
     st.write(f"**Margem estimada:** {margem_estimada}%")
-    st.write(f"**Retorno esperado:** R$ {retorno_esperado}")
+    st.write(f"**Retorno esperado:** {formatar_moeda(retorno_esperado)}")
     st.write(f"**Comparação com concorrência:** {status}")
     st.write(f"**Classificação de risco (IA):** {'Baixo' if rating >= 80 else 'Moderado' if rating >= 60 else 'Alto'}")
     st.write(f"**Risco de inadimplência (manual):** {cor_risco} ({risco_total}%)")
+    st.write(f"**Preço mínimo sugerido pela IA:** {formatar_moeda(preco_minimo)}")
 
-                
     # Gráfico Risco x Retorno
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.scatter(risco_total, retorno_esperado, color="#1f77b4", s=150, edgecolors="black", linewidths=1.2, zorder=3)
@@ -129,7 +150,7 @@ if enviar:
     ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
     ax.set_title("Risco x Retorno", fontsize=13, fontweight='bold')
     ax.grid(True, linestyle="--", alpha=0.6, zorder=0)
-    ax.annotate(f"({risco_total:.1f}%, R$ {retorno_esperado:.2f})", (risco_total, retorno_esperado),
+    ax.annotate(f"({risco_total:.1f}%, {formatar_moeda(retorno_esperado)})", (risco_total, retorno_esperado),
                 textcoords="offset points", xytext=(10, 10), ha='left', fontsize=10,
                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
     buffer = BytesIO()
@@ -166,13 +187,14 @@ if enviar:
     dados_relatorio = {
         "Cliente": nome_cliente,
         "CNPJ": cnpj_cliente,
-        "Valor da operação": f"R$ {valor:.2f}",
+        "Valor da operação": formatar_moeda(valor),
         "Prazo (dias)": prazo,
         "Taxa Ideal (%)": taxa_ideal,
         "Margem (%)": margem_estimada,
-        "Retorno Esperado (R$)": retorno_esperado,
+        "Retorno Esperado (R$)": formatar_moeda(retorno_esperado),
         "Status Concorrência": status,
         "Risco de inadimplência": f"{risco_total}% ({cor_risco})",
+        "Preço mínimo sugerido pela IA": formatar_moeda(preco_minimo),
         "Data do último faturamento": data_faturamento.strftime('%d/%m/%Y')
     }
 
