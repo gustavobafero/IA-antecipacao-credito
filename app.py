@@ -63,7 +63,7 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
         "Quanto mais para cima, melhor o retorno. Quanto mais para a direita, maior o risco. O ideal é ficar no alto e à esquerda: muito retorno com pouco risco."
     ))
 
-    # Página 2: Gráfico de Fatores de Risco
+    # Página 2: Gráfico Análise de Fatores de Risco
     pdf.add_page()
     pdf.set_font("Arial", style='I', size=11)
     if grafico_fatores_bytes:
