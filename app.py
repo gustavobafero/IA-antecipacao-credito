@@ -49,46 +49,44 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
         linha = f"{chave}: {valor}"
         pdf.cell(200, 10, txt=clean_text(linha), ln=True)
 
-    pdf.ln(10)
-
-    # Explicação do gráfico Risco x Retorno
-    pdf.set_font("Arial", style='I', size=11)
-    pdf.multi_cell(0, 8, clean_text(
-        "Este gráfico mostra o quanto a operação pode render (retorno esperado) "
-        "em relação ao risco de não receber o pagamento (risco de inadimplência). "
-        "Quanto mais para cima, melhor o retorno. Quanto mais para a direita, maior o risco. "
-        "O ideal é ficar no alto e à esquerda: muito retorno com pouco risco."
-    ))
-    pdf.ln(3)
-
-    # Inserção do gráfico Risco x Retorno
+    # Página 1: Gráfico Risco x Retorno
+    pdf.add_page()
+    pdf.set_font("Arial", style='B', size=12)
+    pdf.cell(200, 10, txt="Gráfico: Risco x Retorno", ln=True, align='C')
+    pdf.ln(5)
     if grafico_risco_bytes:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_risco:
             tmp_risco.write(grafico_risco_bytes.getvalue())
             tmp_risco_path = tmp_risco.name
         pdf.image(tmp_risco_path, w=180)
         pdf.ln(5)
+    pdf.set_font("Arial", style='I', size=11)
+    pdf.multi_cell(0, 8, clean_text(
+        "Este gráfico mostra o quanto a operação pode render (retorno esperado) em relação ao risco de não receber o pagamento (risco de inadimplência). "
+        "Quanto mais para cima, melhor o retorno. Quanto mais para a direita, maior o risco. O ideal é ficar no alto e à esquerda: muito retorno com pouco risco."
+    ))
 
-    # Inserção do gráfico de Fatores de Risco
+    # Página 2: Gráfico de Fatores de Risco
+    pdf.add_page()
+    pdf.set_font("Arial", style='B', size=12)
+    pdf.cell(200, 10, txt="Gráfico: Análise de Fatores de Risco", ln=True, align='C')
+    pdf.ln(5)
     if grafico_fatores_bytes:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_fatores:
             tmp_fatores.write(grafico_fatores_bytes.getvalue())
             tmp_fatores_path = tmp_fatores.name
         pdf.image(tmp_fatores_path, w=180)
-        pdf.ln(3)
-
-        # Explicação do gráfico de fatores
-        pdf.set_font("Arial", style='I', size=11)
-        pdf.multi_cell(0, 8, clean_text(
-            "Aqui a gente vê os principais motivos que fazem o risco aumentar ou diminuir. "
-            "Cada barra mostra o peso de um fator, como o score do Serasa ou a idade da empresa. "
-            "Se a barra for maior, esse fator está contribuindo mais para o risco. "
-            "É como montar um quebra-cabeça para entender por que uma operação pode dar errado."
-        ))
+        pdf.ln(5)
+    pdf.set_font("Arial", style='I', size=11)
+    pdf.multi_cell(0, 8, clean_text(
+        "Aqui a gente vê os principais motivos que fazem o risco aumentar ou diminuir. "
+        "Cada barra mostra o peso de um fator, como o score do Serasa ou a idade da empresa. "
+        "Se a barra for maior, esse fator está contribuindo mais para o risco. "
+        "É como montar um quebra-cabeça para entender por que uma operação pode dar errado."
+    ))
 
     pdf_data = pdf.output(dest='S').encode('latin1')
     return BytesIO(pdf_data)
-
 
 def gerar_justificativa_ia(prompt):
     st.info("🔍 Enviando solicitação à IA...")
