@@ -146,7 +146,7 @@ if enviar:
     st.pyplot(fig)
 
     # Gráfico de Análise de Risco
-    st.markdown("### Gráfico de Análise de Risco de Inadimplência (Manual)")
+    st.markdown("### Análise de Risco de Inadimplência")
     fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
     pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
     pesos = [p * 100 for p in pesos]
@@ -162,7 +162,8 @@ if enviar:
                           fontsize=10,
                           bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
     ax_risco.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
-    ax_risco.set_title("Contribuição de Fatores no Risco de Inadimplência", fontsize=13, fontweight='bold')
+    ax_risco.set_title("Análise de Risco de Inadimplência", fontsize=13, fontweight='bold')
+    fig_risco.subplots_adjust(top=0.85)
     ax_risco.yaxis.set_major_formatter(PercentFormatter())
     ax_risco.grid(True, linestyle="--", alpha=0.6, zorder=0)
     buffer_risco = BytesIO()
