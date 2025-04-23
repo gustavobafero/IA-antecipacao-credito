@@ -19,7 +19,7 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 def clean_text(text):
     return unicodedata.normalize('NFKD', text).encode('latin1', 'ignore').decode('latin1')
 
-def gerar_pdf(data_dict, explicacao, grafico_risco_bytes=None, grafico_fatores_bytes=None):
+def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -121,19 +121,7 @@ if enviar:
     st.write(f"**Classificação de risco (IA):** {'Baixo' if rating >= 80 else 'Moderado' if rating >= 60 else 'Alto'}")
     st.write(f"**Risco de inadimplência (manual):** {cor_risco} ({risco_total}%)")
 
-    prompt = (
-        f"Considere uma operação de antecipação de crédito no valor de R$ {valor:.2f}, com prazo de {prazo} dias. "
-        f"O rating do cliente é {rating}/100, o custo de capital da operação é {custo_capital}%, "
-        f"e a margem desejada é {margem_desejada}%. A taxa da concorrência é {taxa_concorrencia}%, "
-        f"e a taxa ideal sugerida foi de {taxa_ideal}% (status: {status}). "
-        f"A avaliação de risco de inadimplência resultou em {risco_total}% ({cor_risco}). "
-        f"Gere uma explicação curta e profissional considerando risco x retorno."
-    )
-
-    explicacao = gerar_justificativa_ia(prompt)
-    st.markdown("### Justificativa da IA")
-    st.success(explicacao)
-
+                
     # Gráfico Risco x Retorno
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.scatter(risco_total, retorno_esperado, color="#1f77b4", s=150, edgecolors="black", linewidths=1.2, zorder=3)
@@ -188,5 +176,5 @@ if enviar:
         "Data do último faturamento": data_faturamento.strftime('%d/%m/%Y')
     }
 
-    pdf_bytes = gerar_pdf(dados_relatorio, explicacao, buffer, buffer_risco)
+    pdf_bytes = gerar_pdf(dados_relatorio, buffer, buffer_risco)
     st.download_button("📄 Baixar relatório em PDF", data=pdf_bytes, file_name="relatorio_credito.pdf")
