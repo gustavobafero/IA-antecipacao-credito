@@ -173,7 +173,7 @@ if enviar:
     st.write(f"**Preço mínimo sugerido pela IA:** {formatar_moeda(preco_minimo)}")
 
     # Gráfico Risco x Retorno
-    fig, ax = plt.subplots(figsize=(6, 4))
+        fig, ax = plt.subplots(figsize=(6, 4))
     ax.set_xlim(0, 100)
     ax.set_xticks([i for i in range(0, 101, 10)])
     ax.set_ylim(0, 10000)
@@ -190,6 +190,7 @@ if enviar:
     fig.savefig(buffer, format="png", bbox_inches="tight")
     buffer.seek(0)
     st.pyplot(fig)
+
 
 
 
