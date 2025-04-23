@@ -16,13 +16,13 @@ import locale
 try:
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 except:
-    pass
+    locale.setlocale(locale.LC_ALL, '')  # fallback
 
 def formatar_moeda(valor):
     try:
-        return locale.currency(valor, grouping=True)
-    except:
         return f"R$ {valor:,.2f}".replace(",", "v").replace(".", ",").replace("v", ".")
+    except:
+        return f"R$ {valor:.2f}".replace(".", ",")
 
 def calcular_preco_minimo(custo_base, risco_inadimplencia, margem_desejada_percentual):
     ajuste_risco = 1 + risco_inadimplencia
