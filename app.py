@@ -57,10 +57,10 @@ def gerar_justificativa_ia(prompt):
         st.success("✅ Justificativa recebida com sucesso!")
         return resposta.choices[0].message.content.strip()
     except RateLimitError as e:
-        st.error(f"RateLimitError: {e}")
+        st.warning("⚠️ A IA está temporariamente indisponível (erro de cota). O relatório continuará sem justificativa da IA.")
         return "A OpenAI está com excesso de requisições no momento. Tente novamente mais tarde."
     except Exception as e:
-        st.error(f"Erro inesperado ao chamar a OpenAI: {e}")
+        st.warning("⚠️ Erro inesperado ao consultar a IA. O relatório continuará sem justificativa da IA.")
         return "Não foi possível gerar a justificativa neste momento. Use a análise manual como apoio."
 
 st.header("1. Informações da Operação")
