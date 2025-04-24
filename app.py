@@ -195,8 +195,8 @@ Se a operação é de **R$ 10.000** e a IA sugeriu **2,8%**, isso significa que 
 """)
 
 
-    # Gráfico de Risco x Retorno
-    fig,ax = plt.subplots(figsize=(6, 4))
+# Gráfico de Risco x Retorno
+fig,ax = plt.subplots(figsize=(6, 4))
     ax.set_xlim(0, 100)
     ax.set_xticks([i for i in range(0, 101, 20)])
     ax.set_ylim(0, 2000)
