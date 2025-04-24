@@ -170,33 +170,33 @@ if enviar:
     st.write(f"**Risco de inadimplência (manual):** {cor_risco} ({risco_total}%)")
     st.write(f"**Preço mínimo sugerido pela IA:** {formatar_moeda(preco_minimo)}")
     
-    # Exibe o preço sugerido pela IA
-st.markdown(f"### 💰 Preço sugerido pela IA: **R$ {preco_sugerido:,.2f}**")
+# Exibe o preço sugerido pela IA
+    st.markdown(f"### 💰 Preço sugerido pela IA: **R$ {preco_sugerido:,.2f}**")
 
 # Bloco explicativo dinâmico
-st.markdown("""
----
+    st.markdown("""
+    ---
 
-### 💡 Como esse preço foi calculado?
+    ### Como esse preço foi calculado?
 
-A IA leva em conta três fatores principais:
+    A IA leva em conta três fatores principais:
 
-- **Risco de inadimplência:** quanto maior o risco, maior o retorno necessário para compensar.
-- **Margem desejada:** é o lucro mínimo que você espera ganhar com essa operação.
-- **Concorrência:** se outras empresas oferecem melhores condições, a IA ajusta o preço pra manter você competitivo.
+    - **Risco de inadimplência:** quanto maior o risco, maior o retorno necessário para compensar.
+    - **Margem desejada:** é o lucro mínimo que você espera ganhar com essa operação.
+    - **Concorrência:** se outras empresas oferecem melhores condições, a IA ajusta o preço pra manter você competitivo.
 
-**🧠 Exemplo didático:**  
-Se a operação é de **R$ 10.000** e a IA sugeriu **2,8%**, isso significa que ela calculou um risco médio, considerou sua margem desejada, e chegou nesse retorno ideal:
+    **Exemplo didático:**  
+    Se a operação é de **R$ 10.000** e a IA sugeriu **2,8%**, isso significa que ela calculou um risco médio, considerou sua margem desejada, e chegou nesse retorno ideal:
 
-**R$ 10.000 x 2,8% = R$ 280,00 de retorno esperado**
+    **R$ 10.000 x 2,8% = R$ 280,00 de retorno esperado**
 
----
+    ---
 
-""")
+    """)
 
 
 # Gráfico de Risco x Retorno
-fig,ax = plt.subplots(figsize=(6, 4))
+    fig,ax = plt.subplots(figsize=(6, 4))
     ax.set_xlim(0, 100)
     ax.set_xticks([i for i in range(0, 101, 20)])
     ax.set_ylim(0, 2000)
