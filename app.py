@@ -130,7 +130,6 @@ with form:
     custo_capital = st.number_input("Custo do capital (%)", min_value=0.0, value=1.5)
     taxa_concorrencia = st.number_input("Taxa da concorrência (%)", min_value=0.0, value=4.5)
 
-    st.markdown("---")
     st.subheader("2. Avaliação de Risco de Inadimplência (manual)")
 
     score_serasa = st.number_input("Score Serasa (0 a 1000)", min_value=0, max_value=1000, value=750)
