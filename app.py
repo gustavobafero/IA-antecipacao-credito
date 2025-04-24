@@ -223,31 +223,31 @@ st.image(buffer, caption="")
 plt.close(fig)
 
 
-    # Gráfico de Análise de Fatores de Risco
-    st.markdown("### Análise de Fatores de Risco")
-    fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
-    pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
-    pesos = [p * 100 for p in pesos]
-    fig_risco, ax_risco = plt.subplots(figsize=(6, 4))
-    bars = ax_risco.bar(fatores, pesos, edgecolor="black", zorder=3)
-    for bar in bars:
-        height = bar.get_height()
-        ax_risco.annotate(f'{height:.1f}%',
-                          xy=(bar.get_x() + bar.get_width() / 2, height),
-                          xytext=(0, 5),
-                          textcoords="offset points",
-                          ha='center', va='bottom',
-                          fontsize=10,
-                          bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
-    ax_risco.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
-    ax_risco.set_title("Análise de Fatores de Risco", fontsize=13, fontweight='bold')
-    ax_risco.yaxis.set_major_formatter(PercentFormatter())
-    ax_risco.grid(True, linestyle="--", alpha=0.6, zorder=0)
-    buffer_risco = BytesIO()
-    fig_risco.savefig(buffer_risco, format="png", dpi=300, bbox_inches="tight")
-    buffer_risco.seek(0)
-    st.image(buffer_risco, caption="Análise de Fatores de Risco")
-    plt.close(fig_risco)
+# Gráfico de Análise de Fatores de Risco
+st.markdown("### Análise de Fatores de Risco")
+fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
+pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
+pesos = [p * 100 for p in pesos]
+fig_risco, ax_risco = plt.subplots(figsize=(6, 4))
+bars = ax_risco.bar(fatores, pesos, edgecolor="black", zorder=3)
+for bar in bars:
+    height = bar.get_height()
+    ax_risco.annotate(f'{height:.1f}%',
+                        xy=(bar.get_x() + bar.get_width() / 2, height),
+                        xytext=(0, 5),
+                        textcoords="offset points",
+                        ha='center', va='bottom',
+                        fontsize=10,
+                        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+ax_risco.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
+ax_risco.set_title("Análise de Fatores de Risco", fontsize=13, fontweight='bold')
+ax_risco.yaxis.set_major_formatter(PercentFormatter())
+ax_risco.grid(True, linestyle="--", alpha=0.6, zorder=0)
+buffer_risco = BytesIO()
+fig_risco.savefig(buffer_risco, format="png", dpi=300, bbox_inches="tight")
+buffer_risco.seek(0)
+st.image(buffer_risco, caption="Análise de Fatores de Risco")
+plt.close(fig_risco)
 
     # Geração e download do PDF
     dados_relatorio = {
