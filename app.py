@@ -200,25 +200,28 @@ Se a operação é de **R$ 10.000** e a IA sugeriu **2,8%**, isso significa que 
 """)
 
     # Gráfico de Risco x Retorno
-    fig, ax = plt.subplots(figsize=(6, 4))
-    ax.set_xlim(0, 100)
-    ax.set_xticks(range(0, 101, 20))
-    ax.set_ylim(0, retorno_esperado * 1.2)
-    ax.set_yticks([i for i in range(0, int(retorno_esperado * 1.2) + 1, int(retorno_esperado * 1.2 // 4 or 1))])
-    ax.set_xlabel("Risco de Inadimplência (%)", fontsize=12)
-    ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
-    ax.tick_params(axis='both', which='major', labelsize=10)
-    ax.grid(True, linestyle="--", alpha=0.6, zorder=0)
-    ax.scatter(risco_total, retorno_esperado, s=150, edgecolors="black", linewidths=1.2, zorder=3)
-    ax.annotate(f"({risco_total:.1f}%, {formatar_moeda(retorno_esperado)})",
-                (risco_total, retorno_esperado),
-                textcoords="offset points", xytext=(10, 10), ha='left', fontsize=10,
-                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
-    buffer = BytesIO()
-    fig.savefig(buffer, format="png", dpi=300, bbox_inches="tight")
-    buffer.seek(0)
-    st.image(buffer, caption="Gráfico Risco x Retorno")
-    plt.close(fig)
+fig, ax = plt.subplots(figsize=(6, 4))
+
+# ... seus comandos de eixo, scatter, grid, anotação etc. ...
+
+# Título principal centralizado, moderno e sofisticado
+fig.suptitle("Análise de Risco x Retorno", 
+             fontsize=16, fontweight='bold', color='#333333', y=1.02)
+
+# “Subtítulo” com a fórmula estilizada
+formula = f"{formatar_moeda(valor)} × {margem_estimada:.1f}% = {formatar_moeda(retorno_esperado)} de retorno"
+fig.text(0.5, 0.95, formula, ha='center', fontsize=12, color='#555555')
+
+# Ajuste de layout para não cortar títulos
+fig.tight_layout(rect=[0, 0, 1, 0.9])
+
+# Salva e exibe
+buffer = BytesIO()
+fig.savefig(buffer, format="png", dpi=300, bbox_inches="tight")
+buffer.seek(0)
+st.image(buffer, caption="")
+plt.close(fig)
+
 
     # Gráfico de Análise de Fatores de Risco
     st.markdown("### Análise de Fatores de Risco")
