@@ -168,14 +168,14 @@ if enviar:
     ax.grid(True, linestyle="--", alpha=0.5)
     # Título e subtítulo
     ax.set_title("Análise de Risco x Retorno", fontsize=14, fontweight='bold', pad=15)
-    subtitle = f"{formatar_moeda(valor)} × {margem_estimada:.1f}% = {formatar_moeda(retorno_esperado)} retorno"
+    subtitle = f"{formatar_moeda(valor)} × {margem_estimada:.1f}\% = {formatar_moeda(retorno_esperado)} retorno"
     ax.text(0.5, 1.02, subtitle, transform=ax.transAxes, ha='center', fontsize=11, color='gray')
     # Remover bordas desnecessárias
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     buf_risco = BytesIO()
-    fig.tight_layout()
-    fig.savefig(buf_risco, format='png', dpi=300)
+    # Usa savefig com bbox_inches='tight' e sem tight_layout
+    fig.savefig(buf_risco, format='png', dpi=300, bbox_inches='tight')
     buf_risco.seek(0)
     st.image(buf_risco)
     plt.close(fig)
@@ -201,8 +201,7 @@ if enviar:
     ax_fat.yaxis.set_major_formatter(PercentFormatter())
     ax_fat.grid(True, linestyle="--", alpha=0.6, zorder=0)
     buf_fat = BytesIO()
-    fig_fat.tight_layout()
-    fig_fat.savefig(buf_fat, format='png', dpi=300)
+    fig_fat.savefig(buf_fat, format='png', dpi=300, bbox_inches='tight')
     buf_fat.seek(0)
     st.image(buf_fat)
     plt.close(fig_fat)
