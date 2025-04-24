@@ -81,7 +81,7 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
         pdf.image(path, w=180)
         pdf.ln(5)
     pdf.multi_cell(0, 8, clean_text(
-        "Gráfico: retorno esperado vs. risco de inadimplência. Mais alto é melhor retorno; mais à direita é maior risco."))
+        "Gráfico: retorno esperado vs. risco de inadimplência. Quanto mais alto maior é o retorno; Quanto mais à direita maior o risco; Então a melhor opção é na esquerda, alto o que significa um alto retorno com baixo risco"))
 
     # Gráfico Fatores de Risco
     pdf.add_page()
