@@ -183,54 +183,54 @@ if enviar:
 
     # Bloco explicativo dinâmico
     st.markdown("""
----
-### 💡 Como esse preço foi calculado?
+    ---
+    ### 💡 Como esse preço foi calculado?
 
-A IA leva em conta três fatores principais:
+    A IA leva em conta três fatores principais:
 
-- **Risco de inadimplência:** quanto maior o risco, maior o retorno necessário para compensar.
-- **Margem desejada:** é o lucro mínimo que você espera ganhar com essa operação.
-- **Concorrência:** se outras empresas oferecem melhores condições, a IA ajusta o preço pra manter você competitivo.
+    - **Risco de inadimplência:** quanto maior o risco, maior o retorno necessário para compensar.
+    - **Margem desejada:** é o lucro mínimo que você espera ganhar com essa operação.
+    - **Concorrência:** se outras empresas oferecem melhores condições, a IA ajusta o preço pra manter você competitivo.
 
-**Exemplo didático:**  
-Se a operação é de **R$ 10.000** e a IA sugeriu **2,8%**, isso significa que ela calculou um risco médio, considerou sua margem desejada, e chegou nesse retorno ideal:
+    **Exemplo didático:**  
+    Se a operação é de **R$ 10.000** e a IA sugeriu **2,8%**, isso significa que ela calculou um risco médio, considerou sua margem desejada, e chegou nesse retorno ideal:
 
-**R$ 10.000 x 2,8% = R$ 280,00 de retorno esperado**
----
-""")
+    **R$ 10.000 x 2,8% = R$ 280,00 de retorno esperado**
+    ---
+    """)
 
     # Gráfico de Risco x Retorno
-fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(6, 4))
 
-# ... seus comandos de eixo, scatter, grid, anotação etc. ...
+    # ... seus comandos de eixo, scatter, grid, anotação etc. ...
 
-# Título principal centralizado, moderno e sofisticado
-fig.suptitle("Análise de Risco x Retorno", 
-             fontsize=16, fontweight='bold', color='#333333', y=1.02)
+    # Título principal centralizado, moderno e sofisticado
+    fig.suptitle("Análise de Risco x Retorno", 
+                 fontsize=16, fontweight='bold', color='#333333', y=1.02)
 
-# “Subtítulo” com a fórmula estilizada
-formula = f"{formatar_moeda(valor)} × {margem_estimada:.1f}% = {formatar_moeda(retorno_esperado)} de retorno"
-fig.text(0.5, 0.95, formula, ha='center', fontsize=12, color='#555555')
+    # “Subtítulo” com a fórmula estilizada
+    formula = f"{formatar_moeda(valor)} × {margem_estimada:.1f}% = {formatar_moeda(retorno_esperado)} de retorno"
+    fig.text(0.5, 0.95, formula, ha='center', fontsize=12, color='#555555')
 
-# Ajuste de layout para não cortar títulos
-fig.tight_layout(rect=[0, 0, 1, 0.9])
+    # Ajuste de layout para não cortar títulos
+    fig.tight_layout(rect=[0, 0, 1, 0.9])
 
-# Salva e exibe
-buffer = BytesIO()
-fig.savefig(buffer, format="png", dpi=300, bbox_inches="tight")
-buffer.seek(0)
-st.image(buffer, caption="")
-plt.close(fig)
+    # Salva e exibe
+    buffer = BytesIO()
+    fig.savefig(buffer, format="png", dpi=300, bbox_inches="tight")
+    buffer.seek(0)
+    st.image(buffer, caption="")
+    plt.close(fig)
 
 
-# Gráfico de Análise de Fatores de Risco
-st.markdown("### Análise de Fatores de Risco")
-fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
-pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
-pesos = [p * 100 for p in pesos]
-fig_risco, ax_risco = plt.subplots(figsize=(6, 4))
-bars = ax_risco.bar(fatores, pesos, edgecolor="black", zorder=3)
-for bar in bars:
+    # Gráfico de Análise de Fatores de Risco
+    st.markdown("### Análise de Fatores de Risco")
+    fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
+    pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
+    pesos = [p * 100 for p in pesos]
+    fig_risco, ax_risco = plt.subplots(figsize=(6, 4))
+    bars = ax_risco.bar(fatores, pesos, edgecolor="black", zorder=3)
+    for bar in bars:
     height = bar.get_height()
     ax_risco.annotate(f'{height:.1f}%',
                         xy=(bar.get_x() + bar.get_width() / 2, height),
@@ -239,15 +239,15 @@ for bar in bars:
                         ha='center', va='bottom',
                         fontsize=10,
                         bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
-ax_risco.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
-ax_risco.set_title("Análise de Fatores de Risco", fontsize=13, fontweight='bold')
-ax_risco.yaxis.set_major_formatter(PercentFormatter())
-ax_risco.grid(True, linestyle="--", alpha=0.6, zorder=0)
-buffer_risco = BytesIO()
-fig_risco.savefig(buffer_risco, format="png", dpi=300, bbox_inches="tight")
-buffer_risco.seek(0)
-st.image(buffer_risco, caption="Análise de Fatores de Risco")
-plt.close(fig_risco)
+    ax_risco.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
+    ax_risco.set_title("Análise de Fatores de Risco", fontsize=13, fontweight='bold')
+    ax_risco.yaxis.set_major_formatter(PercentFormatter())
+    ax_risco.grid(True, linestyle="--", alpha=0.6, zorder=0)
+    buffer_risco = BytesIO()
+    fig_risco.savefig(buffer_risco, format="png", dpi=300, bbox_inches="tight")
+    buffer_risco.seek(0)
+    st.image(buffer_risco, caption="Análise de Fatores de Risco")
+    plt.close(fig_risco)
 
     # Geração e download do PDF
     dados_relatorio = {
