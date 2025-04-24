@@ -145,9 +145,11 @@ if enviar:
     ax.set_ylim(0, retorno_esperado * 1.2)
     ax.scatter(risco_total, retorno_esperado, s=150, edgecolor="black", zorder=3)
     fig.suptitle("Análise de Risco x Retorno", fontsize=16, fontweight='bold', y=1.02)
+    # Escapar o % para evitar MathText errors
+    formula_text = f"{formatar_moeda(valor)} × {margem_estimada:.1f}\% = {formatar_moeda(retorno_esperado)} de retorno"
     fig.text(
         0.5, 0.95,
-        f"{formatar_moeda(valor)} × {margem_estimada:.1f}% = {formatar_moeda(retorno_esperado)} de retorno",
+        formula_text,
         ha='center', fontsize=12
     )
     fig.tight_layout(rect=[0, 0, 1, 0.9])
