@@ -18,11 +18,13 @@ try:
 except:
     locale.setlocale(locale.LC_ALL, '')  # fallback
 
+
 def formatar_moeda(valor):
     try:
         return f"R$ {valor:,.2f}".replace(",", "v").replace(".", ",").replace("v", ".")
     except:
         return f"R$ {valor:.2f}".replace(".", ",")
+
 
 def calcular_preco_minimo(custo_base, risco_inadimplencia, margem_desejada_percentual):
     ajuste_risco = 1 + risco_inadimplencia
@@ -30,13 +32,17 @@ def calcular_preco_minimo(custo_base, risco_inadimplencia, margem_desejada_perce
     preco_final = custo_base * ajuste_risco * margem
     return preco_final
 
+# Configuração da página
 st.set_page_config(page_title="IA Crédito + Risco de Inadimplência", layout="centered")
 st.title("IA para Precificação de Antecipação de Crédito")
 
+# Cliente OpenAI
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
 
 def clean_text(text):
     return unicodedata.normalize('NFKD', text).encode('latin1', 'ignore').decode('latin1')
+
 
 def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
     pdf = FPDF()
@@ -91,6 +97,7 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
     pdf_data = pdf.output(dest='S').encode('latin1')
     return BytesIO(pdf_data)
 
+
 def gerar_justificativa_ia(prompt):
     st.info("🔍 Enviando solicitação à IA...")
     try:
@@ -102,13 +109,14 @@ def gerar_justificativa_ia(prompt):
         )
         st.success("✅ Justificativa recebida com sucesso!")
         return resposta.choices[0].message.content.strip()
-    except RateLimitError as e:
+    except RateLimitError:
         st.warning("⚠️ A IA está temporariamente indisponível (erro de cota). O relatório continuará sem justificativa da IA.")
         return "A OpenAI está com excesso de requisições no momento. Tente novamente mais tarde."
-    except Exception as e:
+    except Exception:
         st.warning("⚠️ Erro inesperado ao consultar a IA. O relatório continuará sem justificativa da IA.")
         return "Não foi possível gerar a justificativa neste momento. Use a análise manual como apoio."
 
+# 1. Informações da Operação
 st.header("1. Informações da Operação")
 form = st.form("formulario_operacao")
 with form:
@@ -134,6 +142,7 @@ with form:
     enviar = st.form_submit_button("Simular")
 
 if enviar:
+    # Cálculos principais
     prazo = (data_vencimento - data_operacao).days
     risco = (100 - rating) / 100
     ajuste_valor = max(0.5 - (valor / 100000), 0)
@@ -141,6 +150,7 @@ if enviar:
     margem_estimada = round(taxa_ideal - custo_capital, 2)
     retorno_esperado = round(valor * (margem_estimada / 100), 2)
 
+    # Status concorrência
     if taxa_ideal > taxa_concorrencia + 0.05:
         status = "Acima do mercado"
     elif taxa_ideal < taxa_concorrencia - 0.05:
@@ -148,18 +158,18 @@ if enviar:
     else:
         status = "Na média do mercado"
 
+    # Risco manual detalhado
     risco_score = 0 if score_serasa >= 800 else 1 if score_serasa < 600 else 0.5
     risco_idade = 0 if idade_empresa >= 5 else 0.5
     risco_protesto = 1 if protestos == "Sim" else 0
     risco_faturamento = 0 if faturamento >= 500000 else 0.5
-
-    risco_total = (risco_score * 0.4 + risco_idade * 0.2 + risco_protesto * 0.25 + risco_faturamento * 0.15) * 100
-    risco_total = round(risco_total, 2)
-
+    risco_total = round((risco_score * 0.4 + risco_idade * 0.2 + risco_protesto * 0.25 + risco_faturamento * 0.15) * 100, 2)
     cor_risco = "🟢 Baixo" if risco_total <= 30 else "🟡 Moderado" if risco_total <= 60 else "🔴 Alto"
 
-    preco_minimo = calcular_preco_minimo(valor, risco, margem_desejada)
+    # Novo: preco sugerido pela IA
+    preco_sugerido = calcular_preco_minimo(valor, risco, margem_desejada)
 
+    # Exibição dos resultados
     st.markdown("## Resultado da Simulação")
     st.write(f"**Prazo da operação:** {prazo} dias")
     st.write(f"**Taxa ideal sugerida:** {taxa_ideal}%")
@@ -168,55 +178,48 @@ if enviar:
     st.write(f"**Comparação com concorrência:** {status}")
     st.write(f"**Classificação de risco (IA):** {'Baixo' if rating >= 80 else 'Moderado' if rating >= 60 else 'Alto'}")
     st.write(f"**Risco de inadimplência (manual):** {cor_risco} ({risco_total}%)")
-    st.write(f"**Preço mínimo sugerido pela IA:** {formatar_moeda(preco_minimo)}")
-    
-# Exibe o preço sugerido pela IA
-    st.markdown(f"### 💰 Preço sugerido pela IA: **R$ {preco_sugerido:,.2f}**")
 
-# Bloco explicativo dinâmico
+    # Exibe o preço sugerido pela IA
+    st.markdown(f"### 💰 Preço sugerido pela IA: **{formatar_moeda(preco_sugerido)}**")
+
+    # Bloco explicativo dinâmico
     st.markdown("""
-    ---
+---
+### 💡 Como esse preço foi calculado?
 
-    ### Como esse preço foi calculado?
+A IA leva em conta três fatores principais:
 
-    A IA leva em conta três fatores principais:
+- **Risco de inadimplência:** quanto maior o risco, maior o retorno necessário para compensar.
+- **Margem desejada:** é o lucro mínimo que você espera ganhar com essa operação.
+- **Concorrência:** se outras empresas oferecem melhores condições, a IA ajusta o preço pra manter você competitivo.
 
-    - **Risco de inadimplência:** quanto maior o risco, maior o retorno necessário para compensar.
-    - **Margem desejada:** é o lucro mínimo que você espera ganhar com essa operação.
-    - **Concorrência:** se outras empresas oferecem melhores condições, a IA ajusta o preço pra manter você competitivo.
+**Exemplo didático:**  
+Se a operação é de **R$ 10.000** e a IA sugeriu **2,8%**, isso significa que ela calculou um risco médio, considerou sua margem desejada, e chegou nesse retorno ideal:
 
-    **Exemplo didático:**  
-    Se a operação é de **R$ 10.000** e a IA sugeriu **2,8%**, isso significa que ela calculou um risco médio, considerou sua margem desejada, e chegou nesse retorno ideal:
+**R$ 10.000 x 2,8% = R$ 280,00 de retorno esperado**
+---
+""")
 
-    **R$ 10.000 x 2,8% = R$ 280,00 de retorno esperado**
-
-    ---
-
-    """)
-
-
-# Gráfico de Risco x Retorno
-    fig,ax = plt.subplots(figsize=(6, 4))
+    # Gráfico de Risco x Retorno
+    fig, ax = plt.subplots(figsize=(6, 4))
     ax.set_xlim(0, 100)
-    ax.set_xticks([i for i in range(0, 101, 20)])
-    ax.set_ylim(0, 2000)
-    ax.set_yticks([i for i in range(0, 2001, 500)])
+    ax.set_xticks(range(0, 101, 20))
+    ax.set_ylim(0, retorno_esperado * 1.2)
+    ax.set_yticks([i for i in range(0, int(retorno_esperado * 1.2) + 1, int(retorno_esperado * 1.2 // 4 or 1))])
     ax.set_xlabel("Risco de Inadimplência (%)", fontsize=12)
     ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
     ax.tick_params(axis='both', which='major', labelsize=10)
-    ax.scatter(risco_total, retorno_esperado, color="#1f77b4", s=150, edgecolors="black", linewidths=1.2, zorder=3)
     ax.grid(True, linestyle="--", alpha=0.6, zorder=0)
-    ax.annotate(f"({risco_total:.1f}%, {formatar_moeda(retorno_esperado)})", (risco_total, retorno_esperado),
+    ax.scatter(risco_total, retorno_esperado, s=150, edgecolors="black", linewidths=1.2, zorder=3)
+    ax.annotate(f"({risco_total:.1f}%, {formatar_moeda(retorno_esperado)})",
+                (risco_total, retorno_esperado),
                 textcoords="offset points", xytext=(10, 10), ha='left', fontsize=10,
                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
     buffer = BytesIO()
-    fig.savefig(buffer, format="png", bbox_inches="tight")
+    fig.savefig(buffer, format="png", dpi=300, bbox_inches="tight")
     buffer.seek(0)
-    st.pyplot(fig)
-
-
-
-
+    st.image(buffer, caption="Gráfico Risco x Retorno")
+    plt.close(fig)
 
     # Gráfico de Análise de Fatores de Risco
     st.markdown("### Análise de Fatores de Risco")
@@ -224,7 +227,7 @@ if enviar:
     pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
     pesos = [p * 100 for p in pesos]
     fig_risco, ax_risco = plt.subplots(figsize=(6, 4))
-    bars = ax_risco.bar(fatores, pesos, color="#1f77b4", edgecolor="black", zorder=3)
+    bars = ax_risco.bar(fatores, pesos, edgecolor="black", zorder=3)
     for bar in bars:
         height = bar.get_height()
         ax_risco.annotate(f'{height:.1f}%',
@@ -236,14 +239,15 @@ if enviar:
                           bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
     ax_risco.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
     ax_risco.set_title("Análise de Fatores de Risco", fontsize=13, fontweight='bold')
-    fig_risco.subplots_adjust(top=0.85)
     ax_risco.yaxis.set_major_formatter(PercentFormatter())
     ax_risco.grid(True, linestyle="--", alpha=0.6, zorder=0)
     buffer_risco = BytesIO()
-    fig_risco.savefig(buffer_risco, format="png", bbox_inches="tight")
+    fig_risco.savefig(buffer_risco, format="png", dpi=300, bbox_inches="tight")
     buffer_risco.seek(0)
-    st.pyplot(fig_risco)
+    st.image(buffer_risco, caption="Análise de Fatores de Risco")
+    plt.close(fig_risco)
 
+    # Geração e download do PDF
     dados_relatorio = {
         "Cliente": nome_cliente,
         "CNPJ": cnpj_cliente,
@@ -254,7 +258,7 @@ if enviar:
         "Retorno Esperado (R$)": formatar_moeda(retorno_esperado),
         "Status Concorrência": status,
         "Risco de inadimplência": f"{risco_total}% ({cor_risco})",
-        "Preço mínimo sugerido pela IA": formatar_moeda(preco_minimo),
+        "Preço mínimo sugerido pela IA": formatar_moeda(preco_sugerido),
         "Data do último faturamento": data_faturamento.strftime('%d/%m/%Y')
     }
 
