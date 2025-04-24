@@ -169,6 +169,31 @@ if enviar:
     st.write(f"**Classificação de risco (IA):** {'Baixo' if rating >= 80 else 'Moderado' if rating >= 60 else 'Alto'}")
     st.write(f"**Risco de inadimplência (manual):** {cor_risco} ({risco_total}%)")
     st.write(f"**Preço mínimo sugerido pela IA:** {formatar_moeda(preco_minimo)}")
+    
+    # Exibe o preço sugerido pela IA
+st.markdown(f"### 💰 Preço sugerido pela IA: **R$ {preco_sugerido:,.2f}**")
+
+# Bloco explicativo dinâmico
+st.markdown("""
+---
+
+### 💡 Como esse preço foi calculado?
+
+A IA leva em conta três fatores principais:
+
+- **Risco de inadimplência:** quanto maior o risco, maior o retorno necessário para compensar.
+- **Margem desejada:** é o lucro mínimo que você espera ganhar com essa operação.
+- **Concorrência:** se outras empresas oferecem melhores condições, a IA ajusta o preço pra manter você competitivo.
+
+**🧠 Exemplo didático:**  
+Se a operação é de **R$ 10.000** e a IA sugeriu **2,8%**, isso significa que ela calculou um risco médio, considerou sua margem desejada, e chegou nesse retorno ideal:
+
+**R$ 10.000 x 2,8% = R$ 280,00 de retorno esperado**
+
+---
+
+""")
+
 
     # Gráfico de Risco x Retorno
     fig, ax = plt.subplots(figsize=(6, 4))
