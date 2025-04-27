@@ -102,9 +102,11 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
             path = tmp.name
         pdf.image(path, w=180)
         pdf.ln(5)
-    pdf.multi_cell(0, 8, clean_text(
-        "Fatores de risco: mostra quais indicadores mais afetam a inadimplência."
-    ))
+    pdf.multi_cell(
+        0,
+        8,
+        clean_text("Fatores de risco: mostra quais indicadores mais afetam a inadimplência.")
+    )
 
     return BytesIO(pdf.output(dest='S').encode('latin1'))
 
@@ -166,7 +168,6 @@ if enviar:
 
     # Gráfico: Risco x Retorno com zonas coloridas
     fig, ax = plt.subplots(figsize=(6, 4))
-    # Zonas
     ax.axvspan(0, 30, color='green', alpha=0.2, label='Baixo Risco')
     ax.axvspan(30, 60, color='yellow', alpha=0.2, label='Risco Intermediário')
     ax.axvspan(60, 100, color='red', alpha=0.2, label='Alto Risco')
@@ -186,6 +187,10 @@ if enviar:
     # Título e legenda explicativa
     ax.set_title("Análise de Risco x Retorno", fontsize=14, fontweight='bold', pad=10)
     ax.legend(loc='upper right', fontsize=9)
+    # Captura buffer para PDF
+    buf_risco = BytesIO()
+    fig.savefig(buf_risco, format='png', dpi=300, bbox_inches='tight')
+    buf_risco.seek(0)
     st.pyplot(fig)
     plt.close(fig)
 
@@ -209,6 +214,9 @@ if enviar:
     ax_fat.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
     ax_fat.yaxis.set_major_formatter(PercentFormatter())
     ax_fat.grid(True, linestyle="--", alpha=0.6, zorder=0)
+    buf_fat = BytesIO()
+    fig_fat.savefig(buf_fat, format='png', dpi=300, bbox_inches='tight')
+    buf_fat.seek(0)
     st.pyplot(fig_fat)
     plt.close(fig_fat)
 
@@ -226,5 +234,5 @@ if enviar:
         "Preço mínimo sugerido pela IA": formatar_moeda(preco_sugerido),
         "Data do último faturamento": data_faturamento.strftime('%d/%m/%Y')
     }
-    pdf_bytes = gerar_pdf(dados_relatorio, None, None)
+    pdf_bytes = gerar_pdf(dados_relatorio, buf_risco, buf_fat)
     st.download_button("📄 Baixar relatório em PDF", data=pdf_bytes, file_name="relatorio_credito.pdf")
