@@ -256,34 +256,34 @@ if enviar:
         'retorno (R$)':    [retorno_esperado]
     }).corr()
     # 6) HEATMAP DE CORRELAÇÕES
-st.subheader("Heatmap de Correlações")
+    st.subheader("Heatmap de Correlações")
 
-# monta o DataFrame e corrige colunas
-df_corr = pd.DataFrame({
+    # monta o DataFrame e corrige colunas
+    df_corr = pd.DataFrame({
     'rating':          [rating],
     'score_serasa':    [score_serasa],
     'idade_empresa':   [idade_empresa],
     'faturamento':     [faturamento],
     'risco_total (%)': [risco_total],
     'retorno (R$)':    [retorno_esperado]
-}).corr()
+    }).corr()
 
-fig_heat, ax_heat = plt.subplots(figsize=(6, 5))
-cax = ax_heat.imshow(df_corr.values, interpolation='nearest', cmap='coolwarm')
-fig_heat.colorbar(cax, ax=ax_heat, fraction=0.046, pad=0.04)
+    fig_heat, ax_heat = plt.subplots(figsize=(6, 5))
+    cax = ax_heat.imshow(df_corr.values, interpolation='nearest', cmap='coolwarm')
+    fig_heat.colorbar(cax, ax=ax_heat, fraction=0.046, pad=0.04)
 
-ax_heat.set_xticks(np.arange(len(df_corr.columns)))
-ax_heat.set_yticks(np.arange(len(df_corr.columns)))
-ax_heat.set_xticklabels(df_corr.columns, rotation=45, ha='right')
-ax_heat.set_yticklabels(df_corr.columns)
+    ax_heat.set_xticks(np.arange(len(df_corr.columns)))
+    ax_heat.set_yticks(np.arange(len(df_corr.columns)))
+    ax_heat.set_xticklabels(df_corr.columns, rotation=45, ha='right')
+    ax_heat.set_yticklabels(df_corr.columns)
 
-for (i, j), val in np.ndenumerate(df_corr.values):
-    ax_heat.text(j, i, f"{val:.2f}", ha='center', va='center', fontsize=9)
+    for (i, j), val in np.ndenumerate(df_corr.values):
+        ax_heat.text(j, i, f"{val:.2f}", ha='center', va='center', fontsize=9)
 
-ax_heat.set_title("Matriz de Correlação")
-plt.tight_layout()
+    ax_heat.set_title("Matriz de Correlação")
+    plt.tight_layout()
 
-st.pyplot(fig_heat)
+    st.pyplot(fig_heat)
 
 
     # 8) ALERTA DE OUTLIER
