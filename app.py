@@ -198,7 +198,19 @@ if enviar:
     st.write(f"Margem estimada: {margem_estimada}%")
     st.write(f"Retorno esperado: {formatar_moeda(retorno_esperado)}")
     st.write(f"Preço sugerido: {formatar_moeda(preco_sugerido)}")
+    # ——————————————————————————————
+# Explicação de como a IA chegou no preço mínimo
+    texto_inf = (
+        "Como a IA chegou no preço mínimo?\n"
+        "- Considera o valor do empréstimo e protege-se do risco.\n"
+        "- Adiciona margem de lucro para garantir rentabilidade.\n"
+        "- Oferece preço justo, seguro e vantajoso para todos."
+    )
+    st.subheader("Explicação da IA para o cálculo do preço mínimo")
+    st.markdown(texto_inf.replace("\n", "  \n"))
+
     st.markdown("---")
+    
     # Risco manual
     risco_score = 0 if score_serasa>=800 else 0.5 if score_serasa>=600 else 1
     risco_idade = 0 if idade_empresa>=5 else 0.5
@@ -208,71 +220,88 @@ if enviar:
     cor = "🟢 Baixo" if risco_total<=30 else "🟡 Moderado" if risco_total<=60 else "🔴 Alto"
     st.write(f"Risco: {cor} ({risco_total}% )")
     st.markdown("---")
-    # Gráfico risco x retorno
+    
+  # Gráfico risco x retorno
     fig, ax = plt.subplots(figsize=(6,4))
+    ax.set_title("Análise de Risco x Retorno")              # título
 
-    # zonas de risco
+  # zonas de risco
     ax.axvspan(0, 30,   color='green',  alpha=0.2)
     ax.axvspan(30, 60,  color='yellow', alpha=0.2)
     ax.axvspan(60, 100, color='red',    alpha=0.2)
 
-    # ponto azul
+# ponto azul
     ax.scatter(risco_total, retorno_esperado, s=200)
 
-    # grades
+# grades
     ax.grid(True, linestyle='--', alpha=0.5)
 
-    # formatação de eixos
+# formatação de eixos
     ax.set_xlim(0, 100)
     ax.set_ylim(0, retorno_esperado * 1.3)
     ax.xaxis.set_major_formatter(PercentFormatter())
 
-    # anotação do ponto: mostra R$ e %
+# anotação do ponto
     label = f"{formatar_moeda(retorno_esperado)}\n{risco_total:.2f}%"
     ax.annotate(
         label,
         xy=(risco_total, retorno_esperado),
-        xytext=(10, 10),              # deslocamento do texto
+        xytext=(10, 10),
         textcoords='offset points',
-        ha='left',
-        va='bottom',
+        ha='left', va='bottom',
         fontsize=10,
         bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.7)
     )
 
-    # exibe no Streamlit
+# exibição e explicação no Streamlit
     st.pyplot(fig)
+    st.markdown(
+        "**Explicação do gráfico:**  \n"
+        "- Mostra como o risco de inadimplência se relaciona com o retorno em R$.\n"
+        "- Verde (0–30%): baixo risco.\n"
+        "- Amarelo (30–60%): risco intermediário.\n"
+        "- Vermelho (60–100%): alto risco."
+    )
     plt.close(fig)
 
-    # salva em bytes para o PDF
-    buf_risco = BytesIO()
-    fig.savefig(buf_risco, format='png', dpi=300, bbox_inches='tight')
-    buf_risco.seek(0)
-
-    buf_risco.seek(0)
     # Gráfico fatores
     fig2,ax2=plt.subplots(figsize=(6,4))
-    bars=ax2.bar(["Score","Idade","Protesto","Faturamento"],[risco_score*40,risco_idade*20,risco_protesto*25,risco_fat*15])
+    ax2.set_title("Contribuição dos Fatores para o Risco")
+    bars = ax2.bar(
+    ["Score","Idade","Protesto","Faturamento"],
+    [risco_score*40, risco_idade*20, risco_protesto*25, risco_fat*15]
+    )
     for b in bars:
-        ax2.annotate(f"{b.get_height()}%",(b.get_x()+b.get_width()/2,b.get_height()),ha='center',va='bottom')
+        ax2.annotate(f"{b.get_height()}%", (b.get_x()+b.get_width()/2, b.get_height()),
+                 ha='center', va='bottom')
+
     st.pyplot(fig2)
-    st.markdown("*Explicação:* Este gráfico de barras mostra a contribuição de cada fator (score, idade, protestos e faturamento) para o cálculo do risco total de inadimplência.")
+    st.markdown(
+        "**Explicação do gráfico de fatores:**  \n"
+        "- Score Serasa: confiabilidade de crédito.\n"
+        "- Idade da empresa: maturidade no mercado.\n"
+        "- Protestos: histórico de dívidas.\n"
+        "- Faturamento: solidez financeira."
+    )
     plt.close(fig2)
-    buf_fat=BytesIO()
-    fig2.savefig(buf_fat,format='png',dpi=300,bbox_inches='tight')
-    buf_fat.seek(0)
+    
     # Distribuição de risco
-    fig3,ax3=plt.subplots(figsize=(6,3))
-    sim=np.clip(np.random.normal(rating,10,500),0,100)
-    riscos=100-sim
-    ax3.hist(riscos,bins=20,edgecolor='black')
-    ax3.axvline(risco_total,color='red',linestyle='--',label='Seu risco')
+    fig3, ax3 = plt.subplots(figsize=(6,3))
+    ax3.set_title("Distribuição de Risco em 500 Simulações")  # título
+
+    sim = np.clip(np.random.normal(rating, 10, 500), 0, 100)
+    riscos = 100 - sim
+    ax3.hist(riscos, bins=20, edgecolor='black')
+    ax3.axvline(risco_total, color='red', linestyle='--', label='Seu risco')
+
     st.pyplot(fig3)
-    st.markdown("*Explicação:* O histograma apresenta a frequência dos níveis de risco em múltiplas simulações, permitindo ver onde seu risco calculado se posiciona em relação à distribuição geral.")
+    st.markdown(
+        "**Explicação do histograma:**  \n"
+        "- Frequência dos níveis de risco em múltiplas simulações.\n"
+        "- A linha tracejada vermelha é o seu risco calculado."
+    )
     plt.close(fig3)
-    buf_dist=BytesIO()
-    fig3.savefig(buf_dist,format='png',dpi=300,bbox_inches='tight')
-    buf_dist.seek(0)
+
     # Cenários e alertas
     preco_melhor=formatar_moeda(calcular_preco_minimo(valor,0, margem_desejada))
     preco_pior=formatar_moeda(calcular_preco_minimo(valor,1, margem_desejada))
