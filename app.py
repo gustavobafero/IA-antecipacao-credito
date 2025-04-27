@@ -172,6 +172,10 @@ if enviar:
     ax.axvspan(60, 100, color='red', alpha=0.2, label='Alto Risco')
     # Ponto da simulação
     ax.scatter(risco_total, retorno_esperado, s=200, color='blue', edgecolor='navy', linewidth=1.5, zorder=5)
+    # Anotação do ponto: risco e retorno
+    ax.annotate(f"{risco_total:.1f}% / {formatar_moeda(retorno_esperado)}",
+                (risco_total, retorno_esperado),
+                textcoords="offset points", xytext=(10, 10), ha='left', fontsize=10, color='blue')
     # Configurações dos eixos
     ax.set_xlabel("Risco de Inadimplência (%)", fontsize=12)
     ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
@@ -182,7 +186,6 @@ if enviar:
     # Título e legenda explicativa
     ax.set_title("Análise de Risco x Retorno", fontsize=14, fontweight='bold', pad=10)
     ax.legend(loc='upper right', fontsize=9)
-    # Texto explicativo para todos
     st.pyplot(fig)
     plt.close(fig)
 
