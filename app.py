@@ -77,9 +77,18 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None,
             pdf.multi_cell(0, 8, clean_text(legenda))
 
     # 1) Risco x Retorno
+        # 1) Risco x Retorno
     legenda1 = (
-        "No gráfico:"\n
-        "- Zona verde (0-30%): baixo risco, ótimo retorno.\n"
+        "No gráfico:
+"
+        "- Zona verde (0-30%): baixo risco, ótimo retorno.
+"
+        "- Zona amarela (30-60%): risco intermediário, atenção.
+"
+        "- Zona vermelha (60-100%): alto risco, cuidado.
+"
+        "O ponto mostra a sua simulação. Busque sempre estar na área verde!"
+    ): baixo risco, ótimo retorno.\n"
         "- Zona amarela (30-60%): risco intermediário, atenção.\n"
         "- Zona vermelha (60-100%): alto risco, cuidado.\n"
         "O ponto mostra a sua simulação. Busque sempre estar na área verde!"
