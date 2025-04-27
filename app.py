@@ -87,9 +87,9 @@ def gerar_pdf(data_dict,
     pdf.set_font("Arial", size=11)
     texto_graf1 = (
         "Este gráfico mostra como o risco de inadimplência (eixo horizontal) se relaciona ao retorno esperado em R$.\n"
-        "- Área verde (0–30%): baixo risco e potencial de retorno estável.\n"
-        "- Área amarela (30–60%): risco intermediário; atenção ao investimento.\n"
-        "- Área vermelha (60–100%): alto risco; retorno incerto."
+        "- Área verde (0% a 30%): baixo risco e potencial de retorno estável.\n"
+        "- Área amarela (30% a 60%): risco intermediário; atenção ao investimento.\n"
+        "- Área vermelha (60% a 100%): alto risco; retorno incerto."
     )
     pdf.multi_cell(0, 8, clean_text(texto_graf1))
     # Gráfico Fatores
