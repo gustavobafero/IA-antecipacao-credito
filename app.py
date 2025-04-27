@@ -81,9 +81,18 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
         pdf.image(path, w=180)
         pdf.ln(5)
     pdf.multi_cell(0, 8, clean_text(
-        "Gráfico: retorno esperado vs. risco de inadimplência. Quanto mais alto maior é o retorno; Quanto mais à direita maior o risco; No alto a esquerda seria a melhor opção pois significa um alto retorno com baixo risco"))
+        "Este gráfico mostra:"
+        "Quanto maior o risco de inadimplência, mais atenção você precisa ter."
+        "Quanto maior o retorno que você pode ganhar com a operação, melhor para você."
+        "O ponto que aparece no gráfico representa uma simulação de operação."
+        "Se o ponto estiver mais para cima, significa que você pode ganhar mais dinheiro."
+        "Se o ponto estiver mais para a direita, significa que o risco de inadimplência é maior."
+        "O ideal é encontrar pontos que fiquem o mais para cima e o mais para a esquerda possível – ou seja, ganhar bem e correr pouco risco."
+        "O gráfico ajuda você a visualizar isso rapidinho, sem precisar fazer conta!"
 
-    # Gráfico Fatores de Risco
+    # Gráfico Fatores de Risco"
+
+
     pdf.add_page()
     if grafico_fatores_bytes:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
