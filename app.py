@@ -34,12 +34,13 @@ def calcular_preco_minimo(custo_base, risco_inadimplencia, margem_desejada_perce
     margem = 1 + (margem_desejada_percentual / 100)
     return custo_base * ajuste_risco * margem
 
-# Configuração da página Streamlit
+# Streamlit page config
 st.set_page_config(page_title="IA Crédito + Risco de Inadimplência", layout="centered")
 st.title("IA para Precificação de Antecipação de Crédito")
 
-# Cliente OpenAI
+# OpenAI client
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
 
 def clean_text(text):
     """Normaliza texto para evitar problemas de codificação no PDF."""
@@ -48,7 +49,6 @@ def clean_text(text):
 
 def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None,
              grafico_frente_bytes=None, grafico_water_bytes=None):
-    """Gera um PDF com relatório de precificação e riscos, incluindo gráficos."""
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -77,18 +77,9 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None,
             pdf.multi_cell(0, 8, clean_text(legenda))
 
     # 1) Risco x Retorno
-        # 1) Risco x Retorno
     legenda1 = (
-        "No gráfico:
-"
-        "- Zona verde (0-30%): baixo risco, ótimo retorno.
-"
-        "- Zona amarela (30-60%): risco intermediário, atenção.
-"
-        "- Zona vermelha (60-100%): alto risco, cuidado.
-"
-        "O ponto mostra a sua simulação. Busque sempre estar na área verde!"
-    ): baixo risco, ótimo retorno.\n"
+        "No gráfico:\n"
+        "- Zona verde (0-30%): baixo risco, ótimo retorno.\n"
         "- Zona amarela (30-60%): risco intermediário, atenção.\n"
         "- Zona vermelha (60-100%): alto risco, cuidado.\n"
         "O ponto mostra a sua simulação. Busque sempre estar na área verde!"
@@ -109,7 +100,7 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None,
 
     return BytesIO(pdf.output(dest='S').encode('latin1'))
 
-# Formulário de entrada
+# Form
 st.header("1. Informações da Operação")
 with st.form("formulario_operacao"):
     st.subheader("1. Dados da Operação")
@@ -132,14 +123,12 @@ with st.form("formulario_operacao"):
     enviar = st.form_submit_button("Simular")
 
 if enviar:
-    # Cálculos
     prazo = (data_vencimento - data_operacao).days
     risco = (100 - rating) / 100
     taxa_ideal = round(custo_capital + margem_desejada + (risco * 2.0), 2)
     margem_est = round(taxa_ideal - custo_capital, 2)
     retorno = round(valor * (margem_est / 100), 2)
     preco_sugerido = calcular_preco_minimo(valor, risco, margem_desejada)
-    # Contribuições manuais
     r_score = 0 if score_serasa >= 800 else 1 if score_serasa < 600 else 0.5
     r_idade = 0 if idade_empresa >= 5 else 0.5
     r_protesto = 1 if protestos == "Sim" else 0
@@ -202,7 +191,7 @@ if enviar:
     buf_water = BytesIO(); fig_w.savefig(buf_water, format='png', dpi=300, bbox_inches='tight'); buf_water.seek(0)
     st.pyplot(fig_w); plt.close(fig_w)
 
-    # Gerar PDF com todos os gráficos
+    # Baixar PDF
     dados = {
         'Cliente': nome_cliente,
         'CNPJ': cnpj_cliente,
