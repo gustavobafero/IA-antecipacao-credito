@@ -11,6 +11,8 @@ from fpdf import FPDF
 import unicodedata
 import tempfile
 import locale
+import numpy as np
+import pandas as pd
 
 # Configuração de localização para formatação brasileira
 try:
@@ -61,13 +63,9 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
     pdf.set_font("Arial", size=12)
     pdf.cell(200, 10, txt="Relatório de Precificação e Risco de Crédito", ln=True, align='C')
     pdf.ln(10)
-
-    # Insere dados
     for chave, valor in data_dict.items():
         pdf.cell(0, 8, txt=clean_text(f"{chave}: {valor}"), ln=True)
     pdf.ln(5)
-
-    # Explicação infantil
     pdf.set_font("Arial", style='I', size=11)
     texto_inf = (
         "Como a IA chegou no preço mínimo?\n"
@@ -90,11 +88,11 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
         "- Zona verde (0-30%): baixo risco, ótimo retorno.\n"
         "- Zona amarela (30-60%): risco intermediário, atenção.\n"
         "- Zona vermelha (60-100%): alto risco, cuidado.\n"
-        "O ponto mostra a sua simulação. Busque sempre estar na área verde!"
+        "O ponto mostra sua simulação. Busque sempre estar na área verde!"
     )
     pdf.multi_cell(0, 8, clean_text(texto_graf1))
 
-    # Gráfico Fatores de Risco
+    # Gráfico de Fatores de Risco
     pdf.add_page()
     if grafico_fatores_bytes:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
@@ -155,7 +153,7 @@ if enviar:
     st.markdown(f"### 💰 Preço sugerido pela IA: **{formatar_moeda(preco_sugerido)}**")
     st.markdown("---")
 
-    # Risco manual
+    # Risco Manual
     st.subheader("Avaliação de Risco de Inadimplência (Manual)")
     risco_score = 0 if score_serasa >= 800 else 1 if score_serasa < 600 else 0.5
     risco_idade = 0 if idade_empresa >= 5 else 0.5
@@ -166,28 +164,21 @@ if enviar:
     st.write(f"**Risco de inadimplência (Manual):** {cor_risco} ({risco_total}%)")
     st.markdown("---")
 
-    # Gráfico: Risco x Retorno com zonas coloridas
+    # Gráfico: Risco x Retorno
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.axvspan(0, 30, color='green', alpha=0.2, label='Baixo Risco')
     ax.axvspan(30, 60, color='yellow', alpha=0.2, label='Risco Intermediário')
     ax.axvspan(60, 100, color='red', alpha=0.2, label='Alto Risco')
-    # Ponto da simulação
     ax.scatter(risco_total, retorno_esperado, s=200, color='blue', edgecolor='navy', linewidth=1.5, zorder=5)
-    # Anotação do ponto: risco e retorno
-    ax.annotate(f"{risco_total:.1f}% / {formatar_moeda(retorno_esperado)}",
-                (risco_total, retorno_esperado),
-                textcoords="offset points", xytext=(10, 10), ha='left', fontsize=10, color='blue')
-    # Configurações dos eixos
+    ax.annotate(f"{risco_total:.1f}% / {formatar_moeda(retorno_esperado)}",(risco_total, retorno_esperado), textcoords="offset points", xytext=(10, 10), ha='left', fontsize=10, color='blue')
     ax.set_xlabel("Risco de Inadimplência (%)", fontsize=12)
     ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
     ax.set_xlim(0, 100)
     ax.set_ylim(0, retorno_esperado * 1.3)
     ax.xaxis.set_major_formatter(PercentFormatter())
     ax.grid(True, linestyle="--", alpha=0.5, zorder=3)
-    # Título e legenda explicativa
     ax.set_title("Análise de Risco x Retorno", fontsize=14, fontweight='bold', pad=10)
     ax.legend(loc='upper right', fontsize=9)
-    # Captura buffer para PDF
     buf_risco = BytesIO()
     fig.savefig(buf_risco, format='png', dpi=300, bbox_inches='tight')
     buf_risco.seek(0)
@@ -206,9 +197,7 @@ if enviar:
         ax_fat.annotate(
             f"{height:.1f}%",
             xy=(bar.get_x() + bar.get_width() / 2, height),
-            xytext=(0, 5),
-            textcoords="offset points",
-            ha='center', va='bottom', fontsize=10,
+            xytext=(0, 5), textcoords="offset points", ha='center', va='bottom', fontsize=10,
             bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7)
         )
     ax_fat.set_ylabel("Peso na Composição do Risco (%)", fontsize=12)
@@ -219,6 +208,66 @@ if enviar:
     buf_fat.seek(0)
     st.pyplot(fig_fat)
     plt.close(fig_fat)
+
+    # Novos insights adicionais
+    # 1) Distribuição de Risco
+    st.subheader("Distribuição de Risco (Simulações)")
+    sim_ratings = np.clip(np.random.normal(rating, 10, 500), 0, 100)
+    sim_risks = 100 - sim_ratings  # em porcentagem
+    fig_dist, ax_dist = plt.subplots(figsize=(6, 3))
+    ax_dist.hist(sim_risks, bins=20, edgecolor='black')
+    ax_dist.axvline(risco_total, color='red', linestyle='--', label='Seu risco')
+    ax_dist.set_xlabel('Risco (%)')
+    ax_dist.set_ylabel('Frequência')
+    ax_dist.set_title('Histograma de Risco')
+    ax_dist.legend()
+    st.pyplot(fig_dist)
+    plt.close(fig_dist)
+
+    # 4) Cenários: Melhor e Pior Caso
+    st.subheader("Cenários: Melhor vs. Pior Caso")
+    preco_melhor = calcular_preco_minimo(valor, 0.0, margem_desejada)
+    preco_pior = calcular_preco_minimo(valor, 1.0, margem_desejada)
+    st.write(f"**Melhor caso (risco 0%):** Preço = {formatar_moeda(preco_melhor)}")
+    st.write(f"**Pior caso   (risco 100%):** Preço = {formatar_moeda(preco_pior)}")
+
+    # 6) Heatmap de Correlações
+    st.subheader("Heatmap de Correlações")
+    df_corr = pd.DataFrame({
+        'rating': [rating],
+        'score_serasa': [score_serasa],
+        'idade_empresa': [idade_empresa],
+        'faturamento': [faturamento],
+        'risco_total': [risco_total],
+        'retorno_esperado': [retorno_esperado]
+    }).corr()
+    st.write(df_corr)
+
+    # 8) Alerta de Outlier
+    st.subheader("Alerta de Outlier")
+    media = sim_risks.mean()
+    desvio = sim_risks.std()
+    if risco_total > media + 2 * desvio:
+        st.warning("⚠️ Seu risco está muito acima da média das simulações.")
+    else:
+        st.success("✅ Risco dentro da faixa esperada.")
+
+    # 9) Resumo Executivo
+    st.subheader("Resumo Executivo")
+    resumo = (
+        f"O cliente {nome_cliente} apresenta risco de {risco_total:.1f}% "
+        f"e retorno esperado de {formatar_moeda(retorno_esperado)}. "
+        f"A taxa ideal sugerida é {taxa_ideal}%"
+    )
+    st.info(resumo)
+
+    # 10) Adequação ao Apetite de Risco
+    st.subheader("Adequação ao Apetite de Risco")
+    risco_limite = 50  # %
+    if risco_total <= risco_limite:
+        st.success(f"👍 Operação dentro do apetite de risco (≤ {risco_limite}%)")
+    else:
+        st.error(f"⚠️ Operação fora do apetite de risco (> {risco_limite}%)")
 
     # Geração e download do PDF
     dados_relatorio = {
