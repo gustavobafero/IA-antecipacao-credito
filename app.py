@@ -86,9 +86,10 @@ def gerar_pdf(data_dict,
         pdf.ln(5)
     pdf.set_font("Arial", size=11)
     texto_graf1 = (
-        "- Zona verde (0–30%): baixo risco.\n"
-        "- Zona amarela (30–60%): risco intermediário.\n"
-        "- Zona vermelha (60–100%): alto risco."
+        "Este gráfico mostra como o risco de inadimplência (eixo horizontal) se relaciona ao retorno esperado em R$.\n"
+        "- Área verde (0–30%): baixo risco e potencial de retorno estável.\n"
+        "- Área amarela (30–60%): risco intermediário; atenção ao investimento.\n"
+        "- Área vermelha (60–100%): alto risco; retorno incerto."
     )
     pdf.multi_cell(0, 8, clean_text(texto_graf1))
     # Gráfico Fatores
@@ -101,6 +102,15 @@ def gerar_pdf(data_dict,
             caminho = tmp.name
         pdf.image(caminho, w=180)
         pdf.ln(5)
+    pdf.set_font("Arial", size=11)
+    texto_graf2 = (
+        "Este gráfico de barras indica a contribuição percentual de cada fator para o risco total:\n"
+        "- Score Serasa: confiabilidade de crédito do cliente.\n"
+        "- Idade da empresa: maturidade de mercado.\n"
+        "- Protestos: histórico de dívidas.\n"
+        "- Faturamento: solidez financeira."
+    )
+    pdf.multi_cell(0, 8, clean_text(texto_graf2))
     # Distribuição de Risco
     pdf.add_page()
     pdf.set_font("Arial", style='B', size=12)
@@ -111,13 +121,21 @@ def gerar_pdf(data_dict,
             caminho = tmp.name
         pdf.image(caminho, w=180)
         pdf.ln(5)
+    pdf.set_font("Arial", size=11)
+    texto_graf3 = (
+        "Este histograma mostra a frequência dos níveis de risco em 500 simulações aleatórias.\n"
+        "A linha vertical destaca o seu risco calculado, permitindo comparar com a média das simulações."
+    )
+    pdf.multi_cell(0, 8, clean_text(texto_graf3))
     # Cenários
     pdf.add_page()
     pdf.set_font("Arial", style='B', size=12)
     pdf.cell(0, 10, txt="Cenários: Melhor vs. Pior Caso", ln=True)
     pdf.set_font("Arial", size=11)
-    pdf.cell(0, 8, txt=clean_text(f"Melhor caso (risco 0%): {preco_melhor}"), ln=True)
-    pdf.cell(0, 8, txt=clean_text(f"Pior caso   (risco 100%): {preco_pior}"), ln=True)
+    pdf.multi_cell(0, 8, clean_text(
+        f"Com base no mesmo valor de operação, o melhor cenário (risco 0%) gera preço {preco_melhor}, "
+        f"enquanto o pior cenário (risco 100%) gera {preco_pior}."
+    ))
     # Alerta Outlier
     pdf.add_page()
     pdf.set_font("Arial", style='B', size=12)
@@ -161,7 +179,7 @@ with st.form("formulario_operacao"):
     idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5)
     protestos = st.selectbox("Protestos ou dívidas públicas?", ["Não","Sim"])
     faturamento = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f")
-    data_faturamento = st.date_input("Data do último faturamento", format="DD/MM/YYYY")
+    data_faturAMENTO = st.date_input("Data do último faturamento", format="DD/MM/YYYY")
     enviar = st.form_submit_button("Simular")
 
 if enviar:
@@ -200,6 +218,7 @@ if enviar:
     ax.set_ylim(0,retorno_esperado*1.3)
     ax.xaxis.set_major_formatter(PercentFormatter())
     st.pyplot(fig)
+    st.markdown("**Explicação:** Este gráfico ilustra como o valor do risco de inadimplência se relaciona com o retorno esperado em reais, destacando áreas de baixo, médio e alto risco.")
     plt.close(fig)
     buf_risco=BytesIO()
     fig.savefig(buf_risco,format='png',dpi=300,bbox_inches='tight')
@@ -210,6 +229,7 @@ if enviar:
     for b in bars:
         ax2.annotate(f"{b.get_height()}%",(b.get_x()+b.get_width()/2,b.get_height()),ha='center',va='bottom')
     st.pyplot(fig2)
+    st.markdown("**Explicação:** Este gráfico de barras mostra a contribuição de cada fator (score, idade, protestos e faturamento) para o cálculo do risco total de inadimplência.")
     plt.close(fig2)
     buf_fat=BytesIO()
     fig2.savefig(buf_fat,format='png',dpi=300,bbox_inches='tight')
@@ -221,6 +241,7 @@ if enviar:
     ax3.hist(riscos,bins=20,edgecolor='black')
     ax3.axvline(risco_total,color='red',linestyle='--',label='Seu risco')
     st.pyplot(fig3)
+    st.markdown("**Explicação:** O histograma apresenta a frequência dos níveis de risco em múltiplas simulações, permitindo ver onde seu risco calculado se posiciona em relação à distribuição geral.")
     plt.close(fig3)
     buf_dist=BytesIO()
     fig3.savefig(buf_dist,format='png',dpi=300,bbox_inches='tight')
