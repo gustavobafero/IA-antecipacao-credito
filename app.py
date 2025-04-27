@@ -68,9 +68,16 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
 
     # Explicação infantil
     pdf.set_font("Arial", style='I', size=11)
-    pdf.multi_cell(0, 8, clean_text(
-        "Como a IA chegou no preço mínimo? Ela considera o valor do empréstimo, protege-se do risco "
-        "e adiciona uma margem de lucro. Assim, garante segurança e rentabilidade."))
+    pdf.multi_cell(
+        0,
+        8,
+        clean_text(
+            "Como a IA chegou no preço mínimo?\n"
+            "- Ela considera o valor do empréstimo e protege-se do risco.\n"
+            "- Adiciona uma margem de lucro para garantir rentabilidade.\n"
+            "O resultado é um preço justo, seguro e vantajoso para ambas as partes."
+        )
+    )
 
     # Gráfico Risco x Retorno
     pdf.add_page()
@@ -80,19 +87,19 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
             path = tmp.name
         pdf.image(path, w=180)
         pdf.ln(5)
-    pdf.multi_cell(0, 8, clean_text(
-        "Este gráfico mostra:"
-        "Quanto maior o risco de inadimplência, mais atenção você precisa ter."
-        "Quanto maior o retorno que você pode ganhar com a operação, melhor para você."
-        "O ponto que aparece no gráfico representa uma simulação de operação."
-        "Se o ponto estiver mais para cima, significa que você pode ganhar mais dinheiro."
-        "Se o ponto estiver mais para a direita, significa que o risco de inadimplência é maior."
-        "O ideal é encontrar pontos que fiquem o mais para cima e o mais para a esquerda possível – ou seja, ganhar bem e correr pouco risco."
-        "O gráfico ajuda você a visualizar isso rapidinho, sem precisar fazer conta!")
+    pdf.multi_cell(
+        0,
+        8,
+        clean_text(
+            "Este gráfico mostra:\n"
+            "- Quanto maior o risco, mais atenção você precisa ter.\n"
+            "- Quanto maior o retorno, melhor a operação.\n"
+            "- O ponto no gráfico representa sua simulação: mais alto = mais retorno; mais à direita = mais risco.\n"
+            "O ideal é pontos altos e à esquerda, indicando bom retorno com baixo risco."
+        )
+    )
 
-    # Gráfico Fatores de Risco"
-
-
+    # Gráfico Fatores de Risco
     pdf.add_page()
     if grafico_fatores_bytes:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
@@ -100,8 +107,11 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
             path = tmp.name
         pdf.image(path, w=180)
         pdf.ln(5)
-    pdf.multi_cell(0, 8, clean_text(
-        "Fatores de risco: peso de cada indicador no cálculo do risco de inadimplência."))
+    pdf.multi_cell(
+        0,
+        8,
+        clean_text("Fatores de risco: peso de cada indicador no cálculo do risco de inadimplência.")
+    )
 
     return BytesIO(pdf.output(dest='S').encode('latin1'))
 
@@ -183,13 +193,12 @@ if enviar:
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     buf_risco = BytesIO()
-    # Usa savefig com bbox_inches='tight' e sem tight_layout
     fig.savefig(buf_risco, format='png', dpi=300, bbox_inches='tight')
     buf_risco.seek(0)
     st.image(buf_risco)
     plt.close(fig)
 
-    # Gráfico: Análise de Fatores de Risco
+    # Gr gráfico: Análise de Fatores de Risco
     st.subheader("Análise de Fatores de Risco")
     fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
     pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
