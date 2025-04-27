@@ -88,7 +88,7 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
         "Se o ponto estiver mais para cima, significa que você pode ganhar mais dinheiro."
         "Se o ponto estiver mais para a direita, significa que o risco de inadimplência é maior."
         "O ideal é encontrar pontos que fiquem o mais para cima e o mais para a esquerda possível – ou seja, ganhar bem e correr pouco risco."
-        "O gráfico ajuda você a visualizar isso rapidinho, sem precisar fazer conta!"
+        "O gráfico ajuda você a visualizar isso rapidinho, sem precisar fazer conta!")
 
     # Gráfico Fatores de Risco"
 
