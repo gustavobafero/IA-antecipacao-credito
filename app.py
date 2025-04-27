@@ -246,7 +246,6 @@ if enviar:
     st.write(f"**Pior caso   (risco 100%):** Preço = {formatar_moeda(preco_pior)}")
 
     # 6) HEATMAP DE CORRELAÇÕES
-    st.subheader("Heatmap de Correlações")
     df_corr = pd.DataFrame({
         'rating':          [rating],
         'score_serasa':    [score_serasa],
@@ -255,11 +254,9 @@ if enviar:
         'risco_total (%)': [risco_total],
         'retorno (R$)':    [retorno_esperado]
     }).corr()
-    # 6) HEATMAP DE CORRELAÇÕES
-    st.subheader("Heatmap de Correlações")
+
 
     # monta o DataFrame e corrige colunas
-    # 7) HEATMAP DE CORRELAÇÃO ENTRE RATING E RISCO (USANDO SIMULAÇÕES)
     st.subheader("Heatmap de Correlação (Rating vs. Risco)")
 
     # monta DataFrame de simulação
