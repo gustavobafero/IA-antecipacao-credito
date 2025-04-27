@@ -245,51 +245,6 @@ if enviar:
     st.write(f"**Melhor caso (risco 0%):** Preço = {formatar_moeda(preco_melhor)}")
     st.write(f"**Pior caso   (risco 100%):** Preço = {formatar_moeda(preco_pior)}")
 
-    # 6) HEATMAP DE CORRELAÇÕES
-    df_corr = pd.DataFrame({
-        'rating':          [rating],
-        'score_serasa':    [score_serasa],
-        'idade_empresa':   [idade_empresa],
-        'faturamento':     [faturamento],
-        'risco_total (%)': [risco_total],
-        'retorno (R$)':    [retorno_esperado]
-    }).corr()
-
-
-    # monta o DataFrame e corrige colunas
-    st.subheader("Heatmap de Correlação (Rating vs. Risco)")
-
-    # monta DataFrame de simulação
-    sim_df = pd.DataFrame({
-        'Rating (0–100)': sim_ratings,
-        'Risco (%)':      sim_risks
-    })
-
-    # calcula correlação
-    df_corr_sim = sim_df.corr()
-
-    # plota o heatmap
-    fig_corr, ax_corr = plt.subplots(figsize=(4, 4))
-    cax = ax_corr.imshow(df_corr_sim.values, interpolation='nearest', cmap='coolwarm')
-    fig_corr.colorbar(cax, ax=ax_corr, fraction=0.046, pad=0.04)
-
-    # configurações de ticks
-    ax_corr.set_xticks([0, 1])
-    ax_corr.set_yticks([0, 1])
-    ax_corr.set_xticklabels(df_corr_sim.columns, rotation=45, ha='right')
-    ax_corr.set_yticklabels(df_corr_sim.columns)
-
-    # anota valores
-    for (i, j), val in np.ndenumerate(df_corr_sim.values):
-        ax_corr.text(j, i, f"{val:.2f}", ha='center', va='center', fontsize=10)
-
-    ax_corr.set_title("Correl(Rating, Risco)")
-    plt.tight_layout()
-
-    st.pyplot(fig_corr)
-
-
-
     # 8) ALERTA DE OUTLIER
     st.subheader("Alerta de Outlier")
     media = sim_risks.mean()
