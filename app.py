@@ -4,6 +4,7 @@ from datetime import datetime
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 from matplotlib.ticker import PercentFormatter
 from io import BytesIO
 from fpdf import FPDF
@@ -68,16 +69,13 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
 
     # Explicação infantil
     pdf.set_font("Arial", style='I', size=11)
-    pdf.multi_cell(
-        0,
-        8,
-        clean_text(
-            "Como a IA chegou no preço mínimo?\n"
-            "- Ela considera o valor do empréstimo e protege-se do risco.\n"
-            "- Adiciona uma margem de lucro para garantir rentabilidade.\n"
-            "O resultado é um preço justo, seguro e vantajoso para ambas as partes."
-        )
+    texto_inf = (
+        "Como a IA chegou no preço mínimo?\n"
+        "- Ela considera o valor do empréstimo e protege-se do risco.\n"
+        "- Adiciona uma margem de lucro para garantir rentabilidade.\n"
+        "O resultado é um preço justo, seguro e vantajoso para todos."
     )
+    pdf.multi_cell(0, 8, clean_text(texto_inf))
 
     # Gráfico Risco x Retorno
     pdf.add_page()
@@ -87,17 +85,14 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
             path = tmp.name
         pdf.image(path, w=180)
         pdf.ln(5)
-    pdf.multi_cell(
-        0,
-        8,
-        clean_text(
-            "Este gráfico mostra:\n"
-            "- Quanto maior o risco, mais atenção você precisa ter.\n"
-            "- Quanto maior o retorno, melhor a operação.\n"
-            "- O ponto no gráfico representa sua simulação: mais alto = mais retorno; mais à direita = mais risco.\n"
-            "O ideal é pontos altos e à esquerda, indicando bom retorno com baixo risco."
-        )
+    texto_graf1 = (
+        "No gráfico:\n"
+        "- Zona verde (canto superior esquerdo): ótimo! Muito retorno com pouco risco.\n"
+        "- Zona amarela: fique atento.\n"
+        "- Zona vermelha (inferior direito): alto risco, baixo retorno.\n"
+        "O ponto mostra sua simulação. Quanto mais acima e à esquerda, melhor!"
     )
+    pdf.multi_cell(0, 8, clean_text(texto_graf1))
 
     # Gráfico Fatores de Risco
     pdf.add_page()
@@ -107,11 +102,9 @@ def gerar_pdf(data_dict, grafico_risco_bytes=None, grafico_fatores_bytes=None):
             path = tmp.name
         pdf.image(path, w=180)
         pdf.ln(5)
-    pdf.multi_cell(
-        0,
-        8,
-        clean_text("Fatores de risco: peso de cada indicador no cálculo do risco de inadimplência.")
-    )
+    pdf.multi_cell(0, 8, clean_text(
+        "Fatores de risco: mostra quais indicadores mais afetam a inadimplência."
+    ))
 
     return BytesIO(pdf.output(dest='S').encode('latin1'))
 
@@ -176,29 +169,37 @@ if enviar:
     st.write(f"**Risco de inadimplência (Manual):** {cor_risco} ({risco_total}%)")
     st.markdown("---")
 
-    # Gráfico: Risco x Retorno estilizado
+    # Gráfico: Risco x Retorno amigável e técnico
     fig, ax = plt.subplots(figsize=(6, 4))
-    ax.scatter(risco_total, retorno_esperado, s=100, edgecolor="black", linewidth=1.5)
+    # Fundo dividido em zonas para criança entender
+    ax.add_patch(Rectangle((0, retorno_esperado), 100, retorno_esperado * 0.3, color='#ffdddd', zorder=0))
+    ax.add_patch(Rectangle((0, 0), 50, retorno_esperado * 0.3, color='#ddffdd', zorder=0))
+    ax.add_patch(Rectangle((50, 0), 50, retorno_esperado * 0.3, color='#ffffdd', zorder=0))
+    # Plot do ponto
+    ax.scatter(risco_total, retorno_esperado, s=200, c='blue', edgecolor='navy', linewidth=1.5, zorder=5)
+    # Eixos e grid
     ax.set_xlabel("Risco de Inadimplência (%)", fontsize=12)
     ax.set_ylabel("Retorno Esperado (R$)", fontsize=12)
     ax.set_xlim(0, 100)
     ax.set_ylim(0, retorno_esperado * 1.3)
     ax.xaxis.set_major_formatter(PercentFormatter())
-    ax.grid(True, linestyle="--", alpha=0.5)
-    # Título e subtítulo
-    ax.set_title("Análise de Risco x Retorno", fontsize=14, fontweight='bold', pad=15)
-    subtitle = f"{formatar_moeda(valor)} × {margem_estimada:.1f}\% = {formatar_moeda(retorno_esperado)} retorno"
-    ax.text(0.5, 1.02, subtitle, transform=ax.transAxes, ha='center', fontsize=11, color='gray')
-    # Remover bordas desnecessárias
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
+    ax.grid(True, linestyle="--", alpha=0.5, zorder=3)
+    # Título e legenda clara
+    ax.set_title("Análise de Risco x Retorno", fontsize=14, fontweight='bold')
+    ax.legend(["Sua Simulação"], loc='upper right')
+    # Anotação explícita para criança
+    ax.text(risco_total, retorno_esperado + retorno_esperado*0.05, "Aqui está você! :)", ha='center', fontsize=10, color='blue')
+    # Informação técnica
+    ax.text(0.5, -0.1,
+            f"Especialista: ponto em (risco: {risco_total:.1f}%, retorno: {formatar_moeda(retorno_esperado)})",
+            transform=ax.transAxes, ha='center', fontsize=9, color='gray')
     buf_risco = BytesIO()
     fig.savefig(buf_risco, format='png', dpi=300, bbox_inches='tight')
     buf_risco.seek(0)
     st.image(buf_risco)
     plt.close(fig)
 
-    # Gr gráfico: Análise de Fatores de Risco
+    # Gráfico: Análise de Fatores de Risco
     st.subheader("Análise de Fatores de Risco")
     fatores = ["Score Serasa", "Idade da Empresa", "Protestos", "Faturamento"]
     pesos = [risco_score * 0.4, risco_idade * 0.2, risco_protesto * 0.25, risco_faturamento * 0.15]
