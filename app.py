@@ -11,6 +11,9 @@ from fpdf import FPDF
 import unicodedata
 import tempfile
 import locale
+import numpy as np
+import pandas as pd
+
 
 # Configuração de localização para formatação brasileira
 try:
