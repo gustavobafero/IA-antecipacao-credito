@@ -205,7 +205,7 @@ def exibir_interface_analise_risco():
                 st.write(f"Idade da empresa: **{idade_empresa} anos**")
                 st.write(f"Protestos: **{protestos}**")
                 st.write(f"Faturamento: **{formatar_moeda(faturamento)}**")
-    except Exception:
+        except Exception:
         st.warning("Não foi possível obter dados do Serasa. Preencha manualmente.")
         valor           = st.number_input("Valor da operação (R$)", min_value=0.0, format="%.2f")
         data_operacao   = st.date_input("Data da operação", value=datetime.today(), format="DD/MM/YYYY")
