@@ -14,6 +14,28 @@ import locale
 import numpy as np
 import pandas as pd
 
+# Configuração da página
+st.set_page_config(page_title="IA de Crédito", layout="centered")
+
+st.title("Bem-vindo à Plataforma de Crédito Inteligente")
+st.subheader("Como deseja usar a plataforma?")
+opcao = st.selectbox("Escolha uma opção:", [
+    "Selecione...",
+    "Quero fazer uma análise de risco",
+    "Quero cotar quanto vou receber"
+])
+
+if opcao == "Quero fazer uma análise de risco":
+    exibir_interface_analise_risco()
+
+elif opcao == "Quero cotar quanto vou receber":
+    exibir_interface_cliente_cotacao()
+
+st.stop()
+
+
+    st.header("Análise de Risco e Precificação")
+
 # Configuração de localização para formatação brasileira
 try:
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
@@ -56,6 +78,7 @@ def gerar_pdf(data_dict,
               alerta_text,
               resumo,
               adequacao_text):
+def exibir_interface_analise_risco():
     pdf = FPDF()
     # Página título e dados básicos
     pdf.add_page()
@@ -324,3 +347,48 @@ if enviar:
     }
     pdf_bytes=gerar_pdf(dados,buf_risco,buf_fat,buf_dist,preco_melhor,preco_pior,alerta,resumo,adequacao)
     st.download_button("📄 Baixar PDF",data=pdf_bytes,file_name="relatorio.pdf")
+
+import xml.etree.ElementTree as ET
+
+def exibir_interface_cliente_cotacao():
+    st.header("Cotação de Antecipação de Crédito")
+
+    st.write("Faça o upload do **XML da Nota Fiscal Eletrônica (NF-e)** para gerar sua cotação:")
+
+    xml_file = st.file_uploader("Upload do XML", type=["xml"])
+
+    if xml_file is not None:
+        try:
+            tree = ET.parse(xml_file)
+            root = tree.getroot()
+
+            # Namespace padrão da NF-e
+            ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
+
+            # Leitura de dados principais da nota
+            valor_nota = root.find('.//nfe:vNF', ns).text
+            cnpj_dest = root.find('.//nfe:CNPJ', ns).text
+            data_emissao = root.find('.//nfe:dhEmi', ns)
+            if data_emissao is not None:
+                data_emissao = data_emissao.text[:10]
+
+            valor_nota = float(valor_nota.replace(",", "."))
+
+            st.success("Dados da Nota Fiscal encontrados com sucesso:")
+            st.write(f"**Valor da nota fiscal:** R$ {valor_nota:,.2f}")
+            st.write(f"**CNPJ do cliente:** {cnpj_dest}")
+            if data_emissao:
+                st.write(f"**Data de emissão:** {data_emissao}")
+
+            # Taxa sugerida pelo cliente
+            taxa_sugerida = st.number_input("Informe a taxa que você considera justa (%)", min_value=0.0, max_value=100.0, step=0.1, format="%.2f")
+
+            # Cálculo do valor a receber
+            valor_receber = valor_nota * (1 - taxa_sugerida / 100)
+            st.markdown(f"### Você receberia: R$ {valor_receber:,.2f}")
+
+            if st.button("Solicitar proposta"):
+                st.success("Sua solicitação foi registrada com sucesso! Em breve entraremos em contato.")
+
+        except Exception as e:
+            st.error(f"Erro ao processar o XML: {e}")
