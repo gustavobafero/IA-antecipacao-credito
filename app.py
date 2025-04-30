@@ -376,19 +376,19 @@ def exibir_interface_cliente_cotacao():
             with st.expander("Detalhes da Nota", expanded=False):
                 st.write(f"**Valor da nota fiscal:** {formatar_moeda(valor_nota)}")
                 st.write(f"**CNPJ do cliente:** {cnpj_dest}")
-                if cnpj_dest:
-            try:
-                s = fetch_serasa_data(cnpj_dest)
-                score_serasa = s["score"]
-                idade_empresa = s["idade_empresa"]
-                protestos = "Sim" if s["protestos"] else "Não"
-                faturamento = s["faturamento"]
-                st.write(f"Score Serasa: **{score_serasa}**")
-                st.write(f"Idade da empresa: **{idade_empresa} anos**")
-                st.write(f"Protestos: **{protestos}**")
-                st.write(f"Faturamento: **{formatar_moeda(faturamento)}**")
-            except Exception:
-                st.warning("Não foi possível obter dados do Serasa pelo CNPJ da NF-e.")
+            if cnpj_dest:
+                try:
+                    s = fetch_serasa_data(cnpj_dest)
+                    score_serasa = s["score"]
+                    idade_empresa = s["idade_empresa"]
+                    protestos = "Sim" if s["protestos"] else "Não"
+                    faturamento = s["faturamento"]
+                    st.write(f"Score Serasa: **{score_serasa}**")
+                    st.write(f"Idade da empresa: **{idade_empresa} anos**")
+                    st.write(f"Protestos: **{protestos}**")
+                    st.write(f"Faturamento: **{formatar_moeda(faturamento)}**")
+                except Exception:
+                    st.warning("Não foi possível obter dados do Serasa pelo CNPJ da NF-e.")
                 if data_emissao:
                     st.write(f"**Data de emissão:** {data_emissao}")
 
