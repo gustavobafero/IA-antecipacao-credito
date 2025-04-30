@@ -84,7 +84,7 @@ def exibir_interface_analise_risco():
     pdf.set_font("Arial", size=12)
     pdf.cell(200, 10, txt="Relatório de Precificação e Risco de Crédito", ln=True, align='C')
     pdf.ln(10)
-    for chave, valor in data_dict.items():
+        for chave, valor in data_dict.items():
     pdf.cell(0, 8, txt=clean_text(f"{chave}: {valor}"), ln=True)
     pdf.ln(5)
     # Explicação simples
