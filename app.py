@@ -38,9 +38,9 @@ st.header("Análise de Risco e Precificação")
 
 # Configuração de localização para formatação brasileira
 try:
-locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 except:
-locale.setlocale(locale.LC_ALL, '')  # fallback
+    locale.setlocale(locale.LC_ALL, '')  # fallback
 
 
 def formatar_moeda(valor):
