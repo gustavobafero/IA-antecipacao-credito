@@ -28,15 +28,20 @@ def get_serasa_token() -> str:
     return resp.json()["access_token"]
 
 def fetch_serasa_data(cnpj: str) -> dict:
-    # nova implementação — cole exatamente este bloco aqui, substituindo o antigo
     cnpj_limpo = "".join(filter(str.isdigit, cnpj))
     token = get_serasa_token()
     url = f"https://api.serasa.com.br/company-profile?cnpj={cnpj_limpo}"
     headers = {"Authorization": f"Bearer {token}"}
     resp = requests.get(url, headers=headers, timeout=10)
+
+    st.write("DEBUG Serasa → status:", resp.status_code, "body:", resp.text[:200])
+    st.write("DEBUG Serasa → status:", resp.status_code, "body:", resp.text[:200])
+
     resp.raise_for_status()
     data = resp.json()
-    return {
+    resp.raise_for_status()
+    data = resp.json()
+    return
         "score": data.get("score", 0),
         "idade_empresa": data.get("companyAgeYears", 0),
         "protestos": data.get("hasProtests", False),
@@ -401,8 +406,8 @@ def exibir_interface_cliente_cotacao():
                     st.write(f"Idade da empresa: **{idade_empresa} anos**")
                     st.write(f"Protestos: **{protestos}**")
                     st.write(f"Faturamento: **{formatar_moeda(faturamento)}**")
-                except Exception:
-                    st.warning("Não foi possível obter dados do Serasa pelo CNPJ da NF-e.")
+                except Exception as e:
+                    st.error(f"Erro ao obter dados do Serasa pelo CNPJ da NF-e: {e}")
                 if data_emissao:
                     st.write(f"**Data de emissão:** {data_emissao}")
 
