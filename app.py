@@ -15,14 +15,14 @@ import numpy as np
 import pandas as pd
 
 # Configuração da página
-    st.set_page_config(page_title="IA de Crédito", layout="centered")
+st.set_page_config(page_title="IA de Crédito", layout="centered")
 
-    st.title("Bem-vindo à Plataforma de Crédito Inteligente")
-    st.subheader("Como deseja usar a plataforma?")
-    opcao = st.selectbox("Escolha uma opção:", [
-    "Selecione...",
-    "Quero fazer uma análise de risco",
-    "Quero cotar quanto vou receber"
+st.title("Bem-vindo à Plataforma de Crédito Inteligente")
+st.subheader("Como deseja usar a plataforma?")
+opcao = st.selectbox("Escolha uma opção:", [
+"Selecione...",
+"Quero fazer uma análise de risco",
+"Quero cotar quanto vou receber"
 ])
 
 if opcao == "Quero fazer uma análise de risco":
@@ -31,10 +31,9 @@ if opcao == "Quero fazer uma análise de risco":
 elif opcao == "Quero cotar quanto vou receber":
     exibir_interface_cliente_cotacao()
 
-    st.stop()
+st.stop()
 
-
-    st.header("Análise de Risco e Precificação")
+st.header("Análise de Risco e Precificação")
 
 # Configuração de localização para formatação brasileira
 try:
@@ -102,7 +101,7 @@ def exibir_interface_analise_risco():
     pdf.set_font("Arial", style='B', size=12)
     pdf.cell(0, 10, txt="Análise de Risco x Retorno", ln=True)
     if grafico_risco_bytes:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
             tmp.write(grafico_risco_bytes.getvalue())
             caminho = tmp.name
         pdf.image(caminho, w=180)
