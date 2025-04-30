@@ -17,9 +17,22 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 import requests
 
+def get_serasa_token() -> str:
+    resp = requests.post(
+        "https://api.serasa.com.br/oauth/token",
+        data={"grant_type": "client_credentials"},
+        auth=(st.secrets["SERASA_CLIENT_ID"], st.secrets["SERASA_CLIENT_SECRET"]),
+        timeout=10
+    )
+    resp.raise_for_status()
+    return resp.json()["access_token"]
+
 def fetch_serasa_data(cnpj: str) -> dict:
-    url = f"https://api.serasa.com.br/company-profile?cnpj={cnpj}"
-    headers = {"Authorization": f"Bearer {st.secrets['SERASA_API_KEY']}"}
+    # nova implementação — cole exatamente este bloco aqui, substituindo o antigo
+    cnpj_limpo = "".join(filter(str.isdigit, cnpj))
+    token = get_serasa_token()
+    url = f"https://api.serasa.com.br/company-profile?cnpj={cnpj_limpo}"
+    headers = {"Authorization": f"Bearer {token}"}
     resp = requests.get(url, headers=headers, timeout=10)
     resp.raise_for_status()
     data = resp.json()
@@ -29,6 +42,7 @@ def fetch_serasa_data(cnpj: str) -> dict:
         "protestos": data.get("hasProtests", False),
         "faturamento": data.get("annualRevenue", 0.0)
     }
+
 
 
 # Configuração de página
