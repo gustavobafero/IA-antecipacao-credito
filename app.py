@@ -194,6 +194,7 @@ def exibir_interface_analise_risco():
         st.subheader("1. Dados da Operação")
         nome_cliente    = st.text_input("Nome do cliente")
         cnpj_cliente    = st.text_input("CNPJ do cliente (opcional)")
+               
         if cnpj_cliente:
             try:
                 s = fetch_serasa_data(cnpj_cliente)
@@ -207,15 +208,17 @@ def exibir_interface_analise_risco():
                 st.write(f"Faturamento: **{formatar_moeda(faturamento)}**")
             except Exception:
                 st.warning("Não foi possível obter dados do Serasa. Preencha manualmente.")
-                valor           = st.number_input("Valor da operação (R$)", min_value=0.0, format="%.2f")
-                data_operacao   = st.date_input("Data da operação", value=datetime.today(), format="DD/MM/YYYY")
+                # fallback manual: reapresenta os inputs originais
+                valor = st.number_input("Valor da operação (R$)", min_value=0.0, format="%.2f")
+                data_operacao = st.date_input("Data da operação", value=datetime.today(), format="DD/MM/YYYY")
                 data_vencimento = st.date_input("Data de vencimento", format="DD/MM/YYYY")
-                rating          = st.slider("Rating do cliente", 0, 100, 80)
+                rating = st.slider("Rating do cliente", 0, 100, 80)
                 margem_desejada = st.number_input("Margem desejada (%)", min_value=0.0, value=1.0)
-                custo_capital   = st.number_input("Custo do capital (%)", min_value=0.0, value=1.5)
+                custo_capital = st.number_input("Custo do capital (%)", min_value=0.0, value=1.5)
                 taxa_concorrencia = st.number_input("Taxa da concorrência (%)", min_value=0.0, value=4.5)
                 st.markdown("---")
                 st.subheader("2. Avaliação de Risco de Inadimplência")
+
 
         # Integração Serasa pelo CNPJ
         if cnpj_cliente:
