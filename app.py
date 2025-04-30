@@ -15,6 +15,21 @@ import locale
 import numpy as np
 import pandas as pd
 import xml.etree.ElementTree as ET
+import requests
+
+def fetch_serasa_data(cnpj: str) -> dict:
+    url = f"https://api.serasa.com.br/company-profile?cnpj={cnpj}"
+    headers = {"Authorization": f"Bearer {st.secrets['SERASA_API_KEY']}"}
+    resp = requests.get(url, headers=headers, timeout=10)
+    resp.raise_for_status()
+    data = resp.json()
+    return {
+        "score": data.get("score", 0),
+        "idade_empresa": data.get("companyAgeYears", 0),
+        "protestos": data.get("hasProtests", False),
+        "faturamento": data.get("annualRevenue", 0.0)
+    }
+
 
 # Configuração de página
 st.set_page_config(page_title="IA de Crédito", layout="centered")
@@ -179,6 +194,19 @@ def exibir_interface_analise_risco():
         st.subheader("1. Dados da Operação")
         nome_cliente    = st.text_input("Nome do cliente")
         cnpj_cliente    = st.text_input("CNPJ do cliente (opcional)")
+        if cnpj_cliente:
+    try:
+        s = fetch_serasa_data(cnpj_cliente)
+        score_serasa = s["score"]
+        idade_empresa = s["idade_empresa"]
+        protestos = "Sim" if s["protestos"] else "Não"
+        faturamento = s["faturamento"]
+        st.write(f"Score Serasa: **{score_serasa}**")
+        st.write(f"Idade da empresa: **{idade_empresa} anos**")
+        st.write(f"Protestos: **{protestos}**")
+        st.write(f"Faturamento: **{formatar_moeda(faturamento)}**")
+    except Exception:
+        st.warning("Não foi possível obter dados do Serasa. Preencha manualmente.")
         valor           = st.number_input("Valor da operação (R$)", min_value=0.0, format="%.2f")
         data_operacao   = st.date_input("Data da operação", value=datetime.today(), format="DD/MM/YYYY")
         data_vencimento = st.date_input("Data de vencimento", format="DD/MM/YYYY")
@@ -345,6 +373,19 @@ def exibir_interface_cliente_cotacao():
             with st.expander("Detalhes da Nota", expanded=False):
                 st.write(f"**Valor da nota fiscal:** {formatar_moeda(valor_nota)}")
                 st.write(f"**CNPJ do cliente:** {cnpj_dest}")
+                if cnpj_dest:
+            try:
+                s = fetch_serasa_data(cnpj_dest)
+                score_serasa = s["score"]
+                idade_empresa = s["idade_empresa"]
+                protestos = "Sim" if s["protestos"] else "Não"
+                faturamento = s["faturamento"]
+                st.write(f"Score Serasa: **{score_serasa}**")
+                st.write(f"Idade da empresa: **{idade_empresa} anos**")
+                st.write(f"Protestos: **{protestos}**")
+                st.write(f"Faturamento: **{formatar_moeda(faturamento)}**")
+            except Exception:
+                st.warning("Não foi possível obter dados do Serasa pelo CNPJ da NF-e.")
                 if data_emissao:
                     st.write(f"**Data de emissão:** {data_emissao}")
 
