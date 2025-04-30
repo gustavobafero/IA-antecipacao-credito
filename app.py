@@ -42,7 +42,7 @@ def fetch_serasa_data(cnpj: str) -> dict:
     resp.raise_for_status()
     data = resp.json()
     
-    return
+    return{
     "score": data.get("score", 0),
     "idade_empresa": data.get("companyAgeYears", 0),
     "protestos": data.get("hasProtests", False),
