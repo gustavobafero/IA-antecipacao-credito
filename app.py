@@ -1,6 +1,7 @@
 import streamlit as st
 from openai import OpenAI, RateLimitError
 from datetime import datetime
+import requests
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -47,6 +48,18 @@ def clean_text(text):
     Normaliza texto para evitar problemas de codificação no PDF.
     """
     return unicodedata.normalize('NFKD', text).encode('latin1', 'ignore').decode('latin1')
+
+def fetch_serasa_score(cnpj: str) -> int:
+    """
+    Busca o Serasa Score via API.
+    É necessário configurar st.secrets['SERASA_API_KEY'] com sua chave.
+    """
+    url = f"https://api.serasa.com.br/serasa-score?cnpj={cnpj}"
+    headers = {"Authorization": f"Bearer {st.secrets['SERASA_API_KEY']}"}
+    resp = requests.get(url, headers=headers, timeout=10)
+    resp.raise_for_status()
+    data = resp.json()
+    return data.get("score", 0)
 
 def gerar_pdf(data_dict,
                grafico_risco_bytes,
@@ -156,34 +169,45 @@ def gerar_pdf(data_dict,
     pdf.multi_cell(0, 8, clean_text(adequacao_text))
     return BytesIO(pdf.output(dest='S').encode('latin1'))
 
-# Interface de Análise de Risco (sem alterações)
+# Interface de Análise de Risco (com Serasa)
 def exibir_interface_analise_risco():
     st.header("Análise de Risco e Precificação")
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-    # Formulário
     st.header("1. Informações da Operação")
     with st.form("formulario_operacao"):
         st.subheader("1. Dados da Operação")
-        nome_cliente = st.text_input("Nome do cliente")
-        cnpj_cliente = st.text_input("CNPJ do cliente (opcional)")
-        valor = st.number_input("Valor da operação (R$)", min_value=0.0, format="%.2f")
-        data_operacao = st.date_input("Data da operação", value=datetime.today(), format="DD/MM/YYYY")
+        nome_cliente    = st.text_input("Nome do cliente")
+        cnpj_cliente    = st.text_input("CNPJ do cliente (opcional)")
+        valor           = st.number_input("Valor da operação (R$)", min_value=0.0, format="%.2f")
+        data_operacao   = st.date_input("Data da operação", value=datetime.today(), format="DD/MM/YYYY")
         data_vencimento = st.date_input("Data de vencimento", format="DD/MM/YYYY")
-        rating = st.slider("Rating do cliente", 0, 100, 80)
+        rating          = st.slider("Rating do cliente", 0, 100, 80)
         margem_desejada = st.number_input("Margem desejada (%)", min_value=0.0, value=1.0)
-        custo_capital = st.number_input("Custo do capital (%)", min_value=0.0, value=1.5)
+        custo_capital   = st.number_input("Custo do capital (%)", min_value=0.0, value=1.5)
         taxa_concorrencia = st.number_input("Taxa da concorrência (%)", min_value=0.0, value=4.5)
         st.markdown("---")
         st.subheader("2. Avaliação de Risco de Inadimplência")
-        score_serasa = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750)
-        idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5)
-        protestos = st.selectbox("Protestos ou dívidas públicas?", ["Não","Sim"])
-        faturamento = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f")
-        data_faturAMENTO = st.date_input("Data do último faturamento", format="DD/MM/YYYY")
-        enviar = st.form_submit_button("Simular")
+
+        # Integração Serasa pelo CNPJ
+        if cnpj_cliente:
+            try:
+                score_serasa = fetch_serasa_score(cnpj_cliente)
+                st.write(f"Score Serasa (automático): **{score_serasa}**")
+            except Exception:
+                st.warning("Não foi possível obter o Score Serasa automaticamente.")
+                score_serasa = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750)
+        else:
+            score_serasa = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750)
+
+        idade_empresa    = st.number_input("Idade da empresa (anos)", 0, 100, 5)
+        protestos        = st.selectbox("Protestos ou dívidas públicas?", ["Não","Sim"])
+        faturamento      = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f")
+        data_faturamento = st.date_input("Data do último faturamento", format="DD/MM/YYYY")
+        enviar           = st.form_submit_button("Simular")
 
     if enviar:
+        # Cálculos (mesma lógica anterior, usando score_serasa)
         prazo = (data_vencimento - data_operacao).days
         risco = (100 - rating)/100
         ajuste = max(0.5 - valor/100000,0)
@@ -200,6 +224,7 @@ def exibir_interface_analise_risco():
         st.write(f"Preço sugerido: {formatar_moeda(preco_sugerido)}")
         st.markdown("---")
 
+        # Risco manual (mesma lógica)
         risco_score = 0 if score_serasa>=800 else 0.5 if score_serasa>=600 else 1
         risco_idade = 0 if idade_empresa>=5 else 0.5
         risco_protesto = 1 if protestos=="Sim" else 0
@@ -209,7 +234,7 @@ def exibir_interface_analise_risco():
         st.write(f"Risco: {cor} ({risco_total}% )")
         st.markdown("---")
 
-        # Gráfico risco x retorno
+        # Gráficos e geração de buffers (igual ao código anterior)
         fig, ax = plt.subplots(figsize=(6,4))
         ax.set_title("Análise de Risco x Retorno")
         ax.axvspan(0, 30,   color='green',  alpha=0.2)
@@ -236,7 +261,6 @@ def exibir_interface_analise_risco():
         st.pyplot(fig)
         plt.close(fig)
 
-        # Gráfico fatores
         fig2, ax2 = plt.subplots(figsize=(6,4))
         ax2.set_title("Contribuição dos Fatores para o Risco")
         bars = ax2.bar(
@@ -252,7 +276,6 @@ def exibir_interface_analise_risco():
         st.pyplot(fig2)
         plt.close(fig2)
 
-        # Distribuição de risco
         fig3, ax3 = plt.subplots(figsize=(6,3))
         ax3.set_title("Distribuição de Risco em 500 Simulações")
         sim = np.clip(np.random.normal(rating, 10, 500), 0, 100)
@@ -267,11 +290,11 @@ def exibir_interface_analise_risco():
 
         # Cenários e alertas
         preco_melhor = formatar_moeda(calcular_preco_minimo(valor, 0, margem_desejada))
-        preco_pior = formatar_moeda(calcular_preco_minimo(valor, 1, margem_desejada))
+        preco_pior   = formatar_moeda(calcular_preco_minimo(valor, 1, margem_desejada))
         media, desvio = riscos.mean(), riscos.std()
-        alerta = "⚠️ Risco acima da média" if risco_total > media + 2*desvio else "✅ Risco dentro da média"
+        alerta = "⚠️ Risco acima da média" if risco_total>media+2*desvio else "✅ Risco dentro da média"
         resumo = f"Cliente {nome_cliente} tem risco de {risco_total}% e retorno {formatar_moeda(retorno_esperado)}. Taxa {taxa_ideal}%"
-        adequacao = f"Operação {'dentro' if risco_total <= 50 else 'fora'} do apetite de risco (50%)"
+        adequacao = f"Operação {'dentro' if risco_total<=50 else 'fora'} do apetite de risco (50%)"
         dados = {
             "Cliente": nome_cliente,
             "CNPJ": cnpj_cliente or "-",
@@ -298,7 +321,7 @@ def exibir_interface_analise_risco():
         )
         st.download_button("📄 Baixar PDF", data=pdf_bytes, file_name="relatorio.pdf")
 
-# Interface de Cotação de Crédito via XML (modificada)
+# Interface de Cotação de Crédito via XML (com Serasa)
 def exibir_interface_cliente_cotacao():
     st.header("Cotação de Antecipação de Crédito")
     st.write("Faça o upload do **XML da Nota Fiscal Eletrônica (NF-e)** para gerar sua cotação:")
@@ -310,57 +333,59 @@ def exibir_interface_cliente_cotacao():
             root = tree.getroot()
             ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
 
-            # Extrai dados do XML
             valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(",", "."))
-            cnpj_dest = root.find('.//nfe:CNPJ', ns).text
+            cnpj_dest  = root.find('.//nfe:CNPJ', ns).text
             data_emissao_tag = root.find('.//nfe:dhEmi', ns)
             data_emissao = None
             if data_emissao_tag is not None:
-                raw = data_emissao_tag.text[:10]  # 'YYYY-MM-DD'
+                raw = data_emissao_tag.text[:10]
                 date_obj = datetime.strptime(raw, "%Y-%m-%d")
                 data_emissao = date_obj.strftime("%d/%m/%Y")
 
-            # Expander para detalhes e inputs de risco
             with st.expander("Detalhes da Nota", expanded=False):
                 st.write(f"**Valor da nota fiscal:** {formatar_moeda(valor_nota)}")
                 st.write(f"**CNPJ do cliente:** {cnpj_dest}")
                 if data_emissao:
                     st.write(f"**Data de emissão:** {data_emissao}")
-                # Inputs de fatores de risco
-                score_serasa = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750, key="xml_score")
-                idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key="xml_idade")
-                protestos = st.selectbox("Protestos ou dívidas públicas?", ["Não", "Sim"], key="xml_protestos")
-                faturamento = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key="xml_fat")
 
-            # Cálculo do risco total
-            risco_score = 0 if score_serasa >= 800 else 0.5 if score_serasa >= 600 else 1
-            risco_idade = 0 if idade_empresa >= 5 else 0.5
-            risco_protesto = 1 if protestos == "Sim" else 0
-            risco_fat = 0 if faturamento >= 500000 else 0.5
-            risco_total = round((risco_score*0.4 + risco_idade*0.2 + risco_protesto*0.25 + risco_fat*0.15) * 100, 2)
+                # Serasa pelo CNPJ do XML
+                if cnpj_dest:
+                    try:
+                        score_xml = fetch_serasa_score(cnpj_dest)
+                        st.write(f"Score Serasa (automático): **{score_xml}**")
+                    except Exception:
+                        st.warning("Não foi possível obter o Score Serasa automaticamente.")
+                        score_xml = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750, key="xml_score")
+                else:
+                    score_xml = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750, key="xml_score")
+
+                idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key="xml_idade")
+                protestos     = st.selectbox("Protestos ou dívidas públicas?", ["Não","Sim"], key="xml_protestos")
+                faturamento   = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key="xml_fat")
+
+            # Cálculo do risco total (usa score_xml)
+            risco_score = 0 if score_xml>=800 else 0.5 if score_xml>=600 else 1
+            risco_idade = 0 if idade_empresa>=5 else 0.5
+            risco_protesto = 1 if protestos=="Sim" else 0
+            risco_fat = 0 if faturamento>=500000 else 0.5
+            risco_total = round((risco_score*0.4+risco_idade*0.2+risco_protesto*0.25+risco_fat*0.15)*100,2)
 
             # Taxa sugerida automática
             suggested_taxa = risco_total
             taxa_sugerida = st.number_input(
                 "Taxa sugerida (%)",
-                min_value=0.0,
-                max_value=100.0,
-                step=0.1,
-                value=suggested_taxa,
-                format="%.2f"
+                min_value=0.0, max_value=100.0, step=0.1,
+                value=suggested_taxa, format="%.2f"
             )
 
-            # Cálculo do valor a receber
-            valor_receber = valor_nota * (1 - taxa_sugerida / 100)
+            valor_receber = valor_nota * (1 - taxa_sugerida/100)
 
             # Destaques com st.metric
             st.metric("Taxa sugerida", f"{taxa_sugerida}%")
             st.metric("Você receberá", f"{formatar_moeda(valor_receber)}")
 
-            # Botão de solicitação
             if st.button("Solicitar proposta"):
                 st.success("Sua solicitação foi registrada com sucesso! Em breve entraremos em contato.")
-
         except Exception as e:
             st.error(f"Erro ao processar o XML: {e}")
 
