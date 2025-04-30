@@ -15,11 +15,11 @@ import numpy as np
 import pandas as pd
 
 # Configuração da página
-st.set_page_config(page_title="IA de Crédito", layout="centered")
+    st.set_page_config(page_title="IA de Crédito", layout="centered")
 
-st.title("Bem-vindo à Plataforma de Crédito Inteligente")
-st.subheader("Como deseja usar a plataforma?")
-opcao = st.selectbox("Escolha uma opção:", [
+    st.title("Bem-vindo à Plataforma de Crédito Inteligente")
+    st.subheader("Como deseja usar a plataforma?")
+    opcao = st.selectbox("Escolha uma opção:", [
     "Selecione...",
     "Quero fazer uma análise de risco",
     "Quero cotar quanto vou receber"
@@ -31,10 +31,10 @@ if opcao == "Quero fazer uma análise de risco":
 elif opcao == "Quero cotar quanto vou receber":
     exibir_interface_cliente_cotacao()
 
-st.stop()
+    st.stop()
 
 
-st.header("Análise de Risco e Precificação")
+    st.header("Análise de Risco e Precificação")
 
 # Configuração de localização para formatação brasileira
 try:
