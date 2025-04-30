@@ -79,28 +79,28 @@ def gerar_pdf(data_dict,
               resumo,
               adequacao_text):
 def exibir_interface_analise_risco():
-        pdf = FPDF()
+    pdf = FPDF()
     # Página título e dados básicos
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt="Relatório de Precificação e Risco de Crédito", ln=True, align='C')
-        pdf.ln(10)
-        for chave, valor in data_dict.items():
-            pdf.cell(0, 8, txt=clean_text(f"{chave}: {valor}"), ln=True)
-        pdf.ln(5)
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt="Relatório de Precificação e Risco de Crédito", ln=True, align='C')
+    pdf.ln(10)
+    for chave, valor in data_dict.items():
+    pdf.cell(0, 8, txt=clean_text(f"{chave}: {valor}"), ln=True)
+    pdf.ln(5)
     # Explicação simples
-        pdf.set_font("Arial", style='I', size=11)
-        texto_inf = (
-            "Como a IA chegou no preço mínimo?\n"
-            "- Considera o valor do empréstimo e protege-se do risco.\n"
-            "- Adiciona margem de lucro para garantir rentabilidade.\n"
-            "- Oferece preço justo, seguro e vantajoso para todos."
-        )
-        pdf.multi_cell(0, 8, clean_text(texto_inf))
-        # Gráfico Risco x Retorno
-        pdf.add_page()
-        pdf.set_font("Arial", style='B', size=12)
-        pdf.cell(0, 10, txt="Análise de Risco x Retorno", ln=True)
+    pdf.set_font("Arial", style='I', size=11)
+    texto_inf = (
+        "Como a IA chegou no preço mínimo?\n"
+        "- Considera o valor do empréstimo e protege-se do risco.\n"
+        "- Adiciona margem de lucro para garantir rentabilidade.\n"
+        "- Oferece preço justo, seguro e vantajoso para todos."
+    )
+    pdf.multi_cell(0, 8, clean_text(texto_inf))
+    # Gráfico Risco x Retorno
+    pdf.add_page()
+    pdf.set_font("Arial", style='B', size=12)
+    pdf.cell(0, 10, txt="Análise de Risco x Retorno", ln=True)
     if grafico_risco_bytes:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
             tmp.write(grafico_risco_bytes.getvalue())
