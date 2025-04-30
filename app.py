@@ -156,7 +156,7 @@ def gerar_pdf(data_dict,
     pdf.multi_cell(0, 8, clean_text(adequacao_text))
     return BytesIO(pdf.output(dest='S').encode('latin1'))
 
-# Interface de Análise de Risco
+# Interface de Análise de Risco (sem alterações)
 def exibir_interface_analise_risco():
     st.header("Análise de Risco e Precificação")
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -271,7 +271,7 @@ def exibir_interface_analise_risco():
         media, desvio = riscos.mean(), riscos.std()
         alerta = "⚠️ Risco acima da média" if risco_total > media + 2*desvio else "✅ Risco dentro da média"
         resumo = f"Cliente {nome_cliente} tem risco de {risco_total}% e retorno {formatar_moeda(retorno_esperado)}. Taxa {taxa_ideal}%"
-        adequacao = f"Operação {'dentro' if risco_total<=50 else 'fora'} do apetite de risco (50%)"
+        adequacao = f"Operação {'dentro' if risco_total <= 50 else 'fora'} do apetite de risco (50%)"
         dados = {
             "Cliente": nome_cliente,
             "CNPJ": cnpj_cliente or "-",
@@ -298,7 +298,7 @@ def exibir_interface_analise_risco():
         )
         st.download_button("📄 Baixar PDF", data=pdf_bytes, file_name="relatorio.pdf")
 
-# Interface de Cotação de Crédito via XML
+# Interface de Cotação de Crédito via XML (modificada)
 def exibir_interface_cliente_cotacao():
     st.header("Cotação de Antecipação de Crédito")
     st.write("Faça o upload do **XML da Nota Fiscal Eletrônica (NF-e)** para gerar sua cotação:")
@@ -309,23 +309,58 @@ def exibir_interface_cliente_cotacao():
             tree = ET.parse(xml_file)
             root = tree.getroot()
             ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-            valor_nota = root.find('.//nfe:vNF', ns).text
+
+            # Extrai dados do XML
+            valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(",", "."))
             cnpj_dest = root.find('.//nfe:CNPJ', ns).text
-            data_emissao = root.find('.//nfe:dhEmi', ns)
-            if data_emissao is not None:
-                data_emissao = data_emissao.text[:10]
-            valor_nota = float(valor_nota.replace(",", "."))
-            st.success("Dados da Nota Fiscal encontrados com sucesso:")
-            st.write(f"**Valor da nota fiscal:** R$ {valor_nota:,.2f}")
-            st.write(f"**CNPJ do cliente:** {cnpj_dest}")
-            if data_emissao:
-                st.write(f"**Data de emissão:** {data_emissao}")
-            taxa_sugerida = st.number_input("Informe a taxa que você considera justa (%)", 
-                                            min_value=0.0, max_value=100.0, step=0.1, format="%.2f")
+            data_emissao_tag = root.find('.//nfe:dhEmi', ns)
+            data_emissao = None
+            if data_emissao_tag is not None:
+                raw = data_emissao_tag.text[:10]  # 'YYYY-MM-DD'
+                date_obj = datetime.strptime(raw, "%Y-%m-%d")
+                data_emissao = date_obj.strftime("%d/%m/%Y")
+
+            # Expander para detalhes e inputs de risco
+            with st.expander("Detalhes da Nota", expanded=False):
+                st.write(f"**Valor da nota fiscal:** {formatar_moeda(valor_nota)}")
+                st.write(f"**CNPJ do cliente:** {cnpj_dest}")
+                if data_emissao:
+                    st.write(f"**Data de emissão:** {data_emissao}")
+                # Inputs de fatores de risco
+                score_serasa = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750, key="xml_score")
+                idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key="xml_idade")
+                protestos = st.selectbox("Protestos ou dívidas públicas?", ["Não", "Sim"], key="xml_protestos")
+                faturamento = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key="xml_fat")
+
+            # Cálculo do risco total
+            risco_score = 0 if score_serasa >= 800 else 0.5 if score_serasa >= 600 else 1
+            risco_idade = 0 if idade_empresa >= 5 else 0.5
+            risco_protesto = 1 if protestos == "Sim" else 0
+            risco_fat = 0 if faturamento >= 500000 else 0.5
+            risco_total = round((risco_score*0.4 + risco_idade*0.2 + risco_protesto*0.25 + risco_fat*0.15) * 100, 2)
+
+            # Taxa sugerida automática
+            suggested_taxa = risco_total
+            taxa_sugerida = st.number_input(
+                "Taxa sugerida (%)",
+                min_value=0.0,
+                max_value=100.0,
+                step=0.1,
+                value=suggested_taxa,
+                format="%.2f"
+            )
+
+            # Cálculo do valor a receber
             valor_receber = valor_nota * (1 - taxa_sugerida / 100)
-            st.markdown(f"### Você receberia: R$ {valor_receber:,.2f}")
+
+            # Destaques com st.metric
+            st.metric("Taxa sugerida", f"{taxa_sugerida}%")
+            st.metric("Você receberá", f"{formatar_moeda(valor_receber)}")
+
+            # Botão de solicitação
             if st.button("Solicitar proposta"):
                 st.success("Sua solicitação foi registrada com sucesso! Em breve entraremos em contato.")
+
         except Exception as e:
             st.error(f"Erro ao processar o XML: {e}")
 
