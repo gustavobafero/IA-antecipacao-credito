@@ -225,7 +225,7 @@ def exibir_interface_analise_risco():
             return
 
     # Busca dados Serasa (com fallback manual)
-        try:
+    try:
         s = fetch_serasa_data(cnpj_cliente) if cnpj_cliente else {}
         score_serasa   = s.get("score", 0)
         idade_empresa  = s.get("idade_empresa", 0)
