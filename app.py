@@ -231,7 +231,7 @@ def exibir_interface_analise_risco():
         idade_empresa  = s.get("idade_empresa", 0)
         protestos_bool = s.get("protestos", False)
         faturamento    = s.get("faturamento", 0.0)
-        except Exception:
+    except Exception:
         st.warning("Não foi possível obter dados do Serasa. Preencha manualmente.")
         score_serasa   = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750, key="man_score")
         idade_empresa  = st.number_input("Idade da empresa (anos)", 0, 100, 5, key="man_idade")
