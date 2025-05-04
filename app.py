@@ -209,53 +209,35 @@ def exibir_interface_analise_risco():
     st.header("Análise de Risco e Precificação")
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-    st.header("1. Informações da Operação")
-    with st.form("formulario_operacao"):
-        st.subheader("1. Dados da Operação")
+   # Formulário único com todos os inputs
+    with st.form("form_operacao"):
+        st.subheader("Dados da Operação")
         nome_cliente    = st.text_input("Nome do cliente")
         cnpj_cliente    = st.text_input("CNPJ do cliente (opcional)")
-               
-        if cnpj_cliente:
-            try:
-                s = fetch_serasa_data(cnpj_cliente)
-                score_serasa = s["score"]
-                idade_empresa = s["idade_empresa"]
-                protestos = "Sim" if s["protestos"] else "Não"
-                faturamento = s["faturamento"]
-                st.write(f"Score Serasa: **{score_serasa}**")
-                st.write(f"Idade da empresa: **{idade_empresa} anos**")
-                st.write(f"Protestos: **{protestos}**")
-                st.write(f"Faturamento: **{formatar_moeda(faturamento)}**")
-            except Exception:
-                st.warning("Não foi possível obter dados do Serasa. Preencha manualmente.")
-                # fallback manual: reapresenta os inputs originais
-                valor = st.number_input("Valor da operação (R$)", min_value=0.0, format="%.2f")
-                data_operacao = st.date_input("Data da operação", value=datetime.today(), format="DD/MM/YYYY")
-                data_vencimento = st.date_input("Data de vencimento", format="DD/MM/YYYY")
-                rating = st.slider("Rating do cliente", 0, 100, 80)
-                margem_desejada = st.number_input("Margem desejada (%)", min_value=0.0, value=1.0)
-                custo_capital = st.number_input("Custo do capital (%)", min_value=0.0, value=1.5)
-                taxa_concorrencia = st.number_input("Taxa da concorrência (%)", min_value=0.0, value=4.5)
-                st.markdown("---")
-                st.subheader("2. Avaliação de Risco de Inadimplência")
+        valor           = st.number_input("Valor da operação (R$)", min_value=0.0, format="%.2f")
+        data_operacao   = st.date_input("Data da operação", value=datetime.today(), format="DD/MM/YYYY")
+        data_vencimento = st.date_input("Data de vencimento", format="DD/MM/YYYY")
+        rating          = st.slider("Rating do cliente", 0, 100, 80)
+        margem_desejada = st.number_input("Margem desejada (%)", min_value=0.0, value=1.0)
+        custo_capital   = st.number_input("Custo do capital (%)", min_value=0.0, value=1.5)
+        enviar          = st.form_submit_button("Simular")
+        if not enviar:
+            return
 
+    # Busca dados Serasa (com fallback manual)
+        try:
+        s = fetch_serasa_data(cnpj_cliente) if cnpj_cliente else {}
+        score_serasa   = s.get("score", 0)
+        idade_empresa  = s.get("idade_empresa", 0)
+        protestos_bool = s.get("protestos", False)
+        faturamento    = s.get("faturamento", 0.0)
+        except Exception:
+        st.warning("Não foi possível obter dados do Serasa. Preencha manualmente.")
+        score_serasa   = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750, key="man_score")
+        idade_empresa  = st.number_input("Idade da empresa (anos)", 0, 100, 5, key="man_idade")
+        protestos_bool = st.selectbox("Protestos ou dívidas públicas?", ["Não","Sim"], key="man_prot") == "Sim"
+        faturamento    = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key="man_fat")
 
-        # Integração Serasa pelo CNPJ
-        if cnpj_cliente:
-            try:
-                score_serasa = fetch_serasa_score(cnpj_cliente)
-                st.write(f"Score Serasa (automático): **{score_serasa}**")
-            except Exception:
-                st.warning("Não foi possível obter o Score Serasa automaticamente.")
-                score_serasa = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750)
-        else:
-            score_serasa = st.number_input("Score Serasa (0 a 1000)", 0, 1000, 750)
-
-        idade_empresa    = st.number_input("Idade da empresa (anos)", 0, 100, 5)
-        protestos        = st.selectbox("Protestos ou dívidas públicas?", ["Não","Sim"])
-        faturamento      = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f")
-        data_faturamento = st.date_input("Data do último faturamento", format="DD/MM/YYYY")
-        enviar           = st.form_submit_button("Simular")
 
     if enviar:
         # Cálculos (mesma lógica anterior, usando score_serasa)
