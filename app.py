@@ -211,10 +211,6 @@ def exibir_interface_analise_risco():
         st.write(f"Risco: {cor} ({risco_total}%)")
         st.markdown("---")
 
-        # Geração dos gráficos e do PDF...
-        # (mantém todo o código de plotagem e PDF igual ao original)
-        # ...
-
 # Interface de Cotação de Crédito via XML (sem Serasa)
 def exibir_interface_cliente_cotacao():
     st.header("Cotação de Antecipação de Crédito")
@@ -264,16 +260,19 @@ def exibir_interface_cliente_cotacao():
 
             suggested_taxa = round(risco_total, 2)
             # cap no máximo 10%
-            valor_padrao_taxa = min(suggested_taxa, 10.0)
+                # mapeia risco_total (0–100) para taxa padrão 0–10% (linear)
+            valor_padrao_taxa = round(risco_total * 0.1, 2)
+
             taxa_sugerida = st.number_input(
-            "Taxa sugerida (%)",
-            min_value=0.0,
-            max_value=10.0,
-            step=0.1,
-            value=valor_padrao_taxa,
-            format="%.2f"
+                "Taxa sugerida (%)",
+                min_value=0.0,
+                max_value=10.0,
+                step=0.1,
+                value=valor_padrao_taxa,
+                format="%.2f"
             )
             valor_receber = valor_nota * (1 - taxa_sugerida/100)
+
 
             st.metric("Taxa sugerida", f"{taxa_sugerida}%")
             st.metric("Você receberá", f"{formatar_moeda(valor_receber)}")
