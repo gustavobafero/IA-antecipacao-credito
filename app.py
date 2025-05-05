@@ -51,7 +51,13 @@ def register_client(username, password, cnpj, celular, email):
         conn.commit()
         return True
     except sqlite3.IntegrityError:
+        # Usuário já existe
         return False
+    except sqlite3.Error as e:
+        # Exibe o erro completo para diagnóstico
+        st.error(f"Erro no banco de dados: {e}")
+        return False
+
 
 def authenticate_client(username, password):
     cursor.execute("SELECT password_hash FROM clients WHERE username = ?", (username,))
