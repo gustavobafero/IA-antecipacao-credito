@@ -216,6 +216,7 @@ def exibir_interface_analise_risco():
 def exibir_interface_cliente_cotacao():
     st.header("Cotação de Antecipação de Crédito")
     st.write("Faça o upload do **XML da Nota Fiscal Eletrônica (NF-e)** para gerar sua cotação:")
+    nome_cliente = st.text_input("Nome do cliente", key="xml_nome_cliente")
 
     xml_file = st.file_uploader("Upload do XML", type=["xml"])
     if xml_file is not None:
