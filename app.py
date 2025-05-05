@@ -232,11 +232,31 @@ def exibir_interface_cliente_cotacao():
                 date_obj = datetime.strptime(raw, "%Y-%m-%d")
                 data_emissao = date_obj.strftime("%d/%m/%Y")
 
+                parcelas = []
+                cobr = root.find('.//nfe:cobr', ns)
+            if cobr is not None:
+                for dup in cobr.findall('nfe:dup', ns):
+                    numero = dup.find('nfe:nDup', ns).text if dup.find('nfe:nDup', ns) is not None else None
+                    raw_venc = dup.find('nfe:dVenc', ns).text
+                    data_venc = datetime.strptime(raw_venc[:10], "%Y-%m-%d").strftime("%d/%m/%Y")
+                    raw_val = dup.find('nfe:vDup', ns).text.replace(",", ".")
+                    valor_dup = float(raw_val)
+                    parcelas.append({
+                        "nDup": numero,
+                        "dVenc": data_venc,
+                        "vDup": formatar_moeda(valor_dup)
+                })
+
             with st.expander("Detalhes da Nota", expanded=False):
                 st.write(f"**Valor da nota fiscal:** {formatar_moeda(valor_nota)}")
                 st.write(f"**CNPJ do cliente:** {cnpj_dest}")
                 if data_emissao:
                     st.write(f"**Data de emissão:** {data_emissao}")
+                 if parcelas:
+                    st.markdown("**Parcelas e vencimentos:**")
+                    for p in parcelas:
+                        num = f"Parcela {p['nDup']}: " if p['nDup'] else ""
+                        st.write(f"- {num}{p['dVenc']} → {p['vDup']}")
 
             st.markdown("### Dados de Crédito (manual)")
             score_xml     = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key="xml_score")
