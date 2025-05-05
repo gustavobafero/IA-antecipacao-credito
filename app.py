@@ -304,23 +304,15 @@ def exibir_interface_cliente_cotacao():
 
             st.write("Este cálculo não leva em consideração dados de concentração de carteira e eventuais riscos que não apareçam no Serasa")
 
-            if st.button("Solicitar proposta"):
+            if st.button("Solicitar proposta", key="xml_solicitar"):
                 msg_body = (
                     f"📩 *Nova solicitação de proposta*\n"
                     f"• Cliente: {nome_cliente}\n"
                     f"• CNPJ: {cnpj_dest}\n"
                     f"• Valor da NF-e: {formatar_moeda(valor_nota)}\n"
-                    f"• Emissão: {data_emissao or '—'}\n"
                     f"• Taxa IA sugerida: {taxa_ia}%\n"
                     f"• Taxa escolhida: {taxa_cliente}%\n"
                 )
-                if parcelas:
-                    msg_body += "• Parcelas:\n"
-                    for p in parcelas:
-                        num = f"{p['nDup']}. " if p['nDup'] else ""
-                        msg_body += f"   – {num}{p['dVenc']} → {p['vDup']}\n"
-
-    # 2) Instancie o client e envie
                 client = Client(
                     st.secrets["TWILIO_ACCOUNT_SID"],
                     st.secrets["TWILIO_AUTH_TOKEN"]
@@ -330,6 +322,10 @@ def exibir_interface_cliente_cotacao():
                     from_=f"whatsapp:{st.secrets['TWILIO_WHATSAPP_FROM']}",
                     to  =f"whatsapp:{st.secrets['ADMIN_WHATSAPP_TO']}"
                 )
+                st.success("✅ Proposta enviada! Confira seu WhatsApp.")
+
+        except Exception as e:
+            st.error(f"Erro ao processar o XML: {e}")
                 
 
 # Controle de navegação
