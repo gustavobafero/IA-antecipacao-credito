@@ -3,5 +3,4 @@ openai
 pandas
 matplotlib
 fpdf
-pip install twilio
 twilio>=7.0.0
