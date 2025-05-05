@@ -383,6 +383,9 @@ def exibir_interface_cliente_cotacao():
 
             st.write("Este cálculo não leva em consideração dados de concentração de carteira e eventuais riscos que não apareçam no Serasa")
 
+            receber_propostas = st.checkbox(
+            "Desejo receber propostas e que entrem em contato comigo"
+            )
             if st.button("Solicitar proposta", key="xml_solicitar"):
                 msg_body = (
                       f"📩 *Nova solicitação de proposta*\n"
