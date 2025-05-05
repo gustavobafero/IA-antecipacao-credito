@@ -254,13 +254,17 @@ def exibir_interface_cliente_cotacao():
             risco_fat     = 0 if faturamento >= 500000 else 0.5
             risco_total   = round((risco_score*0.4 + risco_idade*0.2 + risco_protesto*0.25 + risco_fat*0.15)*100, 2)
 
-            suggested_taxa = risco_total
+            suggested_taxa = round(risco_total, 2)
+            # cap no máximo 10%
+            valor_padrao_taxa = min(suggested_taxa, 10.0)
             taxa_sugerida = st.number_input(
-                "Taxa sugerida (%)",
-                min_value=0.0, max_value=100.0, step=0.1,
-                value=suggested_taxa, format="%.2f"
+            "Taxa sugerida (%)",
+            min_value=0.0,
+            max_value=10.0,
+            step=0.1,
+            value=valor_padrao_taxa,
+            format="%.2f"
             )
-
             valor_receber = valor_nota * (1 - taxa_sugerida/100)
 
             st.metric("Taxa sugerida", f"{taxa_sugerida}%")
