@@ -386,6 +386,7 @@ def exibir_interface_cliente_cotacao():
             receber_propostas = st.checkbox(
             "Desejo receber propostas e que entrem em contato comigo"
             )
+            
             if st.button("Solicitar proposta", key="xml_solicitar"):
                 msg_body = (
                       f"📩 *Nova solicitação de proposta*\n"
