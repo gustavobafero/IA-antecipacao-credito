@@ -319,7 +319,7 @@ def exibir_interface_cliente_cotacao():
                     for p in parcelas:
                         num = f"{p['nDup']}. " if p['nDup'] else ""
                         msg_body += f"   – {num}{p['dVenc']} → {p['vDup']}\n"
-                )
+                
                 client = Client(
                     st.secrets["TWILIO_ACCOUNT_SID"],
                     st.secrets["TWILIO_AUTH_TOKEN"]
