@@ -18,6 +18,7 @@ import xml.etree.ElementTree as ET
 import math
 from twilio.rest import Client
 
+st.set_page_config(page_title="IA de Crédito", layout="centered")
 if 'admin_authenticated' not in st.session_state:
     st.session_state['admin_authenticated'] = False
 
@@ -29,8 +30,6 @@ with st.expander("🔒 Admin Login", expanded=False):
             st.success("✅ Autenticado como administrador")
         else:
             st.error("❌ Senha incorreta")
-# Configuração de página
-st.set_page_config(page_title="IA de Crédito", layout="centered")
 
 # Configuração de localização para formatação brasileira
 try:
