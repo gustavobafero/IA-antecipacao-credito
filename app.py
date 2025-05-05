@@ -17,19 +17,98 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 import math
 from twilio.rest import Client
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+
+conn = sqlite3.connect("clientes.db", check_same_thread=False)
+cursor = conn.cursor()
+cursor.execute("""
+  CREATE TABLE IF NOT EXISTS clients (
+    username TEXT PRIMARY KEY,
+    password_hash TEXT NOT NULL,
+    cnpj TEXT NOT NULL,
+    celular TEXT NOT NULL,
+    email TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  )
+""")
+conn.commit()
+
+def register_client(username, password, cnpj, celular, email):
+    pwd_hash = generate_password_hash(password)
+    try:
+        cursor.execute(
+            "INSERT INTO clients (username, password_hash, cnpj, celular, email, created_at) VALUES (?,?,?,?,?,?)",
+            (username, pwd_hash, cnpj, celular, email, datetime.now().isoformat())
+        )
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False  # usuário já existe
+
+def authenticate_client(username, password):
+    cursor.execute("SELECT password_hash FROM clients WHERE username = ?", (username,))
+    row = cursor.fetchone()
+    if row and check_password_hash(row[0], password):
+        return True
+    return False
 
 st.set_page_config(page_title="IA de Crédito", layout="centered")
-if 'admin_authenticated' not in st.session_state:
-    st.session_state['admin_authenticated'] = False
+if 'role' not in st.session_state:
+    st.title("🔐 Bem-vindo")
+    modo = st.radio("Escolha:", ["Entrar", "Cadastrar-se"])
+    if modo == "Cadastrar-se":
+        with st.form("form_register"):
+            u = st.text_input("Usuário")
+            p = st.text_input("Senha", type="password")
+            p2= st.text_input("Confirme a senha", type="password")
+            cnpj = st.text_input("CNPJ")
+            celular = st.text_input("Celular")
+            email   = st.text_input("Email")
+            ok = st.form_submit_button("Criar conta")
+        if ok:
+            if not all([u, p, p2, cnpj, celular, email]):
+                st.error("Preencha todos os campos")
+            elif p != p2:
+                st.error("As senhas não coincidem")
+            elif register_client(u, p, cnpj, celular, email):
+                st.success("Conta criada! Faça login.")
+            else:
+                st.error("Usuário já existe.")
+        st.stop()
 
-with st.expander("🔒 Admin Login", expanded=False):
-    pwd = st.text_input("Senha de acesso (Admin)", type="password", key="login_pwd")
-    if st.button("Entrar como Admin", key="login_btn"):
-        if pwd == st.secrets["ADMIN"]["PASSWORD"]:
-            st.session_state.admin_authenticated = True
-            st.success("✅ Autenticado como administrador")
-        else:
-            st.error("❌ Senha incorreta")
+    else:  # Entrar
+        with st.form("form_login"):
+            u = st.text_input("Usuário")
+            p = st.text_input("Senha", type="password")
+            ok = st.form_submit_button("Entrar")
+        if ok:
+            # admin via secrets
+            if u == st.secrets["ADMIN"]["USERNAME"] and p == st.secrets["ADMIN"]["PASSWORD"]:
+                st.session_state.role = 'admin'
+            # cliente via DB
+            elif authenticate_client(u, p):
+                st.session_state.role = 'cliente'
+            else:
+                st.error("Usuário ou senha inválidos")
+        st.stop()
+
+# --- Roteamento pós-login ---
+if st.session_state.role == 'admin':
+    st.header("📋 Propostas Recebidas (Admin)")
+    if os.path.exists(DATA_PATH):
+        df = pd.read_csv(DATA_PATH)
+        st.dataframe(df)
+    else:
+        st.info("Ainda não há propostas.")
+elif st.session_state.role == 'cliente':
+    st.header("👤 Dashboard do Cliente")
+    tab1, tab2 = st.tabs(["💰 Cotação de Antecipação", "⚙️ Análise de Risco"])
+    with tab1:
+        exibir_interface_cliente_cotacao()
+    with tab2:
+        exibir_interface_analise_risco()
 
 # Configuração de localização para formatação brasileira
 try:
