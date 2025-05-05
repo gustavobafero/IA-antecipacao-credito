@@ -20,6 +20,8 @@ from twilio.rest import Client
 import sqlite3
 import hashlib
 from datetime import datetime
+import os
+DATA_PATH = "clientes.db" 
 
 def hash_password(password: str) -> str:
     """Retorna o SHA-256 hex digest da senha."""
@@ -105,30 +107,7 @@ if 'role' not in st.session_state:
             else:
                 st.error("Usuário ou senha inválidos")
         st.stop()
-
-# --- Roteamento pós-login ---
-if st.session_state.role == 'admin':
-    st.header("📋 Propostas Recebidas (Admin)")
-    if os.path.exists(DATA_PATH):
-        df = pd.read_csv(DATA_PATH)
-        st.dataframe(df)
-    else:
-        st.info("Ainda não há propostas.")
-elif st.session_state.role == 'cliente':
-    st.header("👤 Dashboard do Cliente")
-    tab1, tab2 = st.tabs(["💰 Cotação de Antecipação", "⚙️ Análise de Risco"])
-    with tab1:
-        exibir_interface_cliente_cotacao()
-    with tab2:
-        exibir_interface_analise_risco()
-
-# Configuração de localização para formatação brasileira
-try:
-    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-except:
-    locale.setlocale(locale.LC_ALL, '')  # fallback
-
-# Funções utilitárias
+        
 def formatar_moeda(valor):
     """
     Formata valor numérico como moeda brasileira.
@@ -137,7 +116,6 @@ def formatar_moeda(valor):
         return f"R$ {valor:,.2f}".replace(",", "v").replace(".", ",").replace("v", ".")
     except:
         return f"R$ {valor:.2f}".replace(".", ",")
-
 def calcular_preco_minimo(custo_base, risco_inadimplencia, margem_desejada_percentual):
     """
     Calcula o preço mínimo com base no custo, risco e margem desejada.
@@ -435,6 +413,29 @@ def exibir_interface_cliente_cotacao():
         except Exception as e:
             st.error(f"Erro ao processar o XML: {e}")
                 
+
+# --- Roteamento pós-login ---
+if st.session_state.role == 'admin':
+    st.header("📋 Propostas Recebidas (Admin)")
+    if os.path.exists(DATA_PATH):
+        df = pd.read_csv(DATA_PATH)
+        st.dataframe(df)
+    else:
+        st.info("Ainda não há propostas.")
+elif st.session_state.role == 'cliente':
+    st.header("👤 Dashboard do Cliente")
+    tab1, tab2 = st.tabs(["💰 Cotação de Antecipação", "⚙️ Análise de Risco"])
+    with tab1:
+        exibir_interface_cliente_cotacao()
+    with tab2:
+        exibir_interface_analise_risco()
+
+# Configuração de localização para formatação brasileira
+try:
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+except:
+    locale.setlocale(locale.LC_ALL, '')  # fallback
+
 
 # Controle de navegação
 st.title("Bem-vindo à Plataforma de Crédito Inteligente")
