@@ -300,6 +300,8 @@ def exibir_interface_cliente_cotacao():
             valor_receber = valor_nota * (1 - taxa_cliente/100)
             st.metric("Você receberá", f"{formatar_moeda(valor_receber)}")
 
+            st.warning("Este cálculo não leva em consideração dados de concentração")
+
             if st.button("Solicitar proposta"):
                 st.success("Sua solicitação foi registrada com sucesso! Em breve entraremos em contato.")
         except Exception as e:
