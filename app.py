@@ -205,7 +205,7 @@ def exibir_interface_analise_risco():
         risco_idade   = 0 if idade_empresa >= 5 else 0.5
         risco_protesto= 1 if protestos_bool else 0
         risco_fat     = 0 if faturamento >= 500000 else 0.5
-        risco_total   = round((risco_score*0.4 + risco_idade*0.2 + riscoprotesto*0.25 + risco_fat*0.15)*100, 2)
+        risco_total   = round((risco_score*0.4 + risco_idade*0.2 + risco_protesto*0.25 + risco_fat*0.15)*100, 2)
         cor = "🟢 Baixo" if risco_total <= 30 else "🟡 Moderado" if risco_total <= 60 else "🔴 Alto"
         st.write(f"Risco: {cor} ({risco_total}%)")
         st.markdown("---")
@@ -252,7 +252,7 @@ def exibir_interface_cliente_cotacao():
             risco_idade   = 0 if idade_empresa >= 5 else 0.5
             risco_protesto= 1 if protestos == "Sim" else 0
             risco_fat     = 0 if faturamento >= 500000 else 0.5
-            risco_total   = round((risco_score*0.4 + risco_idade*0.2 + riscoprotesto*0.25 + risco_fat*0.15)*100, 2)
+            risco_total   = round((risco_score*0.4 + risco_idade*0.2 + risco_protesto*0.25 + risco_fat*0.15)*100, 2)
 
             suggested_taxa = risco_total
             taxa_sugerida = st.number_input(
