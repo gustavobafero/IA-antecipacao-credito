@@ -18,6 +18,17 @@ import xml.etree.ElementTree as ET
 import math
 from twilio.rest import Client
 
+if 'admin_authenticated' not in st.session_state:
+    st.session_state['admin_authenticated'] = False
+
+with st.expander("🔒 Admin Login", expanded=False):
+    pwd = st.text_input("Senha de acesso (Admin)", type="password", key="login_pwd")
+    if st.button("Entrar como Admin", key="login_btn"):
+        if pwd == st.secrets["ADMIN"]["PASSWORD"]:
+            st.session_state.admin_authenticated = True
+            st.success("✅ Autenticado como administrador")
+        else:
+            st.error("❌ Senha incorreta")
 # Configuração de página
 st.set_page_config(page_title="IA de Crédito", layout="centered")
 
