@@ -331,8 +331,8 @@ def exibir_interface_cliente_cotacao():
                 )
 
                 st.success("✅ Proposta enviada! Confira seu WhatsApp.")
-                except Exception as e:
-                    st.error(f"Erro ao processar o XML: {e}")
+            except Exception as e:
+                st.error(f"Erro ao processar o XML: {e}")
 
 # Controle de navegação
 st.title("Bem-vindo à Plataforma de Crédito Inteligente")
