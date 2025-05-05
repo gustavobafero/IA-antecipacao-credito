@@ -259,21 +259,22 @@ def exibir_interface_cliente_cotacao():
             )
 
             suggested_taxa = round(risco_total, 2)
-            # cap no máximo 10%
-                # mapeia risco_total (0–100) para taxa padrão 0–10% (linear)
-            valor_padrao_taxa = round(risco_total * 0.1, 2)
+            
+            taxa_ia = round(risco_total * 0.1, 2)
+            st.write(f"Taxa sugerida pela IA: {taxa_ia}%")
 
-            taxa_sugerida = st.number_input(
-                "Taxa sugerida (%)",
+    # campo editável para o cliente definir a taxa de antecipação
+            taxa_cliente = st.number_input(
+                "Defina a taxa de antecipação (%)",
                 min_value=0.0,
                 max_value=10.0,
                 step=0.1,
-                value=valor_padrao_taxa,
+                value=taxa_ia,
                 format="%.2f"
             )
 
-            st.write(f"Taxa sugerida pela IA: {taxa_sugerida}%")
-            valor_receber = valor_nota * (1 - taxa_sugerida/100)
+    # cálculo do valor a receber com a taxa escolhida pelo cliente
+            valor_receber = valor_nota * (1 - taxa_cliente/100)
             st.metric("Você receberá", f"{formatar_moeda(valor_receber)}")
 
             if st.button("Solicitar proposta"):
