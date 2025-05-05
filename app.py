@@ -329,8 +329,9 @@ def exibir_interface_cliente_cotacao():
                     from_=f"whatsapp:{st.secrets['TWILIO_WHATSAPP_FROM']}",
                     to  =f"whatsapp:{st.secrets['ADMIN_WHATSAPP_TO']}"
                 )
-
-                st.success("✅ Proposta enviada! Confira seu WhatsApp.")
+                
+                if st.button("Solicitar proposta"):
+                    st.success("✅ Proposta enviada! Confira seu WhatsApp.")
             except Exception as e:
                 st.error(f"Erro ao processar o XML: {e}")
 
