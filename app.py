@@ -330,10 +330,10 @@ def exibir_interface_cliente_cotacao():
                     to  =f"whatsapp:{st.secrets['ADMIN_WHATSAPP_TO']}"
                 )
                 
-                if st.button("Solicitar proposta"):
+            if st.button("Solicitar proposta"):
                     st.success("✅ Proposta enviada! Confira seu WhatsApp.")
-            except Exception as e:
-                st.error(f"Erro ao processar o XML: {e}")
+        except Exception as e:
+            st.error(f"Erro ao processar o XML: {e}")
 
 # Controle de navegação
 st.title("Bem-vindo à Plataforma de Crédito Inteligente")
