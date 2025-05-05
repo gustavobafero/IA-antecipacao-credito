@@ -18,25 +18,31 @@ import xml.etree.ElementTree as ET
 import math
 from twilio.rest import Client
 import sqlite3
-from werkzeug.security import generate_password_hash, check_password_hash
+import hashlib
 from datetime import datetime
 
+def hash_password(password: str) -> str:
+    """Retorna o SHA-256 hex digest da senha."""
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+
+# 2) Conexão e criação da tabela de clientes
 conn = sqlite3.connect("clientes.db", check_same_thread=False)
 cursor = conn.cursor()
 cursor.execute("""
-  CREATE TABLE IF NOT EXISTS clients (
+CREATE TABLE IF NOT EXISTS clients (
     username TEXT PRIMARY KEY,
     password_hash TEXT NOT NULL,
     cnpj TEXT NOT NULL,
     celular TEXT NOT NULL,
     email TEXT NOT NULL,
     created_at TEXT NOT NULL
-  )
+)
 """)
 conn.commit()
 
+# 4) Funções de registro/autenticação usando o hash
 def register_client(username, password, cnpj, celular, email):
-    pwd_hash = generate_password_hash(password)
+    pwd_hash = hash_password(password)
     try:
         cursor.execute(
             "INSERT INTO clients (username, password_hash, cnpj, celular, email, created_at) VALUES (?,?,?,?,?,?)",
@@ -45,12 +51,12 @@ def register_client(username, password, cnpj, celular, email):
         conn.commit()
         return True
     except sqlite3.IntegrityError:
-        return False  # usuário já existe
+        return False
 
 def authenticate_client(username, password):
     cursor.execute("SELECT password_hash FROM clients WHERE username = ?", (username,))
     row = cursor.fetchone()
-    if row and check_password_hash(row[0], password):
+    if row and row[0] == hash_password(password):
         return True
     return False
 
