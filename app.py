@@ -437,17 +437,4 @@ except:
     locale.setlocale(locale.LC_ALL, '')  # fallback
 
 
-# Controle de navegação
-st.title("Bem-vindo à Plataforma de Crédito Inteligente")
-st.subheader("Como deseja usar a plataforma?")
-opcao = st.selectbox("Escolha uma opção:", [
-    "Selecione...",
-    "Quero fazer uma análise de risco",
-    "Quero cotar quanto vou receber"
-])
-if opcao == "Quero fazer uma análise de risco":
-    exibir_interface_analise_risco()
-elif opcao == "Quero cotar quanto vou receber":
-    exibir_interface_cliente_cotacao()
-
 st.stop()
