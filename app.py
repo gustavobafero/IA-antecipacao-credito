@@ -262,8 +262,9 @@ def exibir_interface_cliente_cotacao():
             
             taxa_ia = round(risco_total * 0.1, 2)
             st.markdown(
-                f"<p style='font-size:24px; font-weight:bold; margin: 10px 0;'>🔥 Taxa sugerida pela IA: {taxa_ia}%</p>",
+                f"<p style='font-size:24px; font-weight:bold; margin:10px 0;'>🔥 Taxa sugerida pela IA: {taxa_ia}%</p>",
                 unsafe_allow_html=True
+            )
 
     # campo editável para o cliente definir a taxa de antecipação
             taxa_cliente = st.number_input(
