@@ -271,11 +271,8 @@ def exibir_interface_cliente_cotacao():
                 value=valor_padrao_taxa,
                 format="%.2f"
             )
-            valor_receber = valor_nota * (1 - taxa_sugerida/100)
-
-
-            st.metric("Taxa sugerida", f"{taxa_sugerida}%")
-            st.metric("Você receberá", f"{formatar_moeda(valor_receber)}")
+            
+            st.write(f"Taxa sugerida: {taxa_sugerida}%")
 
             if st.button("Solicitar proposta"):
                 st.success("Sua solicitação foi registrada com sucesso! Em breve entraremos em contato.")
