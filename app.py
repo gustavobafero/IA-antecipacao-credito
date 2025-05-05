@@ -15,6 +15,7 @@ import locale
 import numpy as np
 import pandas as pd
 import xml.etree.ElementTree as ET
+import math
 
 # Configuração de página
 st.set_page_config(page_title="IA de Crédito", layout="centered")
@@ -248,11 +249,18 @@ def exibir_interface_cliente_cotacao():
             faturamento   = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key="xml_fat")
 
             # Cálculo do risco total
-            risco_score   = 0 if score_xml >= 800 else 0.5 if score_xml >= 600 else 1
-            risco_idade   = 0 if idade_empresa >= 5 else 0.5
-            risco_protesto= 1 if protestos == "Sim" else 0
-            risco_fat     = 0 if faturamento >= 500000 else 0.5
-            risco_total   = round((risco_score*0.4 + risco_idade*0.2 + risco_protesto*0.25 + risco_fat*0.15)*100, 2)
+            risco_score = round(1 / (1 + math.exp(-(600 - score_xml) / 50)), 3)
+            risco_idade = round(1 / (1 + math.exp(-(5 - idade_empresa) / 1)), 3)
+            risco_protesto = 1 if protestos == "Sim" else 0
+            risco_fat = round(1 / (1 + math.exp(-(500_000 - faturamento) / 100_000)), 3)
+            risco_total = round(
+                (risco_score    * 0.40
+                + risco_idade   * 0.20
+                + risco_protesto* 0.25
+                + risco_fat     * 0.15)
+                * 100,
+                2
+            )
 
             suggested_taxa = round(risco_total, 2)
             # cap no máximo 10%
