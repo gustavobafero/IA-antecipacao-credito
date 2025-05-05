@@ -252,7 +252,7 @@ def exibir_interface_cliente_cotacao():
                 st.write(f"**CNPJ do cliente:** {cnpj_dest}")
                 if data_emissao:
                     st.write(f"**Data de emissão:** {data_emissao}")
-                 if parcelas:
+                if parcelas:
                     st.markdown("**Parcelas e vencimentos:**")
                     for p in parcelas:
                         num = f"Parcela {p['nDup']}: " if p['nDup'] else ""
