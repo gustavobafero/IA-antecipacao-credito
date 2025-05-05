@@ -272,7 +272,7 @@ def exibir_interface_cliente_cotacao():
                 format="%.2f"
             )
             
-            st.write(f"Taxa sugerida: {taxa_sugerida}%")
+            st.write(f"Taxa sugerida pela IA: {taxa_sugerida}%")
 
             if st.button("Solicitar proposta"):
                 st.success("Sua solicitação foi registrada com sucesso! Em breve entraremos em contato.")
