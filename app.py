@@ -306,12 +306,19 @@ def exibir_interface_cliente_cotacao():
 
             if st.button("Solicitar proposta", key="xml_solicitar"):
                 msg_body = (
-                    f"📩 *Nova solicitação de proposta*\n"
+                      f"📩 *Nova solicitação de proposta*\n"
                     f"• Cliente: {nome_cliente}\n"
                     f"• CNPJ: {cnpj_dest}\n"
                     f"• Valor da NF-e: {formatar_moeda(valor_nota)}\n"
+                    f"• Emissão: {data_emissao or '—'}\n"
                     f"• Taxa IA sugerida: {taxa_ia}%\n"
                     f"• Taxa escolhida: {taxa_cliente}%\n"
+                )
+                if parcelas:
+                    msg_body += "• Parcelas:\n"
+                    for p in parcelas:
+                        num = f"{p['nDup']}. " if p['nDup'] else ""
+                        msg_body += f"   – {num}{p['dVenc']} → {p['vDup']}\n"
                 )
                 client = Client(
                     st.secrets["TWILIO_ACCOUNT_SID"],
