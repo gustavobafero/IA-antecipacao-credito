@@ -429,9 +429,7 @@ def exibir_interface_cliente_cotacao():
                     f"• Taxa IA sugerida: {taxa_ia}%\n"
                     f"• Taxa escolhida: {taxa_cliente}%\n"
                 )
-                if receber_propostas:
-                    msg_body += f"• Telefone para contato: {telefone_contato}\n"
-                    msg_body += f"• E-mail para contato: {email_contato}\n"
+                
                 if parcelas:
                     msg_body += "• Parcelas:\n"
                     for p in parcelas:
@@ -440,7 +438,10 @@ def exibir_interface_cliente_cotacao():
 
                 contato = "SIM" if receber_propostas else "NÃO"
                 msg_body += f"• Deseja contato: {contato}\n"
-                
+
+                if receber_propostas:
+                    msg_body += f"• Telefone para contato: {telefone_contato}\n"
+                    msg_body += f"• E-mail para contato: {email_contato}\n"
                 client = Client(
                     st.secrets["TWILIO_ACCOUNT_SID"],
                     st.secrets["TWILIO_AUTH_TOKEN"]
