@@ -24,6 +24,7 @@ from sqlalchemy import create_engine, text
 import streamlit as st
 DATA_PATH = "clientes.db" 
 
+st.set_page_config(page_title="IA de Crédito", layout="centered")
 # --- CSS global Times New Roman ---
 st.markdown(
     """
