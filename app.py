@@ -29,26 +29,30 @@ st.set_page_config(page_title="IA de Crédito", layout="centered")
 st.markdown(
     """
     <style>
-      /* tudo que era branco agora azul claro */
-      [data-testid="stAppViewContainer"],
-      [data-testid="stHeader"], 
-      [data-testid="stMarkdownContainer"] {
-          background-color: #E6F0FA !important;  /* azul claro */
+      /* Botões padrão e elementos de ação */
+      .stButton > button,
+      button,
+      [data-testid="stToolbar"],
+      .css-1offfwp.edgvbvh3 {            /* classe genérica de botões */
+        background-color: #0D47A1 !important;  /* azul escuro */
+        color: #FFFFFF     !important;  /* texto branco */
       }
-      
-      /* fundo da sidebar, se usar */
-      [data-testid="stSidebar"] {
-          background-color: #D0E7FF !important;
-          
-      /* tudo que era azul claro agora branco */
-      [data-testid="stSidebar"],
-      [data-testid="stDecoration"] {
-          background-color: #FFFFFF !important; /* branco */
+
+      /* Itens selecionados da sidebar/nav */
+      [data-testid="stSidebarNav"] > div[role="button"][aria-selected="true"] {
+        background-color: #0A174E !important;  /* tom ainda mais escuro */
+        color: #FFFFFF       !important;
+      }
+
+      /* Cabeçalho fixo (toolbar superior) */
+      [data-testid="stToolbar"] {
+        background-color: #0D47A1 !important;
       }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
 
 def hash_password(password: str) -> str:
     """Retorna o SHA-256 hex digest da senha."""
