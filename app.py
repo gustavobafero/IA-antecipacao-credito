@@ -65,6 +65,8 @@ def get_db():
 
 # conexão única e cacheada
 conn = get_db()
+# define o cursor para executar SQL puros
+cursor = conn.connection.cursor()
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS clients (
