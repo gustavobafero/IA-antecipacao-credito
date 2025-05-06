@@ -31,7 +31,7 @@ st.markdown(
     <style>
       /* fundo geral da aplicação */
       [data-testid="stAppViewContainer"] {
-          background-color: #E6F0FA !important;
+          background-color: #FFFFFF !important;
       }
       /* fundo da sidebar, se usar */
       [data-testid="stSidebar"] {
@@ -39,7 +39,7 @@ st.markdown(
       }
       /* cor dos botões e links ativos */
       .css-1offfwp.edgvbvh3 {
-          background-color: #1E90FF !important;
+          background-color: #E6F0FA !important;
       }
     </style>
     """,
