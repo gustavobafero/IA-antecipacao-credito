@@ -128,7 +128,7 @@ def authenticate_client(username, password):
 
 
 if 'role' not in st.session_state:
-    st.title("🔐 Bem-vindo")
+    st.title("🔐 Bem-vindo a I9 Capital")
     modo = st.radio("Escolha:", ["Entrar", "Cadastrar-se"])
     if modo == "Cadastrar-se":
         with st.form("form_register"):
