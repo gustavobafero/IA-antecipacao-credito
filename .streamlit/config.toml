@@ -1,1 +1,4 @@
-
+[theme]
+base="light"        # ou "dark"
+primaryFont="serif" # força fonte serifada (como Times New Roman)
+font="Times New Roman" # opcional, para garantir
