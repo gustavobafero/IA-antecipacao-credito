@@ -23,16 +23,27 @@ from sqlalchemy import create_engine, text
 import streamlit as st
 DATA_PATH = "clientes.db" 
 
+# --- CSS global Times New Roman ---
 st.markdown(
     """
     <style>
-    * {
+    /* Aplica a todos os elementos possíveis */
+    html *, body *, div *, span *, h1, h2, h3, h4, h5, h6, p, label, input, button {
+        font-family: 'Times New Roman', Times, serif !important;
+    }
+    /* Para o container principal do Streamlit */
+    [data-testid="stAppViewContainer"] {
+        font-family: 'Times New Roman', Times, serif !important;
+    }
+    /* Para markdown e headers */
+    [data-testid="stMarkdownContainer"], [data-testid="stHeader"] {
         font-family: 'Times New Roman', Times, serif !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 def hash_password(password: str) -> str:
     """Retorna o SHA-256 hex digest da senha."""
