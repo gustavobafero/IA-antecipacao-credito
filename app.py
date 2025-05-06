@@ -429,6 +429,9 @@ def exibir_interface_cliente_cotacao():
                     f"• Taxa IA sugerida: {taxa_ia}%\n"
                     f"• Taxa escolhida: {taxa_cliente}%\n"
                 )
+                if receber_propostas:
+                    msg_body += f"• Telefone para contato: {telefone_contato}\n"
+                    msg_body += f"• E-mail para contato: {email_contato}\n"
                 if parcelas:
                     msg_body += "• Parcelas:\n"
                     for p in parcelas:
