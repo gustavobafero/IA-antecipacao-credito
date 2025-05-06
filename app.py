@@ -20,6 +20,8 @@ from twilio.rest import Client
 import sqlite3
 import hashlib
 import os
+from sqlalchemy import create_engine, text
+import streamlit as st
 DATA_PATH = "clientes.db" 
 
 def hash_password(password: str) -> str:
@@ -27,8 +29,17 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 # 2) Conexão e criação da tabela de clientes
-conn = sqlite3.connect("clientes.db", check_same_thread=False)
-cursor = conn.cursor()
+@st.cache_resource
+def get_db():
+    engine = create_engine(
+        st.secrets["DATABASE_URL"],
+        connect_args={"sslmode": "require"}
+    )
+    return engine.connect()
+
+# conexão única e cacheada
+conn = get_db()
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS clients (
     username TEXT PRIMARY KEY,
