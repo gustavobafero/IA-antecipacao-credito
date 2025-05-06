@@ -19,6 +19,7 @@ import math
 from twilio.rest import Client
 import hashlib
 import os
+import sqlite3
 from sqlalchemy import create_engine, text
 import streamlit as st
 DATA_PATH = "clientes.db" 
