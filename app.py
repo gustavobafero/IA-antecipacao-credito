@@ -19,7 +19,6 @@ import math
 from twilio.rest import Client
 import sqlite3
 import hashlib
-from datetime import datetime
 import os
 DATA_PATH = "clientes.db" 
 
@@ -44,13 +43,13 @@ conn.commit()
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS proposals (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    Nome Cliente   TEXT,
+    Nome_Cliente   TEXT,
     CNPJ           TEXT,
-    Valor Nota     REAL,
-    Taxa IA        REAL,
-    Taxa Cliente   REAL,
-    Deseja Contato TEXT,
-    Solicitado em     TEXT
+    Valor_Nota     REAL,
+    Taxa_IA        REAL,
+    Taxa_Cliente   REAL,
+    Deseja_Contato TEXT,
+    Solicitado_em     TEXT
 )
 """)
 conn.commit()
@@ -277,6 +276,7 @@ def exibir_interface_analise_risco():
             return
 
         # Cálculos
+        rating = score_serasa / 10
         prazo = (data_vencimento - data_operacao).days
         risco = (100 - rating) / 100
         ajuste = max(0.5 - valor / 100000, 0)
