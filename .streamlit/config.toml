@@ -1,6 +1,5 @@
 [theme]
-base="light"
-primaryColor="#0D47A1"            # cor de destaque dos botões e elementos ativos
-backgroundColor="#E6F0FA"       # cor de fundo da página
-secondaryBackgroundColor="#FFFFFF"  # cor de fundo de painéis e sidebar
-font="Times New Roman"
+primaryColor = "#0D47A1"            # azul escuro
+secondaryBackgroundColor = "#E6F0FA" # azul claro (inputs)
+backgroundColor = "#FFFFFF"         # fundo branco
+font = "Times New Roman"
