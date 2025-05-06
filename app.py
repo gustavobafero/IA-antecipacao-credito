@@ -274,16 +274,47 @@ def exibir_interface_analise_risco():
         enviar = st.form_submit_button("Simular")
         if not enviar:
             return
+            prazo = (data_vencimento - data_operacao).days
 
-        # Cálculos
-        rating = score_serasa / 10
-        prazo = (data_vencimento - data_operacao).days
-        risco = (100 - rating) / 100
-        ajuste = max(0.5 - valor / 100000, 0)
-        taxa_ideal = round(custo_capital + margem_desejada + risco*2 + ajuste, 2)
-        margem_estimada = round(taxa_ideal - custo_capital, 2)
-        retorno_esperado = round(valor * (margem_estimada / 100), 2)
-        preco_sugerido = calcular_preco_minimo(valor, risco, margem_desejada)
+    # 2) Componentes de risco (mesma lógica da aba de cotação)
+            risco_score   = 0   if score_serasa >= 800 else \
+                            0.5 if score_serasa >= 600 else 1
+            risco_idade   = 0   if idade_empresa >= 5  else 0.5
+            risco_protesto= 1   if protestos_bool       else 0
+            risco_fat     = 0   if faturamento >= 500000 else 0.5
+
+    # 3) Risco total em %, ponderado
+            risco_total = round(
+                (risco_score   * 0.40
+               + risco_idade   * 0.20
+               + risco_protesto* 0.25
+               + risco_fat     * 0.15)
+               * 100,
+            2)
+
+    # 4) Determinação do nível de risco
+            cor = "🟢 Baixo" if risco_total <= 30 else \
+                  "🟡 Moderado" if risco_total <= 60 else \
+                  "🔴 Alto"
+
+    # 5) Taxa sugerida pela IA = 10% do risco_total
+        taxa_ia = round(risco_total * 0.1, 2)
+
+    # 6) Valor a receber descontando essa taxa
+        valor_receber = round(valor * (1 - taxa_ia/100), 2)
+
+    # 7) Exibição
+        st.markdown("## Resultado da Simulação")
+        st.write(f"Prazo: {prazo} dias")
+        st.markdown(
+            f"<p style='font-size:24px; font-weight:bold; margin:10px 0;'>"
+            f"🔥 Taxa sugerida pela IA: {taxa_ia}%</p>",
+            unsafe_allow_html=True
+        )
+        st.metric("Você receberá", formatar_moeda(valor_receber))
+        st.write(f"Risco: {cor} ({risco_total}%)")
+
+        
 
         st.markdown("## Resultado da Simulação")
         st.write(f"Prazo: {prazo} dias")
