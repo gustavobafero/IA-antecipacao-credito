@@ -402,6 +402,9 @@ def exibir_interface_cliente_cotacao():
                     for p in parcelas:
                         num = f"{p['nDup']}. " if p['nDup'] else ""
                         msg_body += f"   – {num}{p['dVenc']} → {p['vDup']}\n"
+
+                contato = "SIM" if receber_propostas else "NÃO"
+                msg_body += f"• Deseja contato: {contato}\n"
                 
                 client = Client(
                     st.secrets["TWILIO_ACCOUNT_SID"],
