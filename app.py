@@ -452,8 +452,12 @@ def exibir_interface_cliente_cotacao():
 # --- Roteamento pós-login ---
 if st.session_state.role == 'admin':
     st.header("📋 Propostas Recebidas (Admin)")
-    if os.path.exists(DATA_PATH):
-        df = pd.read_csv(DATA_PATH)
+        if os.path.exists(DATA_PATH):
+        conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
+        df = pd.read_sql_query(
+            "SELECT * FROM proposals ORDER BY created_at DESC",
+            conn
+        )
         st.dataframe(df)
     else:
         st.info("Ainda não há propostas.")
