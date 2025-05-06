@@ -29,23 +29,22 @@ st.set_page_config(page_title="IA de Crédito", layout="centered")
 st.markdown(
     """
     <style>
-    /* Aplica a todos os elementos possíveis */
-    html *, body *, div *, span *, h1, h2, h3, h4, h5, h6, p, label, input, button {
-        font-family: 'Times New Roman', Times, serif !important;
-    }
-    /* Para o container principal do Streamlit */
-    [data-testid="stAppViewContainer"] {
-        font-family: 'Times New Roman', Times, serif !important;
-    }
-    /* Para markdown e headers */
-    [data-testid="stMarkdownContainer"], [data-testid="stHeader"] {
-        font-family: 'Times New Roman', Times, serif !important;
-    }
+      /* fundo geral da aplicação */
+      [data-testid="stAppViewContainer"] {
+          background-color: #E6F0FA !important;
+      }
+      /* fundo da sidebar, se usar */
+      [data-testid="stSidebar"] {
+          background-color: #D0E7FF !important;
+      }
+      /* cor dos botões e links ativos */
+      .css-1offfwp.edgvbvh3 {
+          background-color: #1E90FF !important;
+      }
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
-
 
 def hash_password(password: str) -> str:
     """Retorna o SHA-256 hex digest da senha."""
