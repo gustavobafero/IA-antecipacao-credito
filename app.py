@@ -119,7 +119,7 @@ def authenticate_client(username, password):
         return True
     return False
 
-st.set_page_config(page_title="IA de Crédito", layout="centered")
+
 if 'role' not in st.session_state:
     st.title("🔐 Bem-vindo")
     modo = st.radio("Escolha:", ["Entrar", "Cadastrar-se"])
