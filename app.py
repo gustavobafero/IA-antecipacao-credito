@@ -262,7 +262,6 @@ def exibir_interface_analise_risco():
         valor           = st.number_input("Valor da operação (R$)", min_value=0.0, format="%.2f")
         data_operacao   = st.date_input("Data da operação", value=datetime.today(), format="DD/MM/YYYY")
         data_vencimento = st.date_input("Data de vencimento", format="DD/MM/YYYY")
-        rating          = st.slider("Rating do cliente", 0, 100, 80)
         margem_desejada = st.number_input("Margem desejada (%)", min_value=0.0, value=1.0)
         custo_capital   = st.number_input("Custo do capital (%)", min_value=0.0, value=1.5)
 
