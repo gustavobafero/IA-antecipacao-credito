@@ -428,7 +428,7 @@ def exibir_interface_cliente_cotacao():
                     to  =f"whatsapp:{st.secrets['ADMIN_WHATSAPP_TO']}"
                 )
                 st.success("✅ Proposta enviada!")
-              cursor.execute(
+            cursor.execute(
                     """
                     INSERT INTO proposals
                     (nome_cliente, cnpj, valor_nota, taxa_ia, taxa_cliente, deseja_contato, created_at)
