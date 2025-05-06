@@ -316,10 +316,6 @@ def exibir_interface_analise_risco():
         
 
         st.markdown("## Resultado da Simulação")
-        st.write(f"Prazo: {prazo} dias")
-        st.write(f"Margem estimada: {margem_estimada}%")
-        st.write(f"Retorno esperado: {formatar_moeda(retorno_esperado)}")
-        st.write(f"Preço sugerido: {formatar_moeda(preco_sugerido)}")
         st.markdown("---")
 
         # Risco (com dados manuais)
