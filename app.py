@@ -116,6 +116,7 @@ if 'role' not in st.session_state:
             # cliente via DB
             elif authenticate_client(u, p):
                 st.session_state.role = 'cliente'
+                st.session_state.username = u
             else:
                 st.error("Usuário ou senha inválidos")
         st.stop()
@@ -305,6 +306,14 @@ def exibir_interface_analise_risco():
 # Interface de Cotação de Crédito via XML (sem Serasa)
 def exibir_interface_cliente_cotacao():
     st.header("Cotação de Antecipação de Crédito")
+    user_tel, user_email = "", ""
+    try:
+        cursor.execute("SELECT celular, email FROM clients WHERE username = ?", (st.session_state.username,))
+        row = cursor.fetchone()
+        if row:
+            user_tel, user_email = row
+    except Exception:
+        pass
     st.write("Faça o upload do **XML da Nota Fiscal Eletrônica (NF-e)** para gerar sua cotação:")
     nome_cliente = st.text_input("Nome do cliente", key="xml_nome_cliente")
 
@@ -395,8 +404,20 @@ def exibir_interface_cliente_cotacao():
             st.write("Este cálculo não leva em consideração dados de concentração de carteira e eventuais riscos que não apareçam no Serasa")
 
             receber_propostas = st.checkbox(
-            "Desejo receber propostas e que entrem em contato comigo"
+                "Desejo receber propostas e que entrem em contato comigo"
             )
+
+            if receber_propostas:
+                telefone_contato = st.text_input(
+                    "Telefone para contato",
+                    value=user_tel,
+                    key="telefone_contato"
+                )
+                email_contato = st.text_input(
+                    "E-mail para contato",
+                    value=user_email,
+                    key="email_contato"
+                )
             
             if st.button("Solicitar proposta", key="xml_solicitar"):
                 msg_body = (
