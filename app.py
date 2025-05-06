@@ -44,13 +44,13 @@ conn.commit()
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS proposals (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome_cliente   TEXT,
-    cnpj           TEXT,
-    valor_nota     REAL,
-    taxa_ia        REAL,
-    taxa_cliente   REAL,
-    deseja_contato TEXT,
-    created_at     TEXT
+    Nome Cliente   TEXT,
+    CNPJ           TEXT,
+    Valor Nota     REAL,
+    Taxa IA        REAL,
+    Taxa Cliente   REAL,
+    Deseja Contato TEXT,
+    Solicitado em     TEXT
 )
 """)
 conn.commit()
