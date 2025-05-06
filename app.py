@@ -51,11 +51,15 @@ def hash_password(password: str) -> str:
 
 # 2) Conexão e criação da tabela de clientes
 @st.cache_resource
+@st.cache_resource
 def get_db():
-    engine = create_engine(
-        st.secrets["DATABASE_URL"],
-        connect_args={"sslmode": "require"}
-    )
+    # tenta ler DATABASE_URL, se não existir cai para sqlite local
+    url = st.secrets.get("DATABASE_URL", f"sqlite:///{DATA_PATH}")
+    # se for SQLite não precisa de sslmode
+    connect_args = {}
+    if url.startswith("postgres") or url.startswith("mysql"):
+        connect_args = {"sslmode": "require"}
+    engine = create_engine(url, connect_args=connect_args)
     return engine.connect()
 
 # conexão única e cacheada
