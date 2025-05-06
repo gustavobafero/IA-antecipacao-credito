@@ -29,17 +29,21 @@ st.set_page_config(page_title="IA de Crédito", layout="centered")
 st.markdown(
     """
     <style>
-      /* fundo geral da aplicação */
-      [data-testid="stAppViewContainer"] {
-          background-color: #E6F0FA !important;
+      /* tudo que era branco agora azul claro */
+      [data-testid="stAppViewContainer"],
+      [data-testid="stHeader"], 
+      [data-testid="stMarkdownContainer"] {
+          background-color: #E6F0FA !important;  /* azul claro */
       }
+      
       /* fundo da sidebar, se usar */
       [data-testid="stSidebar"] {
           background-color: #D0E7FF !important;
-      }
-      /* cor dos botões e links ativos */
-      .css-1offfwp.edgvbvh3 {
-          background-color: #FFFFFF !important;
+          
+      /* tudo que era azul claro agora branco */
+      [data-testid="stSidebar"],
+      [data-testid="stDecoration"] {
+          background-color: #FFFFFF !important; /* branco */
       }
     </style>
     """,
