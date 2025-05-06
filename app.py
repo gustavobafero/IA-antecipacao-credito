@@ -17,7 +17,6 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 import math
 from twilio.rest import Client
-import sqlite3
 import hashlib
 import os
 from sqlalchemy import create_engine, text
