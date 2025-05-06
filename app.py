@@ -276,7 +276,11 @@ def exibir_interface_analise_risco():
             return
         prazo = (data_vencimento - data_operacao).days
 
-        risco_score   = 0   if score_serasa >= 800 else \ 0.5 if score_serasa >= 600 else 1
+        risco_score   = (
+            0   if score_serasa >= 800 else 
+            0.5 if score_serasa >= 600 else 
+            1
+        )
         risco_idade   = 0   if idade_empresa >= 5  else 0.5
         risco_protesto= 1   if protestos_bool       else 0
         risco_fat     = 0   if faturamento >= 500000 else 0.5
