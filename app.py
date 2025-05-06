@@ -313,10 +313,6 @@ def exibir_interface_analise_risco():
         st.metric("Você receberá", formatar_moeda(valor_receber))
         st.write(f"Risco: {cor} ({risco_total}%)")
 
-        
-
-        st.markdown("## Resultado da Simulação")
-        st.markdown("---")
 
         # Risco (com dados manuais)
         risco_score   = 0 if score_serasa >= 800 else 0.5 if score_serasa >= 600 else 1
