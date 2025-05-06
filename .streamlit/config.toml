@@ -1,6 +1,6 @@
 [theme]
 base="light"
 primaryColor="#0D47A1"            # cor de destaque dos botões e elementos ativos
-backgroundColor="#FFFFFF"        # cor de fundo da página
-secondaryBackgroundColor="#E6F0FA" # cor de fundo de painéis e sidebar
+backgroundColor="#E6F0FA"       # cor de fundo da página
+secondaryBackgroundColor="#FFFFFF"  # cor de fundo de painéis e sidebar
 font="Times New Roman"
