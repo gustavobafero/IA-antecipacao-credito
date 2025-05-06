@@ -41,7 +41,19 @@ CREATE TABLE IF NOT EXISTS clients (
 )
 """)
 conn.commit()
-
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS proposals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_cliente   TEXT,
+    cnpj           TEXT,
+    valor_nota     REAL,
+    taxa_ia        REAL,
+    taxa_cliente   REAL,
+    deseja_contato TEXT,
+    created_at     TEXT
+)
+""")
+conn.commit()
 # 4) Funções de registro/autenticação usando o hash
 def register_client(username, password, cnpj, celular, email):
     pwd_hash = hash_password(password)
@@ -416,7 +428,23 @@ def exibir_interface_cliente_cotacao():
                     to  =f"whatsapp:{st.secrets['ADMIN_WHATSAPP_TO']}"
                 )
                 st.success("✅ Proposta enviada!")
-
+              cursor.execute(
+                    """
+                    INSERT INTO proposals
+                    (nome_cliente, cnpj, valor_nota, taxa_ia, taxa_cliente, deseja_contato, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        nome_cliente,
+                        cnpj_dest,
+                        valor_nota,
+                        taxa_ia,
+                        taxa_cliente,
+                        contato,                    # "SIM" ou "NÃO"
+                        datetime.now().isoformat()
+                    )
+                )
+                conn.commit()
         except Exception as e:
             st.error(f"Erro ao processar o XML: {e}")
                 
