@@ -314,15 +314,6 @@ def exibir_interface_analise_risco():
         st.write(f"Risco: {cor} ({risco_total}%)")
 
 
-        # Risco (com dados manuais)
-        risco_score   = 0 if score_serasa >= 800 else 0.5 if score_serasa >= 600 else 1
-        risco_idade   = 0 if idade_empresa >= 5 else 0.5
-        risco_protesto= 1 if protestos_bool else 0
-        risco_fat     = 0 if faturamento >= 500000 else 0.5
-        risco_total   = round((risco_score*0.4 + risco_idade*0.2 + risco_protesto*0.25 + risco_fat*0.15)*100, 2)
-        cor = "🟢 Baixo" if risco_total <= 30 else "🟡 Moderado" if risco_total <= 60 else "🔴 Alto"
-        st.write(f"Risco: {cor} ({risco_total}%)")
-        st.markdown("---")
 
 # Interface de Cotação de Crédito via XML (sem Serasa)
 def exibir_interface_cliente_cotacao():
