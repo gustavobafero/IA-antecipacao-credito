@@ -609,21 +609,22 @@ if st.session_state.role == 'admin':
         df = pd.read_sql_query(
             """
             SELECT
-                p.id                                    AS "ID",
-                c.username                              AS "Nome da Empresa",
-                c.celular                               AS "Telefone",
-                c.email                                 AS "E-mail",
-                p.nome_cliente                          AS "Nome no XML",
-                p.cnpj                                  AS "CNPJ (NF-e)",
-                p.valor_nota                            AS "Valor NF-e",
-                p.taxa_ia                               AS "Taxa IA (%)",
-                p.taxa_cliente                          AS "Taxa Cliente (%)",
-                p.deseja_contato                        AS "Deseja Contato",
-                p.created_at                            AS "Solicitado em"
+              p.id                   AS "ID",
+              c.username             AS "Nome da Empresa",
+              p.telefone_contato     AS "Telefone",
+              p.email_contato        AS "E-mail",
+              p.nome_cliente         AS "Nome no XML",
+              p.cnpj                 AS "CNPJ (NF-e)",
+              p.valor_nota           AS "Valor NF-e",
+              p.taxa_ia              AS "Taxa IA (%)",
+              p.taxa_cliente         AS "Taxa Cliente (%)",
+              p.deseja_contato       AS "Deseja Contato",
+              p.created_at           AS "Solicitado em"
             FROM proposals p
             LEFT JOIN clients c
               ON p.cnpj = c.cnpj
             ORDER BY p.created_at DESC
+
             """,
             conn
         )
