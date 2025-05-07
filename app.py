@@ -25,95 +25,76 @@ import streamlit as st
 DATA_PATH = "clientes.db" 
 
 st.set_page_config(page_title="IA de Crédito", layout="centered")
+
 import streamlit as st
 import xml.etree.ElementTree as ET
 from io import StringIO
 
+# --- Inserir este bloco NO INÍCIO do app.py, logo após todos os imports, ANTES de qualquer lógica de login/cadastro ---
+# --- Página Inicial (antes do login) ---
+# Exibe simulação rápida e interrompe o fluxo de login
+if 'role' not in st.session_state:
+    # Configuração da página
+    st.set_page_config(page_title="Simulação Antecipação", layout="centered")
+
+    # --- Estilos ---
+    st.markdown("""
+    <style>
+      .stApp { background-color: #FFFFFF; }
+      .header { font-size: 36px; font-weight: bold; text-align: center; margin-bottom: 10px; }
+      .subheader { font-size: 18px; text-align: center; margin-bottom: 30px; color: #555555; }
+      .resultado { background-color: #E3F2FD; padding: 20px; border-radius: 8px; text-align: center; margin-top: 20px; }
+      .cta { background-color: #0D47A1; color: white; padding: 15px; border-radius: 5px; text-align: center; margin-top: 30px; text-decoration: none; display: inline-block; width: 100%; }
+      .cta:hover { background-color: #1565C0; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # --- Cabeçalho ---
+    st.markdown('<div class="header">Antecipe agora. Sem compromisso.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subheader">Envie uma nota fiscal eletrônica (.XML) e descubra agora quanto você pode antecipar.</div>', unsafe_allow_html=True)
+
+    # --- Upload de XML ---
+    xml_file = st.file_uploader("Escolha seu arquivo XML", type=["xml"] )
+
+    if xml_file:
+        try:
+            tree = ET.parse(xml_file)
+            root = tree.getroot()
+            ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
+            valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
+
+            # Cálculo simples
+            taxa_sugerida = 2.2  # Exemplo fixo, em %
+            valor_receber = valor_nota * (1 - taxa_sugerida / 100)
+
+            # Exibição do resultado
+            st.markdown('<div class="resultado">', unsafe_allow_html=True)
+            st.markdown(f"**Valor da nota:** R$ {valor_nota:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
+            st.markdown(f"**Taxa sugerida:** {taxa_sugerida:.1f}%", unsafe_allow_html=True)
+            st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            # Bloco de CTA
+            st.markdown('<div class="cta">Assinar e continuar</div>', unsafe_allow_html=True)
+            st.markdown('[Já é cliente? Faça login.](#)', unsafe_allow_html=True)
+
+            # Badge de segurança e FAQ simples
+            st.markdown('**🔒 Simulação segura e privada**')
+            with st.expander('O que fazemos com seu XML?'):
+                st.write('- Lemos apenas o valor da nota para a simulação.')
+                st.write('- Não armazenamos seu documento após gerar o resultado.')
+        except Exception as e:
+            st.error(f"Erro ao processar o XML: {e}")
+    else:
+        st.info('Faça upload de um XML para começar a simulação.')
+
+    # Interrompe antes do fluxo de login
+    st.stop()
+
+# --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
+
 # Configuração da página
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
-
-# --- Estilos ---
-st.markdown("""
-<style>
-  .stApp {
-    background-color: #FFFFFF;
-  }
-  .header {
-    font-size: 36px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  .subheader {
-    font-size: 18px;
-    text-align: center;
-    margin-bottom: 30px;
-    color: #555555;
-  }
-  .resultado {
-    background-color: #E3F2FD;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    margin-top: 20px;
-  }
-  .cta {
-    background-color: #0D47A1;
-    color: white;
-    padding: 15px;
-    border-radius: 5px;
-    text-align: center;
-    margin-top: 30px;
-    text-decoration: none;
-    display: inline-block;
-    width: 100%;
-  }
-  .cta:hover {
-    background-color: #1565C0;
-  }
-</style>
-""", unsafe_allow_html=True)
-
-# --- Cabeçalho ---
-st.markdown('<div class="header">Antecipe agora. Sem compromisso.</div>', unsafe_allow_html=True)
-st.markdown('<div class="subheader">Envie uma nota fiscal eletrônica (.XML) e descubra agora quanto você pode antecipar.</div>', unsafe_allow_html=True)
-
-# --- Upload de XML ---
-xml_file = st.file_uploader("Escolha seu arquivo XML", type=["xml"] )
-
-if xml_file:
-    try:
-        # Parse XML e extrai valor da nota
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
-        ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-        valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
-
-        # Cálculo simples
-        taxa_sugerida = 2.2  # Exemplo fixo, em %
-        valor_receber = valor_nota * (1 - taxa_sugerida / 100)
-
-        # Exibição do resultado
-        st.markdown('<div class="resultado">', unsafe_allow_html=True)
-        st.markdown(f"**Valor da nota:** R$ {valor_nota:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
-        st.markdown(f"**Taxa sugerida:** {taxa_sugerida:.1f}%", unsafe_allow_html=True)
-        st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # Bloco de CTA
-        st.markdown('<div class="cta">Assinar e continuar</div>', unsafe_allow_html=True)
-        st.markdown('[Já é cliente? Faça login.](#)', unsafe_allow_html=True)
-
-        # Badge de segurança e FAQ simples
-        st.markdown('**🔒 Simulação segura e privada**')
-        with st.expander('O que fazemos com seu XML?'):
-            st.write('- Lemos apenas o valor da nota para a simulação.')
-            st.write('- Não armazenamos seu documento após gerar o resultado.')
-    except Exception as e:
-        st.error(f"Erro ao processar o XML: {e}")
-else:
-    st.info('Faça upload de um XML para começar a simulação.')
-
 
 st.markdown(
     """
