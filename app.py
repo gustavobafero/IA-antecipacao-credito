@@ -94,19 +94,6 @@ else:
     # Interrompe antes do fluxo de login/cadastro
     st.stop()
 
-# --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
-
-# --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
-
-# --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
-
-
-
-# --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
-
-# Configuração da página
-st.set_page_config(page_title="Simulação Antecipação", layout="centered")
-
 st.markdown(
     """
     <style>
