@@ -583,8 +583,9 @@ def exibir_interface_cliente_cotacao():
                 cursor.execute(
                     """
                     INSERT INTO proposals
-                    (nome_cliente, cnpj, valor_nota, taxa_ia, taxa_cliente, deseja_contato, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                      (nome_cliente, cnpj, valor_nota, taxa_ia, taxa_cliente,
+                       deseja_contato, telefone_contato, email_contato, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         nome_cliente,
@@ -592,11 +593,14 @@ def exibir_interface_cliente_cotacao():
                         valor_nota,
                         taxa_ia,
                         taxa_cliente,
-                        contato,                    # "SIM" ou "NÃO"
+                        contato,
+                        telefone_contato,   # <- adiciona aqui
+                        email_contato,      # <- e aqui
                         datetime.now().isoformat()
                     )
                 )
                 conn.commit()
+
         except Exception as e:
             st.error(f"Erro ao processar o XML: {e}")
                 
