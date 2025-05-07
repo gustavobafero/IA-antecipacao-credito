@@ -23,20 +23,15 @@ import sqlite3
 from sqlalchemy import create_engine, text
 import streamlit as st
 DATA_PATH = "clientes.db" 
-
-st.set_page_config(page_title="IA de Crédito", layout="centered")
-
 import streamlit as st
 import xml.etree.ElementTree as ET
 from io import StringIO
 
-# --- Inserir este bloco NO INÍCIO do app.py, logo após todos os imports, ANTES de qualquer lógica de login/cadastro ---
-# --- Página Inicial (antes do login) ---
-# Exibe simulação rápida e interrompe o fluxo de login
-if 'role' not in st.session_state:
-    # Configuração da página
-    st.set_page_config(page_title="Simulação Antecipação", layout="centered")
+# --- Configuração da página: deve ser o primeiro comando Streamlit ---
+st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
+# --- Página Inicial (antes do login) ---
+if 'role' not in st.session_state:
     # --- Estilos ---
     st.markdown("""
     <style>
@@ -90,6 +85,10 @@ if 'role' not in st.session_state:
 
     # Interrompe antes do fluxo de login
     st.stop()
+
+# --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
+
+
 
 # --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
 
