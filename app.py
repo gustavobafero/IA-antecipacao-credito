@@ -30,8 +30,16 @@ from io import StringIO
 # --- Configuração da página: deve ser o primeiro comando Streamlit ---
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
-# --- Página Inicial (antes do login) ---
-if 'role' not in st.session_state:
+# --- Navegação inicial via simulação ---
+# Se o usuário clicou em um botão, define navegação e executa rerun
+if st.session_state.get("navigate") == "register":
+    # deixa o fluxo principal lidar com cadastro
+    pass
+elif st.session_state.get("navigate") == "login":
+    # deixa o fluxo principal lidar com login
+    pass
+else:
+    # Página Inicial (antes do login)
     # --- Estilos ---
     st.markdown("""
     <style>
@@ -39,7 +47,7 @@ if 'role' not in st.session_state:
       .header { font-size: 36px; font-weight: bold; text-align: center; margin-bottom: 10px; }
       .subheader { font-size: 18px; text-align: center; margin-bottom: 30px; color: #555555; }
       .resultado { background-color: #E3F2FD; padding: 20px; border-radius: 8px; text-align: center; margin-top: 20px; }
-      .cta { background-color: #0D47A1; color: white; padding: 15px; border-radius: 5px; text-align: center; margin-top: 30px; text-decoration: none; display: inline-block; width: 100%; }
+      .cta { background-color: #0D47A1; color: white; padding: 15px; border-radius: 5px; text-align: center; margin-top: 30px; width: 100%; }
       .cta:hover { background-color: #1565C0; }
     </style>
     """, unsafe_allow_html=True)
@@ -50,7 +58,6 @@ if 'role' not in st.session_state:
 
     # --- Upload de XML ---
     xml_file = st.file_uploader("Escolha seu arquivo XML", type=["xml"] )
-
     if xml_file:
         try:
             tree = ET.parse(xml_file)
@@ -68,23 +75,26 @@ if 'role' not in st.session_state:
             st.markdown(f"**Taxa sugerida:** {taxa_sugerida:.1f}%", unsafe_allow_html=True)
             st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
-
-            # Bloco de CTA
-            st.markdown('<div class="cta">Assinar e continuar</div>', unsafe_allow_html=True)
-            st.markdown('[Já é cliente? Faça login.](#)', unsafe_allow_html=True)
-
-            # Badge de segurança e FAQ simples
-            st.markdown('**🔒 Simulação segura e privada**')
-            with st.expander('O que fazemos com seu XML?'):
-                st.write('- Lemos apenas o valor da nota para a simulação.')
-                st.write('- Não armazenamos seu documento após gerar o resultado.')
         except Exception as e:
             st.error(f"Erro ao processar o XML: {e}")
     else:
         st.info('Faça upload de um XML para começar a simulação.')
 
-    # Interrompe antes do fluxo de login
+    # --- Botões de Navegação ---
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Assinar e continuar"):
+            st.session_state["navigate"] = "register"
+            st.experimental_rerun()
+    with col2:
+        if st.button("Já é cliente? Faça login."):
+            st.session_state["navigate"] = "login"
+            st.experimental_rerun()
+
+    # Interrompe antes do fluxo de login/cadastro
     st.stop()
+
+# --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
 
 # --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
 
