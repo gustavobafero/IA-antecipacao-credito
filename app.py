@@ -156,16 +156,19 @@ conn.commit()
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS proposals (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    Nome_Cliente   TEXT,
-    CNPJ           TEXT,
-    Valor_Nota     REAL,
-    Taxa_IA        REAL,
-    Taxa_Cliente   REAL,
-    Deseja_Contato TEXT,
-    Solicitado_em     TEXT
+    nome_cliente       TEXT,
+    cnpj                TEXT,
+    valor_nota          REAL,
+    taxa_ia             REAL,
+    taxa_cliente        REAL,
+    deseja_contato      TEXT,
+    telefone_contato    TEXT,
+    email_contato       TEXT,
+    created_at          TEXT
 )
 """)
 conn.commit()
+
 # 4) Funções de registro/autenticação usando o hash
 def register_client(username, password, cnpj, celular, email):
     pwd_hash = hash_password(password)
