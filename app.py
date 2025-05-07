@@ -31,12 +31,14 @@ from io import StringIO
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
 # --- Navegação inicial via simulação ---
-# Se o usuário clicou em um botão, define navegação e executa rerun
-if st.session_state.get("navigate") == "register":
-    # deixa o fluxo principal lidar com cadastro
+if 'navigate' not in st.session_state:
+    st.session_state['navigate'] = None
+
+if st.session_state.navigate == "register":
+    # fluxo principal irá lidar com cadastro
     pass
-elif st.session_state.get("navigate") == "login":
-    # deixa o fluxo principal lidar com login
+elif st.session_state.navigate == "login":
+    # fluxo principal irá lidar com login
     pass
 else:
     # Página Inicial (antes do login)
@@ -84,15 +86,15 @@ else:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Assinar e continuar"):
-            st.session_state["navigate"] = "register"
-            st.experimental_rerun()
+            st.session_state.navigate = "register"
     with col2:
         if st.button("Já é cliente? Faça login."):
-            st.session_state["navigate"] = "login"
-            st.experimental_rerun()
+            st.session_state.navigate = "login"
 
     # Interrompe antes do fluxo de login/cadastro
     st.stop()
+
+# --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
 
 # --- A partir daqui, segue o restante do app (login, cadastro, dashboard, etc.) ---
 
