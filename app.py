@@ -23,8 +23,6 @@ import sqlite3
 from sqlalchemy import create_engine, text
 import streamlit as st
 DATA_PATH = "clientes.db" 
-import streamlit as st
-import xml.etree.ElementTree as ET
 from io import StringIO
 
 # --- Configuração da página: deve ser o primeiro comando Streamlit ---
