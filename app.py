@@ -243,7 +243,11 @@ if 'role' not in st.session_state:
                 preco_final = preco_mensal
             elif periodicidade == "Anual (10% de desconto)":
                 preco_final = preco_mensal * 12 * 0.9
-
+            st.markdown(
+                f"**Valor a pagar ({periodicidade.lower()}):** R$ {preco_final:,.2f}"
+                .replace(",", "X").replace(".", ",").replace("X", "."),
+                unsafe_allow_html=True
+            )
     # Exibição do preço *antes* do submit
             
             ok_register = st.form_submit_button("Criar conta e pagar")
