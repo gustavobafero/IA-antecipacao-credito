@@ -25,11 +25,10 @@ import streamlit as st
 DATA_PATH = "clientes.db" 
 from io import StringIO
 import sqlite3
-
 import os
 st.write("📂 Diretório de trabalho:", os.getcwd())
-st.write("📋 Arquivos neste diretório:", os.listdir(os.getcwd()))
-# --- Configuração da página: deve ser o primeiro comando Streamlit ---
+st.write("📋 Conteúdo desta pasta:", os.listdir(os.getcwd()))
+
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
 # 1) Abre o arquivo clientes.db
