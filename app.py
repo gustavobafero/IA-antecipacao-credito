@@ -719,6 +719,11 @@ def exibir_interface_cliente_cotacao():
 
 # --- Roteamento pós-login ---
 if st.session_state.role == 'admin':
+    # — DEBUG: colunas no momento do Admin —
+    cursor.execute("PRAGMA table_info(proposals)")
+    colunas_admin = [c[1] for c in cursor.fetchall()]
+    st.write("🛠️ DEBUG (admin): colunas em proposals =", colunas_admin)
+
     st.header("📋 Propostas Recebidas (Admin)")
     sql = """
       SELECT
