@@ -1,5 +1,3 @@
-chat, tudo bem? Vamos continuar o processo?
-
 import streamlit as st
 from openai import OpenAI, RateLimitError
 from datetime import datetime
