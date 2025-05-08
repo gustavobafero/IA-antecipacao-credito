@@ -298,23 +298,23 @@ if 'role' not in st.session_state:
         st.write(f"**Total a ser cobrado:** R$ {total_com_juros:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
         st.write(f"**{parcelas}x de:** R$ {valor_parcela:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
-            ok = st.form_submit_button("Criar conta e pagar")
+        ok = st.form_submit_button("Criar conta e pagar")
 
-        if ok:
+    if ok:
         # aqui você deve validar todos os campos, processar o pagamento via gateway e só então:
-            if not all([u, p, p2, cnpj, celular, email, cc_number, cc_name, mes, ano, cvv]):
-                 st.error("Preencha todos os campos do cadastro e do cartão")
-            elif p != p2:
-                st.error("As senhas não coincidem")
-            else:
+        if not all([u, p, p2, cnpj, celular, email, cc_number, cc_name, mes, ano, cvv]):
+            st.error("Preencha todos os campos do cadastro e do cartão")
+        elif p != p2:
+            st.error("As senhas não coincidem")
+        else:
             # Exemplo: processar pagamento antes de registrar
-                pagamento_sucesso = True  # <- substitua pela chamada ao seu gateway
+            pagamento_sucesso = True  # <- substitua pela chamada ao seu gateway
 
-                if pagamento_sucesso and register_client(u, p, cnpj, celular, email, plano):
-                    st.success(f"Conta criada! Plano: {plano} em {parcelas}x")
-                else:
-                    st.error("Falha no pagamento ou usuário já existe.")
-        st.stop()
+            if pagamento_sucesso and register_client(u, p, cnpj, celular, email, plano):
+                st.success(f"Conta criada! Plano: {plano} em {parcelas}x")
+            else:
+                st.error("Falha no pagamento ou usuário já existe.")
+    st.stop()
 
     else:  # Entrar
         with st.form("form_login"):
