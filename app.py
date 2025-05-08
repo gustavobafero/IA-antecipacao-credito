@@ -40,6 +40,8 @@ cursor = sqlite_cursor
 # — Verifica esquema da tabela proposals e adiciona colunas se não existirem —
 cursor.execute("PRAGMA table_info(proposals)")
 colunas = [c[1] for c in cursor.fetchall()]
+st.write("🛠️ DEBUG: colunas em proposals =", colunas)
+
 
 if 'telefone_contato' not in colunas:
     cursor.execute("ALTER TABLE proposals ADD COLUMN telefone_contato TEXT")
