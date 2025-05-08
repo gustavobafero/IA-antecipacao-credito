@@ -295,13 +295,14 @@ if 'role' not in st.session_state:
             st.error("Preencha os dados do cartão")
         else:
             st.success(f"Cobrando R$ {preco_final:,.2f} em {periodicidade.lower()}")
-    st.stop()
 
             if pagamento_sucesso and register_client(u, p, cnpj, celular, email, plano):
                 st.success(f"Conta criada! Plano: {plano} em {parcelas}x")
             else:
                 st.error("Falha no pagamento ou usuário já existe.")
 
+       st.stop()
+    
     elif modo == "Entrar":  # Entrar
         with st.form("form_login"):
             u = st.text_input("Usuário")
