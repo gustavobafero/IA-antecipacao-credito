@@ -257,13 +257,6 @@ if 'role' not in st.session_state:
             else:
                 preco_final = preco_mensal * 12 * 0.9  # 10% de desconto no anual
 
-            st.markdown(
-                f"**Valor a pagar ({periodicidade.lower()}):** "
-                f"R$ {preco_final:,.2f}"
-                .replace(",", "X").replace(".", ",").replace("X", ".")
-            )
-
-
         st.markdown("---")
         st.subheader("Dados do Cartão de Crédito")
 
