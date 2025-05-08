@@ -232,18 +232,18 @@ if 'role' not in st.session_state:
             )
             ok = st.form_submit_button("Criar conta")
 
-     if ok:
-        if not all([u, p, p2, cnpj, celular, email]):
-            st.error("Preencha todos os campos")
-        elif p != p2:
-            st.error("As senhas não coincidem")
-        else:
-            # <-- certifique-se de que este bloco está indentado em 12 espaços (3 níveis)
-            if register_client(u, p, cnpj, celular, email, plano):
-                st.success(f"Conta criada! Plano selecionado: {plano}")
+        if ok:
+            if not all([u, p, p2, cnpj, celular, email]):
+                st.error("Preencha todos os campos")
+            elif p != p2:
+                st.error("As senhas não coincidem")
             else:
-                st.error("Usuário já existe.")
-    st.stop()
+            # <-- certifique-se de que este bloco está indentado em 12 espaços (3 níveis)
+                if register_client(u, p, cnpj, celular, email, plano):
+                    st.success(f"Conta criada! Plano selecionado: {plano}")
+                else:
+                    st.error("Usuário já existe.")
+        st.stop()
 
 
     else:  # Entrar
