@@ -301,7 +301,7 @@ if 'role' not in st.session_state:
             else:
                 st.error("Falha no pagamento ou usuário já existe.")
 
-       st.stop()
+    st.stop()
     
     elif modo == "Entrar":  # Entrar
         with st.form("form_login"):
