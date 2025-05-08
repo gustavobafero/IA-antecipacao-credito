@@ -24,7 +24,6 @@ from sqlalchemy import create_engine, text
 import streamlit as st 
 from io import StringIO
 import sqlite3
-import os
 DATA_PATH = "clientes.db" 
 import os
 # — DEV: zera o .db para forçar recriação com esquema correto —
@@ -38,48 +37,42 @@ st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
 # 1) Abre o arquivo clientes.db
 # 1) Conecta ao banco
-sqlite_conn   = sqlite3.connect(DATA_PATH, check_same_thread=False)
-sqlite_cursor = sqlite_conn.cursor()
-conn   = sqlite_conn
-cursor = sqlite_cursor
+if not os.path.exists(DATA_PATH):
+    conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
+    cursor = conn.cursor()
 
-# 2) (DEV) — Remove a tabela antiga para recriá-la do jeito certo —
-cursor.execute("DROP TABLE IF EXISTS proposals")
+    cursor.execute("""
+    CREATE TABLE proposals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome_cliente TEXT,
+        cnpj TEXT,
+        valor_nota REAL,
+        taxa_ia REAL,
+        taxa_cliente REAL,
+        deseja_contato TEXT,
+        telefone_contato TEXT,
+        email_contato TEXT,
+        created_at TEXT
+    )
+    """)
 
-# 3) Cria de novo com todas as colunas necessárias
-cursor.execute("""
-CREATE TABLE proposals (
-    id                INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome_cliente      TEXT,
-    cnpj              TEXT,
-    valor_nota        REAL,
-    taxa_ia           REAL,
-    taxa_cliente      REAL,
-    deseja_contato    TEXT,
-    telefone_contato  TEXT,
-    email_contato     TEXT,
-    created_at        TEXT
-)
-""")
+    cursor.execute("""
+    CREATE TABLE clients (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password_hash TEXT,
+        cnpj TEXT,
+        celular TEXT,
+        email TEXT,
+        plano TEXT,
+        created_at TEXT
+    )
+    """)
 
-conn.commit()
-
-# Criação da tabela clients (caso ainda não exista)
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS clients (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE,
-    password_hash TEXT,
-    cnpj TEXT,
-    celular TEXT,
-    email TEXT,
-    plano TEXT,
-    created_at TEXT
-)
-""")
-conn.commit()
-
-
+    conn.commit()
+else:
+    conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
+    cursor = conn.cursor()
 # — verifica as colunas atuais em proposals —
 sqlite_cursor.execute("PRAGMA table_info(proposals)")
 info = sqlite_cursor.fetchall()
