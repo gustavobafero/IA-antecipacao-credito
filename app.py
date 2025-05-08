@@ -64,6 +64,22 @@ CREATE TABLE proposals (
 
 conn.commit()
 
+# Criação da tabela clients (caso ainda não exista)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS clients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    password_hash TEXT,
+    cnpj TEXT,
+    celular TEXT,
+    email TEXT,
+    plano TEXT,
+    created_at TEXT
+)
+""")
+conn.commit()
+
+
 # — verifica as colunas atuais em proposals —
 sqlite_cursor.execute("PRAGMA table_info(proposals)")
 info = sqlite_cursor.fetchall()
