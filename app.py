@@ -298,40 +298,40 @@ if 'role' not in st.session_state:
         st.write(f"**Total a ser cobrado:** R$ {total_com_juros:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
         st.write(f"**{parcelas}x de:** R$ {valor_parcela:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
-    ok = st.form_submit_button("Criar conta e pagar")
+        ok = st.form_submit_button("Criar conta e pagar")
 
-    if ok:
+        if ok:
         # aqui você deve validar todos os campos, processar o pagamento via gateway e só então:
-        if not all([u, p, p2, cnpj, celular, email, cc_number, cc_name, mes, ano, cvv]):
-             st.error("Preencha todos os campos do cadastro e do cartão")
-        elif p != p2:
-            st.error("As senhas não coincidem")
-        else:
-            # Exemplo: processar pagamento antes de registrar
-            pagamento_sucesso = True  # <- substitua pela chamada ao seu gateway
-
-            if pagamento_sucesso and register_client(u, p, cnpj, celular, email, plano):
-                st.success(f"Conta criada! Plano: {plano} em {parcelas}x")
+            if not all([u, p, p2, cnpj, celular, email, cc_number, cc_name, mes, ano, cvv]):
+                 st.error("Preencha todos os campos do cadastro e do cartão")
+            elif p != p2:
+                st.error("As senhas não coincidem")
             else:
-                st.error("Falha no pagamento ou usuário já existe.")
-    st.stop()
+            # Exemplo: processar pagamento antes de registrar
+                pagamento_sucesso = True  # <- substitua pela chamada ao seu gateway
 
-else:  # Entrar
-    with st.form("form_login"):
-        u = st.text_input("Usuário")
-        p = st.text_input("Senha", type="password")
-        ok_login = st.form_submit_button("Entrar")
-    if ok:
+                if pagamento_sucesso and register_client(u, p, cnpj, celular, email, plano):
+                    st.success(f"Conta criada! Plano: {plano} em {parcelas}x")
+                else:
+                    st.error("Falha no pagamento ou usuário já existe.")
+        st.stop()
+
+    else:  # Entrar
+        with st.form("form_login"):
+            u = st.text_input("Usuário")
+            p = st.text_input("Senha", type="password")
+            ok_login = st.form_submit_button("Entrar")
+        if ok:
             # admin via secrets
-        if u == st.secrets["ADMIN"]["USERNAME"] and p == st.secrets["ADMIN"]["PASSWORD"]:
-            st.session_state.role = 'admin'
+            if u == st.secrets["ADMIN"]["USERNAME"] and p == st.secrets["ADMIN"]["PASSWORD"]:
+                st.session_state.role = 'admin'
             # cliente via DB
-        elif authenticate_client(u, p):
-            st.session_state.role = 'cliente'
+            elif authenticate_client(u, p):
+                st.session_state.role = 'cliente'
             st.session_state.username = u
-        else:
-            st.error("Usuário ou senha inválidos")
-    st.stop()
+            else:
+                st.error("Usuário ou senha inválidos")
+        st.stop()
         
 def formatar_moeda(valor):
     """
