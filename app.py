@@ -21,11 +21,16 @@ import hashlib
 import os
 import sqlite3
 from sqlalchemy import create_engine, text
-import streamlit as st
-DATA_PATH = "clientes.db" 
+import streamlit as st 
 from io import StringIO
 import sqlite3
 import os
+DATA_PATH = "clientes.db" 
+import os
+# — DEV: zera o .db para forçar recriação com esquema correto —
+if os.path.exists(DATA_PATH):
+    os.remove(DATA_PATH)
+
 st.write("📂 Diretório de trabalho:", os.getcwd())
 st.write("📋 Conteúdo desta pasta:", os.listdir(os.getcwd()))
 
