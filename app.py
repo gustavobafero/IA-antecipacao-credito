@@ -676,7 +676,7 @@ def exibir_interface_cliente_cotacao():
                 
 
 # --- Roteamento pós-login ---
-elif st.session_state.role == 'admin':
+if st.session_state.role == 'admin':
     st.header("📋 Propostas Recebidas (Admin)")
     sql = """
       SELECT
