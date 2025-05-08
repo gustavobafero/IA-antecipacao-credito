@@ -25,6 +25,7 @@ import streamlit as st
 DATA_PATH = "clientes.db" 
 from io import StringIO
 
+
 # --- Configuração da página: deve ser o primeiro comando Streamlit ---
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
@@ -144,15 +145,17 @@ cursor = conn.connection.cursor()
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS clients (
-    username TEXT PRIMARY KEY,
-    password_hash TEXT NOT NULL,
-    cnpj TEXT NOT NULL,
-    celular TEXT NOT NULL,
-    email TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    username       TEXT PRIMARY KEY,
+    password_hash  TEXT NOT NULL,
+    cnpj           TEXT NOT NULL,
+    celular        TEXT NOT NULL,
+    email          TEXT NOT NULL,
+    plano          TEXT NOT NULL,      -- aqui a nova coluna
+    created_at     TEXT NOT NULL
 )
 """)
 conn.commit()
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS proposals (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -170,12 +173,24 @@ CREATE TABLE IF NOT EXISTS proposals (
 conn.commit()
 
 # 4) Funções de registro/autenticação usando o hash
-def register_client(username, password, cnpj, celular, email):
+def register_client(username, password, cnpj, celular, email, plano):
     pwd_hash = hash_password(password)
     try:
         cursor.execute(
-            "INSERT INTO clients (username, password_hash, cnpj, celular, email, created_at) VALUES (?,?,?,?,?,?)",
-            (username, pwd_hash, cnpj, celular, email, datetime.now().isoformat())
+            """
+            INSERT INTO clients
+              (username, password_hash, cnpj, celular, email, plano, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                username,
+                pwd_hash,
+                cnpj,
+                celular,
+                email,
+                plano,                        # <-- aqui
+                datetime.now().isoformat()
+            )
         )
         conn.commit()
         return True
@@ -183,9 +198,9 @@ def register_client(username, password, cnpj, celular, email):
         # Usuário já existe
         return False
     except sqlite3.Error as e:
-        # Exibe o erro completo para diagnóstico
         st.error(f"Erro no banco de dados: {e}")
         return False
+
 
 
 def authenticate_client(username, password):
@@ -213,11 +228,10 @@ if 'role' not in st.session_state:
                 st.error("Preencha todos os campos")
             elif p != p2:
                 st.error("As senhas não coincidem")
-            elif register_client(u, p, cnpj, celular, email):
-                st.success("Conta criada! Faça login.")
-            else:
-                st.error("Usuário já existe.")
-        st.stop()
+            if register_client(u, p, cnpj, celular, email, plano):
+        st.success(f"Conta criada! Plano selecionado: {plano}")
+    else:
+        st.error("Usuário já existe.")
 
     else:  # Entrar
         with st.form("form_login"):
