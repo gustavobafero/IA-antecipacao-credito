@@ -273,26 +273,7 @@ if 'role' not in st.session_state:
         with col3:
             cvv = st.text_input("CVV", type="password", max_chars=4)
 
-        # Parcelamento
-        parcelas = st.selectbox(
-            "Número de parcelas",
-            list(range(1, 13))
-        )
-
-        # Juros por faixa de parcelas (exemplo)
-        juros_tabela = {
-            1: 0.00, 2: 0.00, 3: 0.00,
-            4: 0.015, 5: 0.020, 6: 0.025,
-            7: 0.030, 8: 0.035, 9: 0.040,
-            10: 0.045, 11: 0.050, 12: 0.055
-        }
-        juros = juros_tabela[parcelas]
-
         # Extrai valor numérico do plano
-        preco_plano = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
-
-        total_com_juros = preco_plano * (1 + juros)
-        valor_parcela = total_com_juros / parcelas
 
         st.write(f"**Juros:** {juros*100:.1f}%")
         st.write(f"**Total a ser cobrado:** R$ {total_com_juros:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
