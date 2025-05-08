@@ -314,7 +314,6 @@ if 'role' not in st.session_state:
                 st.success(f"Conta criada! Plano: {plano} em {parcelas}x")
             else:
                 st.error("Falha no pagamento ou usuário já existe.")
-    st.stop()
 
     else:  # Entrar
         with st.form("form_login"):
