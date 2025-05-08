@@ -32,43 +32,18 @@ st.write("📋 Conteúdo desta pasta:", os.listdir(os.getcwd()))
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
 # 1) Abre o arquivo clientes.db
+# 1) Conecta ao banco
 sqlite_conn   = sqlite3.connect(DATA_PATH, check_same_thread=False)
 sqlite_cursor = sqlite_conn.cursor()
 conn   = sqlite_conn
 cursor = sqlite_cursor
-# — DEBUG: mostrar o SQL que criou a tabela “proposals” —
-cursor.execute(
-    "SELECT sql FROM sqlite_master WHERE type='table' AND name='proposals'"
-)
-schema = cursor.fetchone()
-st.write("🛠️ DEBUG: CREATE TABLE proposals =", schema)
-# — DEBUG: colunas atuais de proposals —
-cursor.execute("PRAGMA table_info(proposals)")
-colunas = [c[1] for c in cursor.fetchall()]
-st.write("🛠️ DEBUG: colunas em proposals =", colunas)
 
-if 'telefone_contato' not in colunas:
-    cursor.execute("ALTER TABLE proposals ADD COLUMN telefone_contato TEXT")
-if 'email_contato' not in colunas:
-    cursor.execute("ALTER TABLE proposals ADD COLUMN email_contato TEXT")
+# 2) (DEV) — Remove a tabela antiga para recriá-la do jeito certo —
+cursor.execute("DROP TABLE IF EXISTS proposals")
 
-conn.commit()
-
-
-# 2) Cria as tabelas se não existirem
-sqlite_cursor.execute("""
-CREATE TABLE IF NOT EXISTS clients (
-    username       TEXT PRIMARY KEY,
-    password_hash  TEXT NOT NULL,
-    cnpj           TEXT NOT NULL,
-    celular        TEXT NOT NULL,
-    email          TEXT NOT NULL,
-    plano          TEXT NOT NULL,
-    created_at     TEXT NOT NULL
-)
-""")
-sqlite_cursor.execute("""
-CREATE TABLE IF NOT EXISTS proposals (
+# 3) Cria de novo com todas as colunas necessárias
+cursor.execute("""
+CREATE TABLE proposals (
     id                INTEGER PRIMARY KEY AUTOINCREMENT,
     nome_cliente      TEXT,
     cnpj              TEXT,
@@ -81,7 +56,8 @@ CREATE TABLE IF NOT EXISTS proposals (
     created_at        TEXT
 )
 """)
-sqlite_conn.commit()
+
+conn.commit()
 
 # — verifica as colunas atuais em proposals —
 sqlite_cursor.execute("PRAGMA table_info(proposals)")
