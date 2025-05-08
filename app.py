@@ -275,7 +275,13 @@ if 'role' not in st.session_state:
 
         # Extrai valor numérico do plano
 
-        st.write(f"**Total a ser cobrado:** R$ ".replace(",", "X").replace(".", ",").replace("X", "."))
+        st.write(
+            f"**Total a ser cobrado:** R$ {preco_final:,.2f}"
+            .replace(",", "X")
+            .replace(".", ",")
+            .replace("X", ".")
+        )
+
 
     if ok_register:
         # aqui você deve validar todos os campos, processar o pagamento via gateway e só então:
