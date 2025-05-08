@@ -27,7 +27,6 @@ import sqlite3
 DATA_PATH = "clientes.db" 
 import os
 # — DEV: zera o .db para forçar recriação com esquema correto —
-if not os.path.exists(DATA_PATH):
     # criação inicial do banco aqui
 st.write("📂 Diretório de trabalho:", os.getcwd())
 st.write("📋 Conteúdo desta pasta:", os.listdir(os.getcwd()))
