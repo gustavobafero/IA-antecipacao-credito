@@ -245,10 +245,7 @@ if 'role' not in st.session_state:
                 preco_final = preco_mensal * 12 * 0.9
 
     # Exibição do preço *antes* do submit
-            st.markdown(
-                f"**Valor a pagar ({periodicidade.lower()}):** R$ {preco_final:,.2f}"
-                .replace(",", "X").replace(".", ",").replace("X", ".")
-            )
+            
             ok_register = st.form_submit_button("Criar conta e pagar")
 
         st.subheader("Dados do Cartão de Crédito")
