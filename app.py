@@ -239,9 +239,6 @@ if 'role' not in st.session_state:
                 ["Mensal", "Anual (10% de desconto)"]
             )
             ok_register = st.form_submit_button("Criar conta e pagar")
-
-            ok = st.form_submit_button("Criar conta e pagar")
-
     # cálculo do preço final
             preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
             if periodicidade == "Mensal":
