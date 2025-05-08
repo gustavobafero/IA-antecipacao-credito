@@ -300,7 +300,7 @@ if 'role' not in st.session_state:
 
         ok = st.form_submit_button("Criar conta e pagar")
 
-    if ok_login:
+    if ok:
         # aqui você deve validar todos os campos, processar o pagamento via gateway e só então:
         if not all([u, p, p2, cnpj, celular, email, cc_number, cc_name, mes, ano, cvv]):
             st.error("Preencha todos os campos do cadastro e do cartão")
