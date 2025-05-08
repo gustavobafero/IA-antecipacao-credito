@@ -215,42 +215,43 @@ if 'role' not in st.session_state:
     st.title("🔐 Bem-vindo a All Way Capital")
     modo = st.radio("Escolha:", ["Entrar", "Cadastrar-se"])
     if modo == "Cadastrar-se":
-        with st.form("form_register"):
-        # Dados de acesso e perfil
-            u       = st.text_input("Usuário")
-            p       = st.text_input("Senha", type="password")
-            p2      = st.text_input("Confirme a senha", type="password")
-            cnpj    = st.text_input("CNPJ")
-            celular = st.text_input("Celular")
-            email   = st.text_input("Email")
-           # --- dentro do st.form("form_register"), logo após o selectbox de plano ---
-            plano = st.selectbox(
-               "Selecione um plano de assinatura",
-                [
-                    "Básico – R$ 699,90",
-                    "Intermediário – R$ 1.299,90",
-                    "Avançado – R$ 1.999,90"
-                ]
-            )
+    st.title("🔐 Cadastro")
 
-    # NOVO: periodicidade de cobrança
-            periodicidade = st.selectbox(
-                "Periodicidade de cobrança",
-                ["Mensal", "Anual (10% de desconto)"]
-            )
-            preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
-            if periodicidade == "Mensal":
-                preco_final = preco_mensal
-            elif periodicidade == "Anual (10% de desconto)":
-                preco_final = preco_mensal * 12 * 0.9
-            st.markdown(
-                f"**Valor a pagar ({periodicidade.lower()}):** R$ {preco_final:,.2f}"
-                .replace(",", "X").replace(".", ",").replace("X", "."),
-                unsafe_allow_html=True
-            )
-    # Exibição do preço *antes* do submit
-            
-            ok_register = st.form_submit_button("Criar conta e pagar")
+    # 1) Seleção do plano e periodicidade fora do form, para preview imediato
+    plano = st.selectbox(
+        "Selecione um plano de assinatura",
+        [
+            "Básico – R$ 699,90",
+            "Intermediário – R$ 1.299,90",
+            "Avançado – R$ 1.999,90"
+        ]
+    )
+    periodicidade = st.selectbox(
+        "Periodicidade de cobrança",
+        ["Mensal", "Anual (10% de desconto)"]
+    )
+
+    # 2) Cálculo do price-tag dinâmico
+    preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
+    if periodicidade == "Mensal":
+        preco_final = preco_mensal
+    else:  # Anual
+        preco_final = preco_mensal * 12 * 0.9
+
+    st.markdown(
+        f"**Valor a pagar ({periodicidade.lower()}):** R$ {preco_final:,.2f}"
+        .replace(",", "X").replace(".", ",").replace("X", "."),
+        unsafe_allow_html=True
+    )
+
+    # 3) Agora só os campos do cartão e o botão ficam **dentro** do form
+    with st.form("form_register"):
+        cc_number = st.text_input("Número do Cartão", placeholder="0000 0000 0000 0000")
+        cc_name   = st.text_input("Nome impresso no cartão")
+        mes       = st.selectbox("Mês de validade", [f"{m:02d}" for m in range(1,13)])
+        ano       = st.selectbox("Ano de validade", [str(y) for y in range(datetime.now().year, datetime.now().year+10)])
+        cvv       = st.text_input("CVV", type="password", max_chars=4)
+        ok_register = st.form_submit_button("Criar conta e pagar")
 
         st.subheader("Dados do Cartão de Crédito")
 
@@ -289,7 +290,12 @@ if 'role' not in st.session_state:
             st.error("As senhas não coincidem")
         else:
             # Exemplo: processar pagamento antes de registrar
-            pagamento_sucesso = True  # <- substitua pela chamada ao seu gateway
+            pagamento_sucesso = True
+        if not all([cc_number, cc_name, mes, ano, cvv]):
+            st.error("Preencha os dados do cartão")
+        else:
+            st.success(f"Cobrando R$ {preco_final:,.2f} em {periodicidade.lower()}")
+    st.stop()
 
             if pagamento_sucesso and register_client(u, p, cnpj, celular, email, plano):
                 st.success(f"Conta criada! Plano: {plano} em {parcelas}x")
