@@ -29,6 +29,39 @@ from io import StringIO
 # --- Configuração da página: deve ser o primeiro comando Streamlit ---
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
+# Conexão direta com o SQLite e criação das tabelas
+import sqlite3
+
+conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
+cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS clients (
+    username       TEXT PRIMARY KEY,
+    password_hash  TEXT NOT NULL,
+    cnpj           TEXT NOT NULL,
+    celular        TEXT NOT NULL,
+    email          TEXT NOT NULL,
+    plano          TEXT NOT NULL,
+    created_at     TEXT NOT NULL
+)
+""")
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS proposals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_cliente       TEXT,
+    cnpj               TEXT,
+    valor_nota         REAL,
+    taxa_ia            REAL,
+    taxa_cliente       REAL,
+    deseja_contato     TEXT,
+    telefone_contato   TEXT,
+    email_contato      TEXT,
+    created_at         TEXT
+)
+""")
+conn.commit()
+
 # --- Navegação inicial via simulação ---
 if 'navigate' not in st.session_state:
     st.session_state['navigate'] = None
@@ -685,31 +718,11 @@ def exibir_interface_cliente_cotacao():
 # --- Roteamento pós-login ---
 if st.session_state.role == 'admin':
     st.header("📋 Propostas Recebidas (Admin)")
-    if os.path.exists(DATA_PATH):
-        conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
-        df = pd.read_sql_query(
-            """
-            SELECT
-              p.id                   AS "ID",
-              c.username             AS "Nome da Empresa",
-              p.telefone_contato     AS "Telefone",
-              p.email_contato        AS "E-mail",
-              p.nome_cliente         AS "Nome no XML",
-              p.cnpj                 AS "CNPJ (NF-e)",
-              p.valor_nota           AS "Valor NF-e",
-              p.taxa_ia              AS "Taxa IA (%)",
-              p.taxa_cliente         AS "Taxa Cliente (%)",
-              p.deseja_contato       AS "Deseja Contato",
-              p.created_at           AS "Solicitado em"
-            FROM proposals p
-            LEFT JOIN clients c
-              ON p.cnpj = c.cnpj
-            ORDER BY p.created_at DESC
-
-            """,
-            conn
-        )
-        st.dataframe(df)
+    try:
+    df = pd.read_sql_query(sql, conn)
+    st.dataframe(df)
+except Exception as e:
+    st.error(f"Erro ao buscar propostas: {e}")
     else:
         st.info("Ainda não há propostas.")
 elif st.session_state.role == 'cliente':
