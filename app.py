@@ -303,7 +303,7 @@ if 'role' not in st.session_state:
     if ok:
         # aqui você deve validar todos os campos, processar o pagamento via gateway e só então:
         if not all([u, p, p2, cnpj, celular, email, cc_number, cc_name, mes, ano, cvv]):
-            st.error("Preencha todos os campos do cadastro e do cartão")
+             st.error("Preencha todos os campos do cadastro e do cartão")
         elif p != p2:
             st.error("As senhas não coincidem")
         else:
