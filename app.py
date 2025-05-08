@@ -215,7 +215,7 @@ if 'role' not in st.session_state:
     st.title("🔐 Bem-vindo a All Way Capital")
     modo = st.radio("Escolha:", ["Entrar", "Cadastrar-se"])
     if modo == "Cadastrar-se":
-    st.title("🔐 Cadastro")
+        st.title("🔐 Cadastro")
 
     # 1) Seleção do plano e periodicidade fora do form, para preview imediato
     plano = st.selectbox(
