@@ -24,13 +24,10 @@ from sqlalchemy import create_engine, text
 import streamlit as st
 DATA_PATH = "clientes.db" 
 from io import StringIO
-
+import sqlite3
 
 # --- Configuração da página: deve ser o primeiro comando Streamlit ---
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
-
-# --- Conexão direta com SQLite e criação das tabelas ---
-import sqlite3
 
 # 1) Abre o arquivo clientes.db
 sqlite_conn   = sqlite3.connect(DATA_PATH, check_same_thread=False)
