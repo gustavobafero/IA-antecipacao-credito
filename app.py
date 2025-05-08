@@ -69,12 +69,24 @@ sqlite_cursor.execute("PRAGMA table_info(proposals)")
 info = sqlite_cursor.fetchall()
 colunas = [col[1] for col in info]
 
-# — só adiciona se não existir —
+# — Adiciona telefone_contato apenas se não existir —
 if 'telefone_contato' not in colunas:
-    sqlite_cursor.execute("ALTER TABLE proposals ADD COLUMN telefone_contato TEXT")
+    try:
+        sqlite_cursor.execute(
+            "ALTER TABLE proposals ADD COLUMN telefone_contato TEXT"
+        )
+    except sqlite3.OperationalError:
+        # Se der erro de coluna duplicada, ignora
+        pass
 
+# — Adiciona email_contato apenas se não existir —
 if 'email_contato' not in colunas:
-    sqlite_cursor.execute("ALTER TABLE proposals ADD COLUMN email_contato TEXT")
+    try:
+        sqlite_cursor.execute(
+            "ALTER TABLE proposals ADD COLUMN email_contato TEXT"
+        )
+    except sqlite3.OperationalError:
+        pass
 
 sqlite_conn.commit()
 
