@@ -70,6 +70,36 @@ if not os.path.exists(DATA_PATH):
     """)
 
     conn.commit()
+
+def hash_password(password: str) -> str:
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+
+def register_client(username, password, cnpj, celular, email, plano):
+    pwd_hash = hash_password(password)
+    try:
+        cursor.execute(
+            """
+            INSERT INTO clients
+            (username, password_hash, cnpj, celular, email, plano, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (username, pwd_hash, cnpj, celular, email, plano, datetime.now().isoformat())
+        )
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+    except sqlite3.Error as e:
+        st.error(f"Erro no banco de dados: {e}")
+        return False
+
+def authenticate_client(username, password):
+    cursor.execute("SELECT password_hash FROM clients WHERE username = ?", (username,))
+    row = cursor.fetchone()
+    if row and row[0] == hash_password(password):
+        return True
+    return False
+    
 else:
     conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
     cursor = conn.cursor()
@@ -192,42 +222,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-def hash_password(password: str) -> str:
-    """Retorna o SHA-256 hex digest da senha."""
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
-
-# 2) Conexão e criação da tabela de clientes
-
-
-# 4) Funções de registro/autenticação usando o hash
-def register_client(username, password, cnpj, celular, email, plano):
-    pwd_hash = hash_password(password)
-    try:
-        cursor.execute(
-            """
-            INSERT INTO clients
-              (username, password_hash, cnpj, celular, email, plano, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                username,
-                pwd_hash,
-                cnpj,
-                celular,
-                email,
-                plano,                        # <-- aqui
-                datetime.now().isoformat()
-            )
-        )
-        conn.commit()
-        return True
-    except sqlite3.IntegrityError:
-        # Usuário já existe
-        return False
-    except sqlite3.Error as e:
-        st.error(f"Erro no banco de dados: {e}")
-        return False
 
 
 
