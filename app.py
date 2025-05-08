@@ -250,12 +250,6 @@ if 'role' not in st.session_state:
                 .replace(",", "X").replace(".", ",").replace("X", ".")
             )
             ok_register = st.form_submit_button("Criar conta e pagar")
-    # cálculo do preço final
-            preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
-            if periodicidade == "Mensal":
-                preco_final = preco_mensal
-            else:
-                preco_final = preco_mensal * 12 * 0.9  # 10% de desconto no anual
 
         st.markdown("---")
         st.subheader("Dados do Cartão de Crédito")
