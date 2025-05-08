@@ -251,7 +251,6 @@ if 'role' not in st.session_state:
             )
             ok_register = st.form_submit_button("Criar conta e pagar")
 
-        st.markdown("---")
         st.subheader("Dados do Cartão de Crédito")
 
         # Número e nome
