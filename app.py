@@ -213,127 +213,50 @@ def authenticate_client(username, password):
 
 if 'role' not in st.session_state:
     st.title("🔐 Bem-vindo a All Way Capital")
-    modo = st.radio("Escolha:", ["Entrar", "Cadastrar-se"])
+    modo = st.radio("Escolha:", ["Cadastrar-se", "Entrar"])
+
     if modo == "Cadastrar-se":
         with st.form("form_register"):
-        # Dados de acesso e perfil
+            # — campos de cadastro —
             u       = st.text_input("Usuário")
             p       = st.text_input("Senha", type="password")
             p2      = st.text_input("Confirme a senha", type="password")
             cnpj    = st.text_input("CNPJ")
             celular = st.text_input("Celular")
             email   = st.text_input("Email")
-           # --- dentro do st.form("form_register"), logo após o selectbox de plano ---
-            plano = st.selectbox(
-               "Selecione um plano de assinatura",
-                [
-                    "Básico – R$ 699,90",
-                    "Intermediário – R$ 1.299,90",
-                    "Avançado – R$ 1.999,90"
-                ]
-            )
+            # … resto do formulário …
+            ok_register = st.form_submit_button("Criar conta e pagar")
 
-    # NOVO: periodicidade de cobrança
-            periodicidade = st.selectbox(
-                "Periodicidade de cobrança",
-                ["Mensal", "Anual (10% de desconto)"]
-            )
-
-    # cálculo do preço final
-            preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
-            if periodicidade == "Mensal":
-                preco_final = preco_mensal
+        if ok_register:
+            if not all([u, p, p2, cnpj, celular, email]):
+                st.error("Preencha todos os campos")
+            elif p != p2:
+                st.error("As senhas não coincidem")
             else:
-                preco_final = preco_mensal * 12 * 0.9  # 10% de desconto no anual
+                # processar pagamento e registrar
+                if register_client(u, p, cnpj, celular, email, plano):
+                    st.success("Conta criada!")
+                    st.session_state.role = 'cliente'
+                else:
+                    st.error("Erro ao criar conta.")
+        st.stop()
 
-            st.markdown(
-                f"**Valor a pagar ({periodicidade.lower()}):** "
-                f"R$ {preco_final:,.2f}"
-                .replace(",", "X").replace(".", ",").replace("X", ".")
-            )
-
-
-        st.markdown("---")
-        st.subheader("Dados do Cartão de Crédito")
-
-        # Número e nome
-        cc_number = st.text_input(
-            "Número do Cartão",
-            placeholder="0000 0000 0000 0000",
-            max_chars=19
-        )
-        cc_name = st.text_input("Nome impresso no cartão")
-
-        # Validade e CVV
-        col1, col2, col3 = st.columns([2,2,1])
-        with col1:
-            mes = st.selectbox("Mês de validade", [f"{m:02d}" for m in range(1,13)])
-        with col2:
-            ano = st.selectbox("Ano de validade", [str(y) for y in range(datetime.now().year, datetime.now().year+10)])
-        with col3:
-            cvv = st.text_input("CVV", type="password", max_chars=4)
-
-        # Parcelamento
-        parcelas = st.selectbox(
-            "Número de parcelas",
-            list(range(1, 13))
-        )
-
-        # Juros por faixa de parcelas (exemplo)
-        juros_tabela = {
-            1: 0.00, 2: 0.00, 3: 0.00,
-            4: 0.015, 5: 0.020, 6: 0.025,
-            7: 0.030, 8: 0.035, 9: 0.040,
-            10: 0.045, 11: 0.050, 12: 0.055
-        }
-        juros = juros_tabela[parcelas]
-
-        # Extrai valor numérico do plano
-        preco_plano = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
-
-        total_com_juros = preco_plano * (1 + juros)
-        valor_parcela = total_com_juros / parcelas
-
-        st.write(f"**Juros:** {juros*100:.1f}%")
-        st.write(f"**Total a ser cobrado:** R$ {total_com_juros:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
-        st.write(f"**{parcelas}x de:** R$ {valor_parcela:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
-
-        ok = st.form_submit_button("Criar conta e pagar")
-
-    if ok:
-        # aqui você deve validar todos os campos, processar o pagamento via gateway e só então:
-        if not all([u, p, p2, cnpj, celular, email, cc_number, cc_name, mes, ano, cvv]):
-            st.error("Preencha todos os campos do cadastro e do cartão")
-        elif p != p2:
-            st.error("As senhas não coincidem")
-        else:
-            # Exemplo: processar pagamento antes de registrar
-            pagamento_sucesso = True  # <- substitua pela chamada ao seu gateway
-
-            if pagamento_sucesso and register_client(u, p, cnpj, celular, email, plano):
-                st.success(f"Conta criada! Plano: {plano} em {parcelas}x")
-            else:
-                st.error("Falha no pagamento ou usuário já existe.")
-    st.stop()
-
-
-
-    else:  # Entrar
+    elif modo == "Entrar":
         with st.form("form_login"):
             u = st.text_input("Usuário")
             p = st.text_input("Senha", type="password")
-            ok = st.form_submit_button("Entrar")
-        if ok:
-            # admin via secrets
+            ok_login = st.form_submit_button("Entrar")
+
+        if ok_login:
             if u == st.secrets["ADMIN"]["USERNAME"] and p == st.secrets["ADMIN"]["PASSWORD"]:
                 st.session_state.role = 'admin'
-            # cliente via DB
             elif authenticate_client(u, p):
                 st.session_state.role = 'cliente'
                 st.session_state.username = u
             else:
                 st.error("Usuário ou senha inválidos")
         st.stop()
+
         
 def formatar_moeda(valor):
     """
