@@ -36,12 +36,16 @@ sqlite_conn   = sqlite3.connect(DATA_PATH, check_same_thread=False)
 sqlite_cursor = sqlite_conn.cursor()
 conn   = sqlite_conn
 cursor = sqlite_cursor
-
-# — Verifica esquema da tabela proposals e adiciona colunas se não existirem —
+# — DEBUG: mostrar o SQL que criou a tabela “proposals” —
+cursor.execute(
+    "SELECT sql FROM sqlite_master WHERE type='table' AND name='proposals'"
+)
+schema = cursor.fetchone()
+st.write("🛠️ DEBUG: CREATE TABLE proposals =", schema)
+# — DEBUG: colunas atuais de proposals —
 cursor.execute("PRAGMA table_info(proposals)")
 colunas = [c[1] for c in cursor.fetchall()]
 st.write("🛠️ DEBUG: colunas em proposals =", colunas)
-
 
 if 'telefone_contato' not in colunas:
     cursor.execute("ALTER TABLE proposals ADD COLUMN telefone_contato TEXT")
