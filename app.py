@@ -193,7 +193,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 def hash_password(password: str) -> str:
     """Retorna o SHA-256 hex digest da senha."""
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
@@ -308,7 +307,6 @@ if 'role' not in st.session_state:
             .replace(".", ",")
             .replace("X", ".")
         )
-
 
     if ok_register:
         # aqui você deve validar todos os campos, processar o pagamento via gateway e só então:
