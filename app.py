@@ -215,25 +215,24 @@ if 'role' not in st.session_state:
     st.title("🔐 Bem-vindo a All Way Capital")
     modo = st.radio("Escolha:", ["Entrar", "Cadastrar-se"])
     if modo == "Cadastrar-se":
-    with st.form("form_register"):
-        u       = st.text_input("Usuário")
-        p       = st.text_input("Senha", type="password")
-        p2      = st.text_input("Confirme a senha", type="password")
-        cnpj    = st.text_input("CNPJ")
-        celular = st.text_input("Celular")
-        email   = st.text_input("Email")
-        plano   = st.selectbox(
-            "Selecione um plano de assinatura",
-            [
-                "Básico – R$ 699,90",
-                "Intermediário – R$ 1.299,90",
-                "Avançado – R$ 1.999,90"
-            ]
-        )
+        with st.form("form_register"):
+            u       = st.text_input("Usuário")
+            p       = st.text_input("Senha", type="password")
+            p2      = st.text_input("Confirme a senha", type="password")
+            cnpj    = st.text_input("CNPJ")
+            celular = st.text_input("Celular")
+            email   = st.text_input("Email")
+            plano   = st.selectbox(
+                "Selecione um plano de assinatura",
+                [
+                    "Básico – R$ 699,90",
+                    "Intermediário – R$ 1.299,90",
+                    "Avançado – R$ 1.999,90"
+                ]
+            )
+            ok = st.form_submit_button("Criar conta")
 
-        ok = st.form_submit_button("Criar conta")
-
-    if ok:
+     if ok:
         if not all([u, p, p2, cnpj, celular, email]):
             st.error("Preencha todos os campos")
         elif p != p2:
