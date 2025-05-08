@@ -29,14 +29,14 @@ from io import StringIO
 # --- Configuração da página: deve ser o primeiro comando Streamlit ---
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
-# Conexão direta com o SQLite e criação das tabelas
+# --- Conexão direta com SQLite e criação das tabelas ---
 import sqlite3
 
-# 1) Conexão única com o arquivo clientes.db
-sqlite_conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
+# 1) Abre o arquivo clientes.db
+sqlite_conn   = sqlite3.connect(DATA_PATH, check_same_thread=False)
 sqlite_cursor = sqlite_conn.cursor()
 
-# 2) Criação das tabelas se ainda não existirem
+# 2) Cria as tabelas se não existirem
 sqlite_cursor.execute("""
 CREATE TABLE IF NOT EXISTS clients (
     username       TEXT PRIMARY KEY,
@@ -63,6 +63,8 @@ CREATE TABLE IF NOT EXISTS proposals (
 )
 """)
 sqlite_conn.commit()
+# --- Fim da conexão SQLite ---
+
 
 # --- Navegação inicial via simulação ---
 if 'navigate' not in st.session_state:
@@ -161,51 +163,7 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 # 2) Conexão e criação da tabela de clientes
-@st.cache_resource
-@st.cache_resource
-def get_db():
-    # tenta ler DATABASE_URL, se não existir cai para sqlite local
-    url = st.secrets.get("DATABASE_URL", f"sqlite:///{DATA_PATH}")
-    # se for SQLite não precisa de sslmode
-    connect_args = {}
-    if url.startswith("postgres") or url.startswith("mysql"):
-        connect_args = {"sslmode": "require"}
-    engine = create_engine(url, connect_args=connect_args)
-    return engine.connect()
 
-# conexão única e cacheada
-conn = get_db()
-# define o cursor para executar SQL puros
-cursor = conn.connection.cursor()
-
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS clients (
-    username       TEXT PRIMARY KEY,
-    password_hash  TEXT NOT NULL,
-    cnpj           TEXT NOT NULL,
-    celular        TEXT NOT NULL,
-    email          TEXT NOT NULL,
-    plano          TEXT NOT NULL,      -- aqui a nova coluna
-    created_at     TEXT NOT NULL
-)
-""")
-conn.commit()
-
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS proposals (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome_cliente       TEXT,
-    cnpj                TEXT,
-    valor_nota          REAL,
-    taxa_ia             REAL,
-    taxa_cliente        REAL,
-    deseja_contato      TEXT,
-    telefone_contato    TEXT,
-    email_contato       TEXT,
-    created_at          TEXT
-)
-""")
-conn.commit()
 
 # 4) Funções de registro/autenticação usando o hash
 def register_client(username, password, cnpj, celular, email, plano):
