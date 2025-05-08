@@ -275,7 +275,6 @@ if 'role' not in st.session_state:
 
         # Extrai valor numérico do plano
 
-        st.write(f"**Juros:** {juros*100:.1f}%")
         st.write(f"**Total a ser cobrado:** R$ {total_com_juros:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
         st.write(f"**{parcelas}x de:** R$ {valor_parcela:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
