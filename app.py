@@ -241,7 +241,7 @@ if 'role' not in st.session_state:
             preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
             if periodicidade == "Mensal":
                 preco_final = preco_mensal
-            else: periodicidade == "Anual(10% de desconto)":
+            elif: periodicidade == "Anual (10% de desconto)":
                 preco_final = preco_mensal * 12 * 0.9
 
     # Exibição do preço *antes* do submit
