@@ -238,6 +238,7 @@ if 'role' not in st.session_state:
                 "Periodicidade de cobrança",
                 ["Mensal", "Anual (10% de desconto)"]
             )
+            ok_register = st.form_submit_button("Criar conta e pagar")
 
     # cálculo do preço final
             preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
@@ -300,7 +301,7 @@ if 'role' not in st.session_state:
 
         ok = st.form_submit_button("Criar conta e pagar")
 
-    if ok:
+    if ok_register:
         # aqui você deve validar todos os campos, processar o pagamento via gateway e só então:
         if not all([u, p, p2, cnpj, celular, email, cc_number, cc_name, mes, ano, cvv]):
             st.error("Preencha todos os campos do cadastro e do cartão")
@@ -315,12 +316,12 @@ if 'role' not in st.session_state:
             else:
                 st.error("Falha no pagamento ou usuário já existe.")
 
-    else:  # Entrar
+    elif:  # Entrar
         with st.form("form_login"):
             u = st.text_input("Usuário")
             p = st.text_input("Senha", type="password")
             ok_login = st.form_submit_button("Entrar")
-        if ok:
+        if ok_login:
             # admin via secrets
             if u == st.secrets["ADMIN"]["USERNAME"] and p == st.secrets["ADMIN"]["PASSWORD"]:
                 st.session_state.role = 'admin'
