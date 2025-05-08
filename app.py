@@ -63,6 +63,21 @@ CREATE TABLE IF NOT EXISTS proposals (
 )
 """)
 sqlite_conn.commit()
+
+# — verifica as colunas atuais em proposals —
+sqlite_cursor.execute("PRAGMA table_info(proposals)")
+info = sqlite_cursor.fetchall()
+colunas = [col[1] for col in info]
+
+# — só adiciona se não existir —
+if 'telefone_contato' not in colunas:
+    sqlite_cursor.execute("ALTER TABLE proposals ADD COLUMN telefone_contato TEXT")
+
+if 'email_contato' not in colunas:
+    sqlite_cursor.execute("ALTER TABLE proposals ADD COLUMN email_contato TEXT")
+
+sqlite_conn.commit()
+
 # --- Fim da conexão SQLite ---
 
 
