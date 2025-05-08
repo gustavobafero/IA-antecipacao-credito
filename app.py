@@ -238,6 +238,17 @@ if 'role' not in st.session_state:
                 "Periodicidade de cobrança",
                 ["Mensal", "Anual (10% de desconto)"]
             )
+            preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
+            if periodicidade == "Mensal":
+                preco_final = preco_mensal
+            else:
+                preco_final = preco_mensal * 12 * 0.9
+
+    # Exibição do preço *antes* do submit
+            st.markdown(
+                f"**Valor a pagar ({periodicidade.lower()}):** R$ {preco_final:,.2f}"
+                .replace(",", "X").replace(".", ",").replace("X", ".")
+            )
             ok_register = st.form_submit_button("Criar conta e pagar")
     # cálculo do preço final
             preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
