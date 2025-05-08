@@ -329,9 +329,9 @@ if 'role' not in st.session_state:
             elif authenticate_client(u, p):
                 st.session_state.role = 'cliente'
             st.session_state.username = u
-            else:
-                st.error("Usuário ou senha inválidos")
-        st.stop()
+        else:
+            st.error("Usuário ou senha inválidos")
+    st.stop()
         
 def formatar_moeda(valor):
     """
