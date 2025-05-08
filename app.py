@@ -34,6 +34,20 @@ st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 # 1) Abre o arquivo clientes.db
 sqlite_conn   = sqlite3.connect(DATA_PATH, check_same_thread=False)
 sqlite_cursor = sqlite_conn.cursor()
+conn   = sqlite_conn
+cursor = sqlite_cursor
+
+# — Verifica esquema da tabela proposals e adiciona colunas se não existirem —
+cursor.execute("PRAGMA table_info(proposals)")
+colunas = [c[1] for c in cursor.fetchall()]
+
+if 'telefone_contato' not in colunas:
+    cursor.execute("ALTER TABLE proposals ADD COLUMN telefone_contato TEXT")
+if 'email_contato' not in colunas:
+    cursor.execute("ALTER TABLE proposals ADD COLUMN email_contato TEXT")
+
+conn.commit()
+
 
 # 2) Cria as tabelas se não existirem
 sqlite_cursor.execute("""
