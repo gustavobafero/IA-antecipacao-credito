@@ -215,42 +215,42 @@ if 'role' not in st.session_state:
     st.title("🔐 Bem-vindo a All Way Capital")
     modo = st.radio("Escolha:", ["Entrar", "Cadastrar-se"])
     if modo == "Cadastrar-se":
-    with st.form("form_register"):
+        with st.form("form_register"):
         # Dados de acesso e perfil
-        u       = st.text_input("Usuário")
-        p       = st.text_input("Senha", type="password")
-        p2      = st.text_input("Confirme a senha", type="password")
-        cnpj    = st.text_input("CNPJ")
-        celular = st.text_input("Celular")
-        email   = st.text_input("Email")
+            u       = st.text_input("Usuário")
+            p       = st.text_input("Senha", type="password")
+            p2      = st.text_input("Confirme a senha", type="password")
+            cnpj    = st.text_input("CNPJ")
+            celular = st.text_input("Celular")
+            email   = st.text_input("Email")
            # --- dentro do st.form("form_register"), logo após o selectbox de plano ---
-        plano = st.selectbox(
-            "Selecione um plano de assinatura",
-            [
-                "Básico – R$ 699,90",
-                "Intermediário – R$ 1.299,90",
-                "Avançado – R$ 1.999,90"
-            ]
-        )
+            plano = st.selectbox(
+               "Selecione um plano de assinatura",
+                [
+                    "Básico – R$ 699,90",
+                    "Intermediário – R$ 1.299,90",
+                    "Avançado – R$ 1.999,90"
+                ]
+            )
 
     # NOVO: periodicidade de cobrança
-        periodicidade = st.selectbox(
-            "Periodicidade de cobrança",
-            ["Mensal", "Anual (10% de desconto)"]
-        )
+            periodicidade = st.selectbox(
+                "Periodicidade de cobrança",
+                ["Mensal", "Anual (10% de desconto)"]
+            )
 
     # cálculo do preço final
-        preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
-        if periodicidade == "Mensal":
-            preco_final = preco_mensal
-        else:
-            preco_final = preco_mensal * 12 * 0.9  # 10% de desconto no anual
+            preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
+            if periodicidade == "Mensal":
+                preco_final = preco_mensal
+            else:
+                preco_final = preco_mensal * 12 * 0.9  # 10% de desconto no anual
 
-        st.markdown(
-            f"**Valor a pagar ({periodicidade.lower()}):** "
-            f"R$ {preco_final:,.2f}"
-            .replace(",", "X").replace(".", ",").replace("X", ".")
-        )
+            st.markdown(
+                f"**Valor a pagar ({periodicidade.lower()}):** "
+                f"R$ {preco_final:,.2f}"
+                .replace(",", "X").replace(".", ",").replace("X", ".")
+            )
 
 
         st.markdown("---")
