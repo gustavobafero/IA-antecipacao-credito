@@ -240,6 +240,8 @@ if 'role' not in st.session_state:
             )
             ok_register = st.form_submit_button("Criar conta e pagar")
 
+            ok = st.form_submit_button("Criar conta e pagar")
+
     # cálculo do preço final
             preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
             if periodicidade == "Mensal":
@@ -298,8 +300,6 @@ if 'role' not in st.session_state:
         st.write(f"**Juros:** {juros*100:.1f}%")
         st.write(f"**Total a ser cobrado:** R$ {total_com_juros:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
         st.write(f"**{parcelas}x de:** R$ {valor_parcela:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
-
-        ok = st.form_submit_button("Criar conta e pagar")
 
     if ok_register:
         # aqui você deve validar todos os campos, processar o pagamento via gateway e só então:
