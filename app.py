@@ -316,24 +316,22 @@ if 'role' not in st.session_state:
                 st.error("Falha no pagamento ou usuário já existe.")
     st.stop()
 
-
-
-    else:  # Entrar
-        with st.form("form_login"):
-            u = st.text_input("Usuário")
-            p = st.text_input("Senha", type="password")
-            ok = st.form_submit_button("Entrar")
-        if ok:
+else:  # Entrar
+    with st.form("form_login"):
+        u = st.text_input("Usuário")
+        p = st.text_input("Senha", type="password")
+        ok = st.form_submit_button("Entrar")
+    if ok:
             # admin via secrets
-            if u == st.secrets["ADMIN"]["USERNAME"] and p == st.secrets["ADMIN"]["PASSWORD"]:
-                st.session_state.role = 'admin'
+        if u == st.secrets["ADMIN"]["USERNAME"] and p == st.secrets["ADMIN"]["PASSWORD"]:
+            st.session_state.role = 'admin'
             # cliente via DB
-            elif authenticate_client(u, p):
-                st.session_state.role = 'cliente'
-                st.session_state.username = u
-            else:
-                st.error("Usuário ou senha inválidos")
-        st.stop()
+        elif authenticate_client(u, p):
+            st.session_state.role = 'cliente'
+            st.session_state.username = u
+        else:
+            st.error("Usuário ou senha inválidos")
+    st.stop()
         
 def formatar_moeda(valor):
     """
