@@ -320,7 +320,7 @@ else:  # Entrar
     with st.form("form_login"):
         u = st.text_input("Usuário")
         p = st.text_input("Senha", type="password")
-        ok = st.form_submit_button("Entrar")
+        ok_login = st.form_submit_button("Entrar")
     if ok:
             # admin via secrets
         if u == st.secrets["ADMIN"]["USERNAME"] and p == st.secrets["ADMIN"]["PASSWORD"]:
