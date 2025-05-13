@@ -232,7 +232,7 @@ def authenticate_client(username, password):
 
 ok_register = False
 if 'role' not in st.session_state:
-    st.title("🔐 Bem-vindo a All Way Capital")
+    st.title("🔐 Seja bem vindo a Confiança")
     modo = st.radio("Escolha:", ["Entrar", "Cadastrar-se"])
     if modo == "Cadastrar-se":
         with st.form("form_register"):
