@@ -98,13 +98,13 @@ def authenticate_client(username, password):
         return True
     return False
     
-else:
-    conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
-    cursor = conn.cursor()
+    else:
+        conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
+        cursor = conn.cursor()
 # — verifica as colunas atuais em proposals —
-sqlite_cursor.execute("PRAGMA table_info(proposals)")
-info = sqlite_cursor.fetchall()
-colunas = [col[1] for col in info]
+    sqlite_cursor.execute("PRAGMA table_info(proposals)")
+    info = sqlite_cursor.fetchall()
+    colunas = [col[1] for col in info]
 
 # — Adiciona telefone_contato apenas se não existir —
 if 'telefone_contato' not in colunas:
