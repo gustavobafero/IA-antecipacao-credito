@@ -159,34 +159,28 @@ else:
     st.markdown('<div class="subheader">Envie uma nota fiscal eletrônica (.XML) e descubra agora quanto você pode antecipar.</div>', unsafe_allow_html=True)
 
     # --- Upload de XML ---
-    uploaded_files = st.file_uploader("Escolha um ou mais arquivos XML", type=["xml"], accept_multiple_files=True)
-
-valor_total = 0.0
-detalhes = []
-
-if uploaded_files:
-    for file in uploaded_files:
+    xml_file = st.file_uploader("Escolha seu arquivo XML", type=["xml"] )
+    if xml_file:
         try:
-            tree = ET.parse(file)
+            tree = ET.parse(xml_file)
             root = tree.getroot()
             ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-            valor = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
-            valor_total += valor
+            valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
 
-            cnpj = root.find('.//nfe:CNPJ', ns)
-            cnpj_txt = cnpj.text if cnpj is not None else "—"
+            # Cálculo simples
+            taxa_sugerida = 2.2  # Exemplo fixo, em %
+            valor_receber = valor_nota * (1 - taxa_sugerida / 100)
 
-            emissao = root.find('.//nfe:dhEmi', ns)
-            emissao_txt = emissao.text[:10] if emissao is not None else "—"
-
-            detalhes.append(f"🔹 {file.name}: {formatar_moeda(valor)} • CNPJ: {cnpj_txt} • Emissão: {emissao_txt}")
+            # Exibição do resultado
+            st.markdown('<div class="resultado">', unsafe_allow_html=True)
+            st.markdown(f"**Valor da nota:** R$ {valor_nota:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
+            st.markdown(f"**Taxa sugerida:** {taxa_sugerida:.1f}%", unsafe_allow_html=True)
+            st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
         except Exception as e:
-            st.error(f"Erro ao processar {file.name}: {e}")
-
-    taxa_sugerida = 2.2  # exemplo fixo
-    valor_receber = valor_total * (1 - taxa_sugerida / 100)
-
-    st.markdown('<div class="resultado">', unsafe_allow_html=True)
+            st.error(f"Erro ao processar o XML: {e}")
+    else:
+        st.info('Faça upload de um XML para começar a simulação.')
 
     # --- Botões de Navegação ---
     col1, col2 = st.columns(2)
@@ -548,13 +542,9 @@ def exibir_interface_cliente_cotacao(permissoes):
 
     st.write("Faça o upload do **XML da Nota Fiscal Eletrônica (NF-e)** para gerar sua cotação:")
     nome_cliente = st.text_input("Nome do cliente", key="xml_nome_cliente")
-    uploaded_files = st.file_uploader("Envie os XMLs das NF-e", type=["xml"], accept_multiple_files=True)
+    xml_file = st.file_uploader("Upload do XML", type=["xml"])
 
-valor_total_todas = 0.0
-lista_notas = []
-
-if uploaded_files:
-    for xml_file in uploaded_files:
+    if xml_file is not None:
         try:
             tree = ET.parse(xml_file)
             root = tree.getroot()
@@ -562,8 +552,38 @@ if uploaded_files:
 
             valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(",", "."))
             cnpj_dest  = root.find('.//nfe:CNPJ', ns).text
-            data_emissao_tag
+            data_emissao_tag = root.find('.//nfe:dhEmi', ns)
+            data_emissao = None
+            if data_emissao_tag is not None:
+                raw = data_emissao_tag.text[:10]
+                date_obj = datetime.strptime(raw, "%Y-%m-%d")
+                data_emissao = date_obj.strftime("%d/%m/%Y")
 
+            parcelas = []
+            cobr = root.find('.//nfe:cobr', ns)
+            if cobr is not None:
+                for dup in cobr.findall('nfe:dup', ns):
+                    numero = dup.find('nfe:nDup', ns).text if dup.find('nfe:nDup', ns) is not None else None
+                    raw_venc = dup.find('nfe:dVenc', ns).text
+                    data_venc = datetime.strptime(raw_venc[:10], "%Y-%m-%d").strftime("%d/%m/%Y")
+                    raw_val = dup.find('nfe:vDup', ns).text.replace(",", ".")
+                    valor_dup = float(raw_val)
+                    parcelas.append({
+                        "nDup": numero,
+                        "dVenc": data_venc,
+                        "vDup": formatar_moeda(valor_dup)
+                    })
+
+            with st.expander("Detalhes da Nota", expanded=False):
+                st.write(f"**Valor da nota fiscal:** {formatar_moeda(valor_nota)}")
+                st.write(f"**CNPJ do cliente:** {cnpj_dest}")
+                if data_emissao:
+                    st.write(f"**Data de emissão:** {data_emissao}")
+                if parcelas:
+                    st.markdown("**Parcelas e vencimentos:**")
+                    for p in parcelas:
+                        num = f"Parcela {p['nDup']}: " if p['nDup'] else ""
+                        st.write(f"- {num}{p['dVenc']} → {p['vDup']}")
 
             st.markdown("### Dados de Crédito (manual)")
             score_xml     = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key="xml_score")
