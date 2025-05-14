@@ -93,35 +93,30 @@ def authenticate_client(username, password):
         return True
     return False
     
-    conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
-    cursor = conn.cursor()
-# — verifica as colunas atuais em proposals —
-    # Verifica colunas da tabela 'proposals' e cria a lista 'colunas'
-    cursor.execute("PRAGMA table_info(proposals)")
-    info = cursor.fetchall()
-    colunas = [col[1] for col in info]
+    # Conexão com o banco de dados (se ainda não estiver criado)
+conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
+cursor = conn.cursor()
 
+# Verifica as colunas existentes da tabela 'proposals'
+cursor.execute("PRAGMA table_info(proposals)")
+info = cursor.fetchall()
+colunas = [col[1] for col in info]  # aqui nasce a variável 'colunas'
 
-# — Adiciona telefone_contato apenas se não existir —
+# Adiciona 'telefone_contato' se não existir
 if 'telefone_contato' not in colunas:
     try:
-        sqlite_cursor.execute(
-            "ALTER TABLE proposals ADD COLUMN telefone_contato TEXT"
-        )
+        cursor.execute("ALTER TABLE proposals ADD COLUMN telefone_contato TEXT")
     except sqlite3.OperationalError:
-        # Se der erro de coluna duplicada, ignora
-        pass
+        pass  # ignora se já existir
 
-# — Adiciona email_contato apenas se não existir —
+# Adiciona 'email_contato' se não existir
 if 'email_contato' not in colunas:
     try:
-        sqlite_cursor.execute(
-            "ALTER TABLE proposals ADD COLUMN email_contato TEXT"
-        )
+        cursor.execute("ALTER TABLE proposals ADD COLUMN email_contato TEXT")
     except sqlite3.OperationalError:
         pass
 
-sqlite_conn.commit()
+conn.commit()
 
 # --- Fim da conexão SQLite ---
 
