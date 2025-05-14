@@ -159,28 +159,34 @@ else:
     st.markdown('<div class="subheader">Envie uma nota fiscal eletrônica (.XML) e descubra agora quanto você pode antecipar.</div>', unsafe_allow_html=True)
 
     # --- Upload de XML ---
-    xml_file = st.file_uploader("Escolha seu arquivo XML", type=["xml"] )
-    if xml_file:
+    uploaded_files = st.file_uploader("Escolha um ou mais arquivos XML", type=["xml"], accept_multiple_files=True)
+
+valor_total = 0.0
+detalhes = []
+
+if uploaded_files:
+    for file in uploaded_files:
         try:
-            tree = ET.parse(xml_file)
+            tree = ET.parse(file)
             root = tree.getroot()
             ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-            valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
+            valor = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
+            valor_total += valor
 
-            # Cálculo simples
-            taxa_sugerida = 2.2  # Exemplo fixo, em %
-            valor_receber = valor_nota * (1 - taxa_sugerida / 100)
+            cnpj = root.find('.//nfe:CNPJ', ns)
+            cnpj_txt = cnpj.text if cnpj is not None else "—"
 
-            # Exibição do resultado
-            st.markdown('<div class="resultado">', unsafe_allow_html=True)
-            st.markdown(f"**Valor da nota:** R$ {valor_nota:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
-            st.markdown(f"**Taxa sugerida:** {taxa_sugerida:.1f}%", unsafe_allow_html=True)
-            st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            emissao = root.find('.//nfe:dhEmi', ns)
+            emissao_txt = emissao.text[:10] if emissao is not None else "—"
+
+            detalhes.append(f"🔹 {file.name}: {formatar_moeda(valor)} • CNPJ: {cnpj_txt} • Emissão: {emissao_txt}")
         except Exception as e:
-            st.error(f"Erro ao processar o XML: {e}")
-    else:
-        st.info('Faça upload de um XML para começar a simulação.')
+            st.error(f"Erro ao processar {file.name}: {e}")
+
+    taxa_sugerida = 2.2  # exemplo fixo
+    valor_receber = valor_total * (1 - taxa_sugerida / 100)
+
+    st.markdown('<div class="resultado">', unsafe_allow_html=Tr
 
     # --- Botões de Navegação ---
     col1, col2 = st.columns(2)
