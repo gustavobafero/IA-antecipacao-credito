@@ -161,28 +161,28 @@ else:
     # --- Upload de XML ---
    xml_files = st.file_uploader("Escolha seus arquivos XML", type=["xml"], accept_multiple_files=True)
 
-valor_total = 0
-if xml_files:
-    for xml_file in xml_files:
-        try:
-            tree = ET.parse(xml_file)
-            root = tree.getroot()
-            ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-            valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
-            valor_receber = valor_nota * (1 - 2.2 / 100)
-            valor_total += valor_nota
+    valor_total = 0
+    if xml_files:
+        for xml_file in xml_files:
+            try:
+                tree = ET.parse(xml_file)
+                root = tree.getroot()
+                ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
+                valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
+                valor_receber = valor_nota * (1 - 2.2 / 100)
+                valor_total += valor_nota
 
-            st.markdown('<div class="resultado">', unsafe_allow_html=True)
-            st.markdown(f"**Arquivo:** {xml_file.name}", unsafe_allow_html=True)
-            st.markdown(f"**Valor da nota:** R$ {valor_nota:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), unsafe_allow_html=True)
-            st.markdown(f"**Taxa sugerida:** 2,2%", unsafe_allow_html=True)
-            st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-        except Exception as e:
-            st.error(f"Erro ao processar {xml_file.name}: {e}")
-    st.markdown(f"**Valor total das notas:** R$ {valor_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
-else:
-    st.info('Faça upload de um ou mais XMLs para começar a simulação.')
+                st.markdown('<div class="resultado">', unsafe_allow_html=True)
+                st.markdown(f"**Arquivo:** {xml_file.name}", unsafe_allow_html=True)
+                st.markdown(f"**Valor da nota:** R$ {valor_nota:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), unsafe_allow_html=True)
+                st.markdown(f"**Taxa sugerida:** 2,2%", unsafe_allow_html=True)
+                st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"Erro ao processar {xml_file.name}: {e}")
+        st.markdown(f"**Valor total das notas:** R$ {valor_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+    else:
+        st.info('Faça upload de um ou mais XMLs para começar a simulação.')
 
 
     # --- Botões de Navegação ---
