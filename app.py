@@ -584,6 +584,10 @@ def exibir_interface_cliente_cotacao(permissoes):
                 st.write(f"**CNPJ do cliente:** {cnpj_dest}")
                 if data_emissao:
                     st.write(f"**Data de emissão:** {data_emissao}")
+                    
+            except Exception as e:
+            st.error(f"Erro ao processar {xml_file.name}: {e}")
+                
                 if parcelas:
                     st.markdown("**Parcelas e vencimentos:**")
                     for p in parcelas:
