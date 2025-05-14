@@ -665,7 +665,7 @@ def exibir_interface_cliente_cotacao():
                     )
                     client.messages.create(
                         body=msg_body,
-                        from_=f"whatsapp:{st.secrets['TWILIO_WHATSAPP_FROM']}",
+                        from_="whatsapp:+14155238886",
                         to  =f"whatsapp:{st.secrets['ADMIN_WHATSAPP_TO']}"
                     )
                     st.success("✅ Proposta enviada!")
