@@ -157,31 +157,31 @@ else:
     # --- Cabeçalho ---
     st.markdown('<div class="header">Antecipe agora. Sem compromisso.</div>', unsafe_allow_html=True)
     st.markdown('<div class="subheader">Envie uma nota fiscal eletrônica (.XML) e descubra agora quanto você pode antecipar.</div>', unsafe_allow_html=True)
-
-    # --- Upload de XML ---
-   xml_files = st.file_uploader("Escolha seus arquivos XML", type=["xml"], accept_multiple_files=True)
-if xml_files:
-    valor_total = 0.0
-    for xml_file in xml_files:
-        try:
-            tree = ET.parse(xml_file)
-            root = tree.getroot()
-            ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-            valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
-            valor_total += valor_nota
-        except Exception as e:
-            st.warning(f"Erro ao processar {xml_file.name}: {e}")
-
-    taxa_sugerida = 2.2  # fixa ou dinâmica
-    valor_receber = valor_total * (1 - taxa_sugerida / 100)
-
-    st.markdown('<div class="resultado">', unsafe_allow_html=True)
-    st.markdown(f"**Valor total das notas:** R$ {valor_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
-    st.markdown(f"**Taxa sugerida:** {taxa_sugerida:.1f}%", unsafe_allow_html=True)
-    st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 else:
-    st.info('Faça upload de um ou mais XMLs para começar a simulação.')
+    # --- Upload de XML ---
+    xml_files = st.file_uploader("Escolha seus arquivos XML", type=["xml"], accept_multiple_files=True)
+    if xml_files:
+        valor_total = 0.0
+        for xml_file in xml_files:
+            try:
+                tree = ET.parse(xml_file)
+                root = tree.getroot()
+                ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
+                valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
+                valor_total += valor_nota
+            except Exception as e:
+                st.warning(f"Erro ao processar {xml_file.name}: {e}")
+
+        taxa_sugerida = 2.2  # fixa ou dinâmica
+        valor_receber = valor_total * (1 - taxa_sugerida / 100)
+    
+        st.markdown('<div class="resultado">', unsafe_allow_html=True)
+        st.markdown(f"**Valor total das notas:** R$ {valor_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
+        st.markdown(f"**Taxa sugerida:** {taxa_sugerida:.1f}%", unsafe_allow_html=True)
+        st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    else:
+        st.info('Faça upload de um ou mais XMLs para começar a simulação.')
 
     
 
