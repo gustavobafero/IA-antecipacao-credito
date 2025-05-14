@@ -27,11 +27,10 @@ import sqlite3
 DATA_PATH = "clientes.db" 
 import os
 # — DEV: zera o .db para forçar recriação com esquema correto —
-    # criação inicial do banco aqui
+ 
+st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 st.write("📂 Diretório de trabalho:", os.getcwd())
 st.write("📋 Conteúdo desta pasta:", os.listdir(os.getcwd()))
-
-st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
 # 1) Abre o arquivo clientes.db
 # 1) Conecta ao banco
