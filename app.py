@@ -98,8 +98,8 @@ def authenticate_client(username, password):
         return True
     return False
     
-        conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
-        cursor = conn.cursor()
+    conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
+    cursor = conn.cursor()
 # — verifica as colunas atuais em proposals —
     sqlite_cursor.execute("PRAGMA table_info(proposals)")
     info = sqlite_cursor.fetchall()
