@@ -159,7 +159,7 @@ else:
     st.markdown('<div class="subheader">Envie uma nota fiscal eletrônica (.XML) e descubra agora quanto você pode antecipar.</div>', unsafe_allow_html=True)
 
     # --- Upload de XML ---
-   xml_files = st.file_uploader("Escolha seus arquivos XML", type=["xml"], accept_multiple_files=True)
+    xml_files = st.file_uploader("Escolha seus arquivos XML", type=["xml"], accept_multiple_files=True)
 
     valor_total = 0
     if xml_files:
