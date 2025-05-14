@@ -226,52 +226,59 @@ if 'role' not in st.session_state:
     st.title("🔐 Seja bem vindo a Confiança")
     modo = st.radio("Escolha:", ["Entrar", "Cadastrar-se"])
     if modo == "Cadastrar-se":
-        with st.form("form_register"):
-        # Dados de acesso e perfil
-            u       = st.text_input("Usuário")
-            p       = st.text_input("Senha", type="password")
-            p2      = st.text_input("Confirme a senha", type="password")
-            cnpj    = st.text_input("CNPJ")
-            celular = st.text_input("Celular")
-            email   = st.text_input("Email")
-           # --- dentro do st.form("form_register"), logo após o selectbox de plano ---
-            plano = st.selectbox(
-               "Preço plano de assinatura",
-                [
-                    "Básico – R$ 99,90",
-                    "Intermediário – R$ 299,90",
-                    "Avançado – R$ 499,90"
-                ]
-            )
+       with st.form("form_register"):
+    # Dados de acesso e perfil
+    u       = st.text_input("Usuário")
+    p       = st.text_input("Senha", type="password")
+    p2      = st.text_input("Confirme a senha", type="password")
+    cnpj    = st.text_input("CNPJ")
+    celular = st.text_input("Celular")
+    email   = st.text_input("Email")
 
-            periodicidade = st.selectbox(
-                "Renovação do Plano",
-                ["Mensal", "Anual - 10% de desconto"]
-            )
+    plano = st.selectbox(
+       "Preço plano de assinatura",
+        [
+            "Básico – R$ 99,90",
+            "Intermediário – R$ 299,90",
+            "Avançado – R$ 499,90"
+        ]
+    )
 
-            st.subheader("Dados do Cartão de Crédito")
+    periodicidade = st.selectbox(
+        "Renovação do Plano",
+        ["Mensal", "Anual - 10% de desconto"]
+    )
 
-        # Número e nome
-            cc_number = st.text_input(
-                "Número do Cartão",
-                placeholder="0000 0000 0000 0000",
-                max_chars=19
-            )
-            cc_name = st.text_input("Nome impresso no cartão")
-    
-            preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
-            if periodicidade == "Mensal":
-                preco_final = preco_mensal
-            elif periodicidade == "Anual (10% de desconto)":
-                preco_final = preco_mensal * 12 * 0.9
-            st.markdown(
-                f"**Valor a pagar ({periodicidade.lower()}):** R$ {preco_final:,.2f}"
-                .replace(",", "X").replace(".", ",").replace("X", "."),
-                unsafe_allow_html=True
-            )
-  
-     
-        ok_register = st.form_submit_button("Criar conta e pagar")
+    preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
+    preco_final = preco_mensal if periodicidade == "Mensal" else preco_mensal * 12 * 0.9
+
+    st.markdown(
+        f"**Valor a pagar ({periodicidade.lower()}):** R$ {preco_final:,.2f}"
+        .replace(",", "X").replace(".", ",").replace("X", "."),
+        unsafe_allow_html=True
+    )
+
+    # Agora os campos de cartão de crédito estão dentro do form!
+    st.subheader("Dados do Cartão de Crédito")
+
+    cc_number = st.text_input(
+        "Número do Cartão",
+        placeholder="0000 0000 0000 0000",
+        max_chars=19
+    )
+    cc_name = st.text_input("Nome impresso no cartão")
+
+    col1, col2, col3 = st.columns([2,2,1])
+    with col1:
+        mes = st.selectbox("Mês de validade", [f"{m:02d}" for m in range(1,13)])
+    with col2:
+        ano = st.selectbox("Ano de validade", [str(y) for y in range(datetime.now().year, datetime.now().year+10)])
+    with col3:
+        cvv = st.text_input("CVV", type="password", max_chars=4)
+
+    # ✅ Botão dentro do form, agora funciona perfeitamente
+    ok_register = st.form_submit_button("Criar conta e pagar")
+
         # Validade e CVV
         col1, col2, col3 = st.columns([2,2,1])
         with col1:
