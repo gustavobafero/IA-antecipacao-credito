@@ -558,36 +558,22 @@ def exibir_interface_cliente_cotacao(permissoes):
                 cnpj_dest  = root.find('.//nfe:CNPJ', ns).text
                 data_emissao_tag = root.find('.//nfe:dhEmi', ns)
                 data_emissao = None
-                
-            if data_emissao_tag is not None:
-                raw = data_emissao_tag.text[:10]
-                date_obj = datetime.strptime(raw, "%Y-%m-%d")
-                data_emissao = date_obj.strftime("%d/%m/%Y")
 
-            parcelas = []
-            cobr = root.find('.//nfe:cobr', ns)
-            if cobr is not None:
-                for dup in cobr.findall('nfe:dup', ns):
-                    numero = dup.find('nfe:nDup', ns).text if dup.find('nfe:nDup', ns) is not None else None
-                    raw_venc = dup.find('nfe:dVenc', ns).text
-                    data_venc = datetime.strptime(raw_venc[:10], "%Y-%m-%d").strftime("%d/%m/%Y")
-                    raw_val = dup.find('nfe:vDup', ns).text.replace(",", ".")
-                    valor_dup = float(raw_val)
-                    parcelas.append({
-                        "nDup": numero,
-                        "dVenc": data_venc,
-                        "vDup": formatar_moeda(valor_dup)
-                    })
+                if data_emissao_tag is not None:
+                    raw = data_emissao_tag.text[:10]
+                    date_obj = datetime.strptime(raw, "%Y-%m-%d")
+                    data_emissao = date_obj.strftime("%d/%m/%Y")
 
-            with st.expander("Detalhes da Nota", expanded=False):
-                st.write(f"**Valor da nota fiscal:** {formatar_moeda(valor_nota)}")
-                st.write(f"**CNPJ do cliente:** {cnpj_dest}")
+                st.markdown("----")
+                st.subheader(f"🧾 Nota: {xml_file.name}")
+                st.write(f"Valor: {formatar_moeda(valor_nota)}")
+                st.write(f"CNPJ: {cnpj_dest}")
                 if data_emissao:
-                    st.write(f"**Data de emissão:** {data_emissao}")
-                    
+                    st.write(f"Data de emissão: {data_emissao}")
+
             except Exception as e:
-            st.error(f"Erro ao processar {xml_file.name}: {e}")
-                
+                st.error(f"Erro ao processar {xml_file.name}: {e}")
+
                 if parcelas:
                     st.markdown("**Parcelas e vencimentos:**")
                     for p in parcelas:
