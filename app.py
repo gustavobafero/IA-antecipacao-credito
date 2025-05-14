@@ -658,6 +658,7 @@ def exibir_interface_cliente_cotacao():
                 if receber_propostas:
                     msg_body += f"• Telefone para contato: {telefone_contato}\n"
                     msg_body += f"• E-mail para contato: {email_contato}\n"
+                try:   
                 client = Client(
                     st.secrets["TWILIO_ACCOUNT_SID"],
                     st.secrets["TWILIO_AUTH_TOKEN"]
@@ -667,7 +668,10 @@ def exibir_interface_cliente_cotacao():
                     from_=f"whatsapp:{st.secrets['TWILIO_WHATSAPP_FROM']}",
                     to  =f"whatsapp:{st.secrets['ADMIN_WHATSAPP_TO']}"
                 )
+                
                 st.success("✅ Proposta enviada!")
+                except Exception as e:
+                st.error(f"Erro ao enviar WhatsApp: {e}")
                 cursor.execute(
                     """
                     INSERT INTO proposals
