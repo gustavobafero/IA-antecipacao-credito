@@ -645,66 +645,67 @@ def exibir_interface_cliente_cotacao(permissoes):
                 )
                 
         if "propostas" in permissoes:
-            if st.button("Solicitar proposta", key="xml_solicitar"):
-                msg_body = (
-                      f"📩 *Nova solicitação de proposta*\n"
-                    f"• Cliente: {nome_cliente}\n"
-                    f"• CNPJ: {cnpj_dest}\n"
-                    f"• Valor da NF-e: {formatar_moeda(valor_nota)}\n"
-                    f"• Emissão: {data_emissao or '—'}\n"
-                    f"• Taxa IA sugerida: {taxa_ia}%\n"
-                    f"• Taxa escolhida: {taxa_cliente}%\n"
-                )
-                
-                if parcelas:
-                    msg_body += "• Parcelas:\n"
-                    for p in parcelas:
-                        num = f"{p['nDup']}. " if p['nDup'] else ""
-                        msg_body += f"   – {num}{p['dVenc']} → {p['vDup']}\n"
+    if st.button("Solicitar proposta", key="xml_solicitar"):
+        msg_body = (
+            f"📩 *Nova solicitação de proposta*\n"
+            f"• Cliente: {nome_cliente}\n"
+            f"• CNPJ: {cnpj_dest}\n"
+            f"• Valor da NF-e: {formatar_moeda(valor_nota)}\n"
+            f"• Emissão: {data_emissao or '—'}\n"
+            f"• Taxa IA sugerida: {taxa_ia}%\n"
+            f"• Taxa escolhida: {taxa_cliente}%\n"
+        )
+        
+        if parcelas:
+            msg_body += "• Parcelas:\n"
+            for p in parcelas:
+                num = f"{p['nDup']}. " if p['nDup'] else ""
+                msg_body += f"   – {num}{p['dVenc']} → {p['vDup']}\n"
 
-                contato = "SIM" if receber_propostas else "NÃO"
-                msg_body += f"• Deseja contato: {contato}\n"
+        contato = "SIM" if receber_propostas else "NÃO"
+        msg_body += f"• Deseja contato: {contato}\n"
 
-                if receber_propostas:
-                    msg_body += f"• Telefone para contato: {telefone_contato}\n"
-                    msg_body += f"• E-mail para contato: {email_contato}\n"
-                try:   
-                    client = Client(
-                        st.secrets["TWILIO_ACCOUNT_SID"],
-                        st.secrets["TWILIO_AUTH_TOKEN"]
-                    )
-                    client.messages.create(
-                        body=msg_body,
-                        from_="whatsapp:+14155238886",
-                        to  =f"whatsapp:{st.secrets['ADMIN_WHATSAPP_TO']}"
-                    )
-                    st.success("✅ Proposta enviada!")
-                except Exception as e:
-                    st.error(f"Erro ao enviar WhatsApp: {e}")
-                cursor.execute(
-                    """
-                    INSERT INTO proposals
-                      (nome_cliente, cnpj, valor_nota, taxa_ia, taxa_cliente,
-                       deseja_contato, telefone_contato, email_contato, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (
-                        nome_cliente,
-                        cnpj_dest,
-                        valor_nota,
-                        taxa_ia,
-                        taxa_cliente,
-                        contato,
-                        telefone_contato,   # <- adiciona aqui
-                        email_contato,      # <- e aqui
-                        datetime.now().isoformat()
-                    )
-                )
-                conn.commit()
+        if receber_propostas:
+            msg_body += f"• Telefone para contato: {telefone_contato}\n"
+            msg_body += f"• E-mail para contato: {email_contato}\n"
 
-        else:
-            st.warning("⚠️ Seu plano atual não permite solicitar propostas. Assine o plano Intermediário para ter acesso a essa função.")
-                
+        try:   
+            client = Client(
+                st.secrets["TWILIO_ACCOUNT_SID"],
+                st.secrets["TWILIO_AUTH_TOKEN"]
+            )
+            client.messages.create(
+                body=msg_body,
+                from_="whatsapp:+14155238886",
+                to=f"whatsapp:{st.secrets['ADMIN_WHATSAPP_TO']}"
+            )
+            st.success("✅ Proposta enviada!")
+        except Exception as e:
+            st.error(f"Erro ao enviar WhatsApp: {e}")
+
+        cursor.execute(
+            """
+            INSERT INTO proposals
+              (nome_cliente, cnpj, valor_nota, taxa_ia, taxa_cliente,
+               deseja_contato, telefone_contato, email_contato, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                nome_cliente,
+                cnpj_dest,
+                valor_nota,
+                taxa_ia,
+                taxa_cliente,
+                contato,
+                telefone_contato,
+                email_contato,
+                datetime.now().isoformat()
+            )
+        )
+        conn.commit()
+else:
+    st.warning("⚠️ Seu plano atual não permite solicitar propostas. Assine o plano Intermediário para ter acesso a essa função.")
+
 
 # --- Roteamento pós-login ---
 if st.session_state.role == 'admin':
