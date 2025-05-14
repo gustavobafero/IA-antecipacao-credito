@@ -655,8 +655,6 @@ def exibir_interface_cliente_cotacao(permissoes):
                     f"• Taxa IA sugerida: {taxa_ia}%\n"
                     f"• Taxa escolhida: {taxa_cliente}%\n"
                 )
-        else:
-            st.warning("⚠️ Seu plano atual não permite solicitar propostas. Assine o plano Intermediário para ter acesso a essa função.")
                 
                 if parcelas:
                     msg_body += "• Parcelas:\n"
@@ -704,8 +702,8 @@ def exibir_interface_cliente_cotacao(permissoes):
                 )
                 conn.commit()
 
-        except Exception as e:
-            st.error(f"Erro ao processar o XML: {e}")
+        else:
+            st.warning("⚠️ Seu plano atual não permite solicitar propostas. Assine o plano Intermediário para ter acesso a essa função.")
                 
 
 # --- Roteamento pós-login ---
