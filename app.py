@@ -159,28 +159,31 @@ else:
     st.markdown('<div class="subheader">Envie uma nota fiscal eletrônica (.XML) e descubra agora quanto você pode antecipar.</div>', unsafe_allow_html=True)
 
     # --- Upload de XML ---
-    xml_file = st.file_uploader("Escolha seu arquivo XML", type=["xml"] )
-    if xml_file:
+   xml_files = st.file_uploader("Escolha seus arquivos XML", type=["xml"], accept_multiple_files=True)
+
+valor_total = 0
+if xml_files:
+    for xml_file in xml_files:
         try:
             tree = ET.parse(xml_file)
             root = tree.getroot()
             ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
             valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(',', '.'))
+            valor_receber = valor_nota * (1 - 2.2 / 100)
+            valor_total += valor_nota
 
-            # Cálculo simples
-            taxa_sugerida = 2.2  # Exemplo fixo, em %
-            valor_receber = valor_nota * (1 - taxa_sugerida / 100)
-
-            # Exibição do resultado
             st.markdown('<div class="resultado">', unsafe_allow_html=True)
-            st.markdown(f"**Valor da nota:** R$ {valor_nota:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
-            st.markdown(f"**Taxa sugerida:** {taxa_sugerida:.1f}%", unsafe_allow_html=True)
-            st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), unsafe_allow_html=True)
+            st.markdown(f"**Arquivo:** {xml_file.name}", unsafe_allow_html=True)
+            st.markdown(f"**Valor da nota:** R$ {valor_nota:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), unsafe_allow_html=True)
+            st.markdown(f"**Taxa sugerida:** 2,2%", unsafe_allow_html=True)
+            st.markdown(f"**Valor a receber:** R$ {valor_receber:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
         except Exception as e:
-            st.error(f"Erro ao processar o XML: {e}")
-    else:
-        st.info('Faça upload de um XML para começar a simulação.')
+            st.error(f"Erro ao processar {xml_file.name}: {e}")
+    st.markdown(f"**Valor total das notas:** R$ {valor_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+else:
+    st.info('Faça upload de um ou mais XMLs para começar a simulação.')
+
 
     # --- Botões de Navegação ---
     col1, col2 = st.columns(2)
@@ -542,9 +545,11 @@ def exibir_interface_cliente_cotacao(permissoes):
 
     st.write("Faça o upload do **XML da Nota Fiscal Eletrônica (NF-e)** para gerar sua cotação:")
     nome_cliente = st.text_input("Nome do cliente", key="xml_nome_cliente")
-    xml_file = st.file_uploader("Upload do XML", type=["xml"])
+    xml_files = st.file_uploader("Upload de XMLs", type=["xml"], accept_multiple_files=True)
 
-    if xml_file is not None:
+    if xml_files:
+        for xml_file in xml_files:
+
         try:
             tree = ET.parse(xml_file)
             root = tree.getroot()
