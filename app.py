@@ -643,8 +643,10 @@ def exibir_interface_cliente_cotacao(permissoes):
                     value=user_email,
                     key="email_contato"
                 )
-                
-        if "propostas" in permissoes:
+        except Exception as e:
+            st.error(f"Erro ao processar XML: {e}")
+            
+if "propostas" in permissoes:
     if st.button("Solicitar proposta", key="xml_solicitar"):
         msg_body = (
             f"📩 *Nova solicitação de proposta*\n"
