@@ -261,7 +261,7 @@ if 'role' not in st.session_state:
             )
     # Exibição do preço *antes* do submit
             
-            ok_register = st.form_submit_button("Criar conta e pagar")
+           
 
         st.subheader("Dados do Cartão de Crédito")
 
@@ -273,6 +273,7 @@ if 'role' not in st.session_state:
         )
         cc_name = st.text_input("Nome impresso no cartão")
 
+        ok_register = st.form_submit_button("Criar conta e pagar")
         # Validade e CVV
         col1, col2, col3 = st.columns([2,2,1])
         with col1:
