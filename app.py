@@ -529,7 +529,7 @@ def exibir_interface_analise_risco():
 
 
 # Interface de Cotação de Crédito via XML (sem Serasa)
-def exibir_interface_cliente_cotacao():
+def exibir_interface_cliente_cotacao(permissoes):
     st.header("Cotação de Antecipação de Crédito")
     user_tel, user_email = "", ""
     try:
@@ -643,7 +643,8 @@ def exibir_interface_cliente_cotacao():
                     value=user_email,
                     key="email_contato"
                 )
-            
+                
+        if "propostas" in permissoes:
             if st.button("Solicitar proposta", key="xml_solicitar"):
                 msg_body = (
                       f"📩 *Nova solicitação de proposta*\n"
@@ -654,6 +655,8 @@ def exibir_interface_cliente_cotacao():
                     f"• Taxa IA sugerida: {taxa_ia}%\n"
                     f"• Taxa escolhida: {taxa_cliente}%\n"
                 )
+        else:
+            st.warning("⚠️ Seu plano atual não permite solicitar propostas. Assine o plano Intermediário para ter acesso a essa função.")
                 
                 if parcelas:
                     msg_body += "• Parcelas:\n"
