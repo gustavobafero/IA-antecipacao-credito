@@ -542,9 +542,13 @@ def exibir_interface_cliente_cotacao(permissoes):
 
     st.write("Faça o upload do **XML da Nota Fiscal Eletrônica (NF-e)** para gerar sua cotação:")
     nome_cliente = st.text_input("Nome do cliente", key="xml_nome_cliente")
-    xml_file = st.file_uploader("Upload do XML", type=["xml"])
+    uploaded_files = st.file_uploader("Envie os XMLs das NF-e", type=["xml"], accept_multiple_files=True)
 
-    if xml_file is not None:
+valor_total_todas = 0.0
+lista_notas = []
+
+if uploaded_files:
+    for xml_file in uploaded_files:
         try:
             tree = ET.parse(xml_file)
             root = tree.getroot()
@@ -552,38 +556,8 @@ def exibir_interface_cliente_cotacao(permissoes):
 
             valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(",", "."))
             cnpj_dest  = root.find('.//nfe:CNPJ', ns).text
-            data_emissao_tag = root.find('.//nfe:dhEmi', ns)
-            data_emissao = None
-            if data_emissao_tag is not None:
-                raw = data_emissao_tag.text[:10]
-                date_obj = datetime.strptime(raw, "%Y-%m-%d")
-                data_emissao = date_obj.strftime("%d/%m/%Y")
+            data_emissao_tag
 
-            parcelas = []
-            cobr = root.find('.//nfe:cobr', ns)
-            if cobr is not None:
-                for dup in cobr.findall('nfe:dup', ns):
-                    numero = dup.find('nfe:nDup', ns).text if dup.find('nfe:nDup', ns) is not None else None
-                    raw_venc = dup.find('nfe:dVenc', ns).text
-                    data_venc = datetime.strptime(raw_venc[:10], "%Y-%m-%d").strftime("%d/%m/%Y")
-                    raw_val = dup.find('nfe:vDup', ns).text.replace(",", ".")
-                    valor_dup = float(raw_val)
-                    parcelas.append({
-                        "nDup": numero,
-                        "dVenc": data_venc,
-                        "vDup": formatar_moeda(valor_dup)
-                    })
-
-            with st.expander("Detalhes da Nota", expanded=False):
-                st.write(f"**Valor da nota fiscal:** {formatar_moeda(valor_nota)}")
-                st.write(f"**CNPJ do cliente:** {cnpj_dest}")
-                if data_emissao:
-                    st.write(f"**Data de emissão:** {data_emissao}")
-                if parcelas:
-                    st.markdown("**Parcelas e vencimentos:**")
-                    for p in parcelas:
-                        num = f"Parcela {p['nDup']}: " if p['nDup'] else ""
-                        st.write(f"- {num}{p['dVenc']} → {p['vDup']}")
 
             st.markdown("### Dados de Crédito (manual)")
             score_xml     = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key="xml_score")
