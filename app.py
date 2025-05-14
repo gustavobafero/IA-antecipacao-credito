@@ -249,26 +249,26 @@ if 'role' not in st.session_state:
                 ["Mensal", "Anual - 10% de desconto"]
             )
 
-        st.subheader("Dados do Cartão de Crédito")
+            st.subheader("Dados do Cartão de Crédito")
 
         # Número e nome
-        cc_number = st.text_input(
-            "Número do Cartão",
-            placeholder="0000 0000 0000 0000",
-            max_chars=19
-        )
-        cc_name = st.text_input("Nome impresso no cartão")
-
-        preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
-        if periodicidade == "Mensal":
-            preco_final = preco_mensal
-        elif periodicidade == "Anual (10% de desconto)":
-            preco_final = preco_mensal * 12 * 0.9
-        st.markdown(
-            f"**Valor a pagar ({periodicidade.lower()}):** R$ {preco_final:,.2f}"
-            .replace(",", "X").replace(".", ",").replace("X", "."),
-            unsafe_allow_html=True
-        )
+            cc_number = st.text_input(
+                "Número do Cartão",
+                placeholder="0000 0000 0000 0000",
+                max_chars=19
+            )
+            cc_name = st.text_input("Nome impresso no cartão")
+    
+            preco_mensal = float(plano.split("R$")[1].replace(".", "").replace(",", "."))
+            if periodicidade == "Mensal":
+                preco_final = preco_mensal
+            elif periodicidade == "Anual (10% de desconto)":
+                preco_final = preco_mensal * 12 * 0.9
+            st.markdown(
+                f"**Valor a pagar ({periodicidade.lower()}):** R$ {preco_final:,.2f}"
+                .replace(",", "X").replace(".", ",").replace("X", "."),
+                unsafe_allow_html=True
+            )
   
      
         ok_register = st.form_submit_button("Criar conta e pagar")
