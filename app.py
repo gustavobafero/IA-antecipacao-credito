@@ -754,7 +754,9 @@ if st.session_state.role == 'admin':
         st.info("Ainda não há propostas.")
 elif st.session_state.role == 'cliente':
     st.header("👤 Dashboard do Cliente")
-    permissoes = PERMISSOES_POR_PLANO.get(st.session_state.plano, [])
+    plano_atual = st.session_state.get("plano", "").split("–")[0].strip()
+    permissoes = PERMISSOES_POR_PLANO.get(plano_atual, [])
+
 
     abas = []
     if "cotacao" in permissoes:
