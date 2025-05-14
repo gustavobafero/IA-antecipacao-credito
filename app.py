@@ -194,10 +194,8 @@ else:
         <div style='background-color:#E3F2FD; padding: 20px; border-radius: 10px; margin-top: 20px; text-align:center;'>
             <p style='font-size:22px; font-weight:bold; margin-bottom:10px;'>📄 Valor total das notas:</p>
             <p style='font-size:28px; color:#0D47A1; font-weight:bold;'>R$ {valor_total:,.2f}</p>
-
             <p style='font-size:22px; font-weight:bold; margin-top:20px;'>📊 Taxa da IA aplicada:</p>
             <p style='font-size:26px; color:#F57C00; font-weight:bold;'>{taxa_ia:.2f}%</p>
-
             <p style='font-size:22px; font-weight:bold; margin-top:20px;'>💸 Valor total a receber:</p>
             <p style='font-size:28px; color:#2E7D32; font-weight:bold;'>R$ {valor_total_receber:,.2f}</p>
         </div>
