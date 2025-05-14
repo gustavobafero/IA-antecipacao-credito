@@ -24,8 +24,15 @@ from sqlalchemy import create_engine, text
 import streamlit as st 
 from io import StringIO
 import sqlite3
-DATA_PATH = "clientes.db" 
 import os
+DATA_PATH = "clientes.db" 
+# Dicionário com permissões por plano de assinatura
+PERMISSOES_POR_PLANO = {
+    "Básico": ["cotacao"],
+    "Intermediário": ["cotacao", "analise_risco"],
+    "Avançado": ["cotacao", "analise_risco", "pdf", "serasa"]
+}
+
 # — DEV: zera o .db para forçar recriação com esquema correto —
  
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
@@ -309,8 +316,17 @@ if 'role' not in st.session_state:
                 st.session_state.role = 'admin'
             # cliente via DB
             elif authenticate_client(u, p):
-                st.session_state.role = 'cliente'
-            st.session_state.username = u
+                cursor.execute("SELECT plano FROM clients WHERE username = ?", (u,))
+                row = cursor.fetchone()
+                if row:
+                    plano_completo = row[0]  # Ex: "Intermediário – R$ 299,90"
+                    plano_limpo = plano_completo.split("–")[0].strip()  # Fica só "Intermediário"
+                    st.session_state.role = 'cliente'
+                    st.session_state.username = u
+                    st.session_state.plano = plano_limpo
+                else:
+                    st.error("Plano de assinatura não encontrado.")
+
         else:
             st.error("Usuário ou senha inválidos")
     st.stop()
@@ -721,11 +737,25 @@ if st.session_state.role == 'admin':
         st.info("Ainda não há propostas.")
 elif st.session_state.role == 'cliente':
     st.header("👤 Dashboard do Cliente")
-    tab1, tab2 = st.tabs(["💰 Cotação de Antecipação", "⚙️ Análise de Risco"])
-    with tab1:
-        exibir_interface_cliente_cotacao()
-    with tab2:
-        exibir_interface_analise_risco()
+    permissoes = PERMISSOES_POR_PLANO.get(st.session_state.plano, [])
+
+    abas = []
+    if "cotacao" in permissoes:
+        abas.append("💰 Cotação de Antecipação")
+    if "analise_risco" in permissoes:
+        abas.append("⚙️ Análise de Risco")
+
+    if abas:
+        tabs = st.tabs(abas)
+        if "💰 Cotação de Antecipação" in abas:
+            with tabs[abas.index("💰 Cotação de Antecipação")]:
+                exibir_interface_cliente_cotacao()
+        if "⚙️ Análise de Risco" in abas:
+            with tabs[abas.index("⚙️ Análise de Risco")]:
+                exibir_interface_analise_risco()
+    else:
+        st.warning("Seu plano atual não dá acesso a funcionalidades. Atualize para aproveitar a plataforma.")
+
 
 # Configuração de localização para formatação brasileira
 try:
