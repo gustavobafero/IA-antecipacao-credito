@@ -182,6 +182,10 @@ else:
                 st.error(f"Erro ao processar {xml_file.name}: {e}")
         valor_total_receber = valor_total * (1 - 2.2 / 100)
 
+        lista_taxas = [2.2, 2.4, 2.1]  # Substitua pelos valores reais calculados em loop
+
+        taxa_ia = sum(lista_taxas) / len(lista_taxas) if lista_taxas else 0.0
+
         st.markdown("""
         <div style='background-color:#E3F2FD; padding: 20px; border-radius: 10px; margin-top: 20px; text-align:center;'>
             <p style='font-size:22px; font-weight:bold; margin-bottom:10px;'>📄 Valor total das notas:</p>
