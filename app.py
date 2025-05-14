@@ -236,11 +236,11 @@ if 'role' not in st.session_state:
             email   = st.text_input("Email")
            # --- dentro do st.form("form_register"), logo após o selectbox de plano ---
             plano = st.selectbox(
-               "Selecione um plano de assinatura",
+               "Preço plano de assinatura",
                 [
-                    "Básico – R$ 699,90",
-                    "Intermediário – R$ 1.299,90",
-                    "Avançado – R$ 1.999,90"
+                    "Básico – R$ 99,90",
+                    "Intermediário – R$ 299,90",
+                    "Avançado – R$ 499,90"
                 ]
             )
 
