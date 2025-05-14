@@ -549,16 +549,16 @@ def exibir_interface_cliente_cotacao(permissoes):
 
     if xml_files:
         for xml_file in xml_files:
+            try:
+                tree = ET.parse(xml_file)
+                root = tree.getroot()
+                ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
 
-        try:
-            tree = ET.parse(xml_file)
-            root = tree.getroot()
-            ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-
-            valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(",", "."))
-            cnpj_dest  = root.find('.//nfe:CNPJ', ns).text
-            data_emissao_tag = root.find('.//nfe:dhEmi', ns)
-            data_emissao = None
+                valor_nota = float(root.find('.//nfe:vNF', ns).text.replace(",", "."))
+                cnpj_dest  = root.find('.//nfe:CNPJ', ns).text
+                data_emissao_tag = root.find('.//nfe:dhEmi', ns)
+                data_emissao = None
+                
             if data_emissao_tag is not None:
                 raw = data_emissao_tag.text[:10]
                 date_obj = datetime.strptime(raw, "%Y-%m-%d")
