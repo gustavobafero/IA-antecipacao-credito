@@ -302,7 +302,8 @@ if 'role' not in st.session_state:
             pagamento_sucesso = True  # <- substitua pela chamada ao seu gateway
 
             if pagamento_sucesso and register_client(u, p, cnpj, celular, email, plano):
-                st.success(f"Conta criada! Plano: {plano} em {parcelas}x")
+                st.success(f"Conta criada! Plano: {plano} – Cobrança: {periodicidade}")
+
             else:
                 st.error("Falha no pagamento ou usuário já existe.")
 
