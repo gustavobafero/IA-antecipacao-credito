@@ -698,7 +698,7 @@ if st.session_state.role == 'admin':
     cursor.execute("PRAGMA table_info(proposals)")
     colunas_admin = [c[1] for c in cursor.fetchall()]
 
-    st.header("📋 Propostas Recebidas (Admin)")
+    st.header("📋 Propostas Recebidas")
     sql = """
       SELECT
         p.id                   AS "ID",
