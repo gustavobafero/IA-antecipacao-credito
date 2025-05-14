@@ -244,10 +244,9 @@ if 'role' not in st.session_state:
                 ]
             )
 
-    # NOVO: periodicidade de cobrança
             periodicidade = st.selectbox(
-                "Periodicidade de cobrança",
-                ["Mensal", "Anual (10% de desconto)"]
+                "Renovação do Plano",
+                ["Mensal", "Anual - 10% de desconto"]
             )
 
         st.subheader("Dados do Cartão de Crédito")
