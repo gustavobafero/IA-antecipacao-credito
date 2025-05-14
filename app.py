@@ -29,11 +29,7 @@ import os
 # — DEV: zera o .db para forçar recriação com esquema correto —
  
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
-st.write("📂 Diretório de trabalho:", os.getcwd())
-st.write("📋 Conteúdo desta pasta:", os.listdir(os.getcwd()))
 
-# 1) Abre o arquivo clientes.db
-# 1) Conecta ao banco
 if not os.path.exists(DATA_PATH):
     conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
     cursor = conn.cursor()
@@ -100,7 +96,7 @@ def authenticate_client(username, password):
     conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
     cursor = conn.cursor()
 # — verifica as colunas atuais em proposals —
-    sqlite_cursor.execute("PRAGMA table_info(proposals)")
+    cursor.execute("PRAGMA table_info(proposals)")
     info = sqlite_cursor.fetchall()
     colunas = [col[1] for col in info]
 
