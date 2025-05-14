@@ -30,10 +30,6 @@ import os
  
 st.set_page_config(page_title="Simulação Antecipação", layout="centered")
 
-if 'role' not in st.session_state:
-    st.session_state.role = None  # ainda não está logado
-
-
 if not os.path.exists(DATA_PATH):
     conn = sqlite3.connect(DATA_PATH, check_same_thread=False)
     cursor = conn.cursor()
