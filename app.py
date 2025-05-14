@@ -140,7 +140,6 @@ if st.session_state.navigate == "register":
 elif st.session_state.navigate == "login":
     # fluxo principal irá lidar com login
     pass
-else:
     # Página Inicial (antes do login)
     # --- Estilos ---
     st.markdown("""
