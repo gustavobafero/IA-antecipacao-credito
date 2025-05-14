@@ -181,6 +181,9 @@ else:
             except Exception as e:
                 st.error(f"Erro ao processar {xml_file.name}: {e}")
         st.markdown(f"**Valor total das notas:** R$ {valor_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+        valor_total_receber = valor_total * (1 - 2.2 / 100)
+        st.markdown(f"**Valor total a receber:** R$ {valor_total_receber:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
     else:
         st.info('Faça upload de um ou mais XMLs para começar a simulação.')
 
