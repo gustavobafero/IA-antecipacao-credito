@@ -27,11 +27,13 @@ import sqlite3
 import os
 DATA_PATH = "clientes.db" 
 # Dicionário com permissões por plano de assinatura
+# Permissões por plano
 PERMISSOES_POR_PLANO = {
     "Básico": ["cotacao"],
-    "Intermediário": ["cotacao", "analise_risco"],
-    "Avançado": ["cotacao", "analise_risco", "pdf", "serasa"]
+    "Intermediário": ["cotacao", "propostas"],
+    "Avançado": ["cotacao", "propostas", "analise_risco", "pdf", "serasa"]
 }
+
 
 # — DEV: zera o .db para forçar recriação com esquema correto —
  
@@ -749,7 +751,7 @@ elif st.session_state.role == 'cliente':
         tabs = st.tabs(abas)
         if "💰 Cotação de Antecipação" in abas:
             with tabs[abas.index("💰 Cotação de Antecipação")]:
-                exibir_interface_cliente_cotacao()
+                exibir_interface_cliente_cotacao(permissoes)
         if "⚙️ Análise de Risco" in abas:
             with tabs[abas.index("⚙️ Análise de Risco")]:
                 exibir_interface_analise_risco()
