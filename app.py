@@ -682,8 +682,9 @@ def exibir_interface_cliente_cotacao(permissoes):
                     conn.commit()
             else:
                 st.warning("⚠️ Seu plano atual não permite solicitar propostas.")
-            except Exception as e:
-                st.error(f"Erro ao processar XML: {e}")
+                
+                except Exception as e:
+                    st.error(f"Erro ao processar XML: {e}")
 
 # --- Roteamento pós-login ---
 if st.session_state.role == 'admin':
