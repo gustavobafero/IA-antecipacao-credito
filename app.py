@@ -539,10 +539,11 @@ def exibir_interface_cliente_cotacao(permissoes):
             user_tel, user_email = row
     except Exception:
         pass
+
     st.write("Faça o upload do **XML da Nota Fiscal Eletrônica (NF-e)** para gerar sua cotação:")
     nome_cliente = st.text_input("Nome do cliente", key="xml_nome_cliente")
-
     xml_file = st.file_uploader("Upload do XML", type=["xml"])
+
     if xml_file is not None:
         try:
             tree = ET.parse(xml_file)
@@ -558,8 +559,8 @@ def exibir_interface_cliente_cotacao(permissoes):
                 date_obj = datetime.strptime(raw, "%Y-%m-%d")
                 data_emissao = date_obj.strftime("%d/%m/%Y")
 
-                parcelas = []
-                cobr = root.find('.//nfe:cobr', ns)
+            parcelas = []
+            cobr = root.find('.//nfe:cobr', ns)
             if cobr is not None:
                 for dup in cobr.findall('nfe:dup', ns):
                     numero = dup.find('nfe:nDup', ns).text if dup.find('nfe:nDup', ns) is not None else None
@@ -571,7 +572,7 @@ def exibir_interface_cliente_cotacao(permissoes):
                         "nDup": numero,
                         "dVenc": data_venc,
                         "vDup": formatar_moeda(valor_dup)
-                })
+                    })
 
             with st.expander("Detalhes da Nota", expanded=False):
                 st.write(f"**Valor da nota fiscal:** {formatar_moeda(valor_nota)}")
@@ -604,15 +605,7 @@ def exibir_interface_cliente_cotacao(permissoes):
                 2
             )
 
-            suggested_taxa = round(risco_total, 2)
-            
             taxa_ia = round(risco_total * 0.1, 2)
-            st.markdown(
-                f"<p style='font-size:24px; font-weight:bold; margin:10px 0;'>🔥 Taxa sugerida pela IA: {taxa_ia}%</p>",
-                unsafe_allow_html=True
-            )
-
-    # campo editável para o cliente definir a taxa de antecipação
             taxa_cliente = st.number_input(
                 "Defina a taxa de antecipação (%)",
                 min_value=0.0,
@@ -621,43 +614,19 @@ def exibir_interface_cliente_cotacao(permissoes):
                 value=taxa_ia,
                 format="%.2f"
             )
-
-    # cálculo do valor a receber com a taxa escolhida pelo cliente
             valor_receber = valor_nota * (1 - taxa_cliente/100)
             st.metric("Você receberá", f"{formatar_moeda(valor_receber)}")
-
             st.write("Este cálculo não leva em consideração dados de concentração de carteira e eventuais riscos que não apareçam no Serasa")
 
-            receber_propostas = st.checkbox(
-                "Desejo receber propostas e que entrem em contato comigo"
-            )
-
+            receber_propostas = st.checkbox("Desejo receber propostas e que entrem em contato comigo")
             if receber_propostas:
-                telefone_contato = st.text_input(
-                    "Telefone para contato",
-                    value=user_tel,
-                    key="telefone_contato"
-                )
-                email_contato = st.text_input(
-                    "E-mail para contato",
-                    value=user_email,
-                    key="email_contato"
-                )
-        except Exception as e:
-            st.error(f"Erro ao processar XML: {e}")
-            
-            if receber_propostas:
-                telefone_contato = st.text_input(
-                    "Telefone para contato",
-                    value=user_tel,
-                    key="telefone_contato"
-                )
-                email_contato = st.text_input(
-                    "E-mail para contato",
-                    value=user_email,
-                    key="email_contato"
-                )
+                telefone_contato = st.text_input("Telefone para contato", value=user_tel, key="telefone_contato")
+                email_contato = st.text_input("E-mail para contato", value=user_email, key="email_contato")
+            else:
+                telefone_contato = ""
+                email_contato = ""
 
+            # ✅ Aqui está o botão, agora posicionado corretamente
             if "propostas" in permissoes:
                 if st.button("Solicitar proposta", key="xml_solicitar"):
                     msg_body = (
@@ -669,7 +638,7 @@ def exibir_interface_cliente_cotacao(permissoes):
                         f"• Taxa IA sugerida: {taxa_ia}%\n"
                         f"• Taxa escolhida: {taxa_cliente}%\n"
                     )
-        
+
                     if parcelas:
                         msg_body += "• Parcelas:\n"
                         for p in parcelas:
@@ -678,12 +647,11 @@ def exibir_interface_cliente_cotacao(permissoes):
 
                     contato = "SIM" if receber_propostas else "NÃO"
                     msg_body += f"• Deseja contato: {contato}\n"
-
                     if receber_propostas:
                         msg_body += f"• Telefone para contato: {telefone_contato}\n"
                         msg_body += f"• E-mail para contato: {email_contato}\n"
 
-                    try:   
+                    try:
                         client = Client(
                             st.secrets["TWILIO_ACCOUNT_SID"],
                             st.secrets["TWILIO_AUTH_TOKEN"]
@@ -696,8 +664,8 @@ def exibir_interface_cliente_cotacao(permissoes):
                         st.success("✅ Proposta enviada!")
                     except Exception as e:
                         st.error(f"Erro ao enviar WhatsApp: {e}")
-    
-                        cursor.execute(
+
+                    cursor.execute(
                         """
                         INSERT INTO proposals
                           (nome_cliente, cnpj, valor_nota, taxa_ia, taxa_cliente,
@@ -719,6 +687,8 @@ def exibir_interface_cliente_cotacao(permissoes):
                     conn.commit()
             else:
                 st.warning("⚠️ Seu plano atual não permite solicitar propostas.")
+        except Exception as e:
+            st.error(f"Erro ao processar XML: {e}")
 
 # --- Roteamento pós-login ---
 if st.session_state.role == 'admin':
