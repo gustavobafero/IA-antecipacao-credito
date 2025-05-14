@@ -186,7 +186,7 @@ if uploaded_files:
     taxa_sugerida = 2.2  # exemplo fixo
     valor_receber = valor_total * (1 - taxa_sugerida / 100)
 
-    st.markdown('<div class="resultado">', unsafe_allow_html=Tr
+    st.markdown('<div class="resultado">', unsafe_allow_html=True)
 
     # --- Botões de Navegação ---
     col1, col2 = st.columns(2)
