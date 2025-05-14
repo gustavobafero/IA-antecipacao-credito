@@ -719,7 +719,7 @@ if st.session_state.role == 'admin':
       ORDER BY p.created_at DESC
     """
     try:
-        df = pd.read_sql_query(sql, sqlite_conn)
+        df = pd.read_sql_query(sql, conn)
         st.dataframe(df)
     except Exception as e:
         st.error(f"Erro ao buscar propostas: {e}")
