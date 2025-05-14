@@ -186,24 +186,22 @@ else:
 
         taxa_ia = sum(lista_taxas) / len(lista_taxas) if lista_taxas else 0.0
 
-        taxa_ia = 2.23  # ou calcule dinamicamente
-
-        st.markdown("""
+        taxa_ia = 2.23  # valor calculado ou fixo
+        valor_total = 9840.00  # exemplo
+        valor_total_receber = 9623.52  # exemplo
+    
+        st.markdown(f"""
         <div style='background-color:#E3F2FD; padding: 20px; border-radius: 10px; margin-top: 20px; text-align:center;'>
             <p style='font-size:22px; font-weight:bold; margin-bottom:10px;'>📄 Valor total das notas:</p>
-            <p style='font-size:28px; color:#0D47A1; font-weight:bold;'>R$ {valor_total}</p>
+            <p style='font-size:28px; color:#0D47A1; font-weight:bold;'>R$ {valor_total:,.2f}</p>
 
             <p style='font-size:22px; font-weight:bold; margin-top:20px;'>📊 Taxa da IA aplicada:</p>
-            <p style='font-size:26px; color:#F57C00; font-weight:bold;'>{taxa_ia}%</p>
+            <p style='font-size:26px; color:#F57C00; font-weight:bold;'>{taxa_ia:.2f}%</p>
 
             <p style='font-size:22px; font-weight:bold; margin-top:20px;'>💸 Valor total a receber:</p>
-            <p style='font-size:28px; color:#2E7D32; font-weight:bold;'>R$ {valor_receber}</p>
+            <p style='font-size:28px; color:#2E7D32; font-weight:bold;'>R$ {valor_total_receber:,.2f}</p>
         </div>
-        """.format(
-            valor_total=f"{valor_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
-            valor_receber=f"{valor_total_receber:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
-            taxa_ia=f"{taxa_ia:.2f}".replace(".", ",")
-        ), unsafe_allow_html=True)
+        """.replace(",", "X").replace(".", ",").replace("X", "."), unsafe_allow_html=True)
 
 
 
