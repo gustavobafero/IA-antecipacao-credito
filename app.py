@@ -604,10 +604,16 @@ def exibir_interface_cliente_cotacao(permissoes):
                         st.write(f"- {num}{p['dVenc']} → {p['vDup']}")
 
             st.markdown("### Dados de Crédito (manual)")
-            score_xml     = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key="xml_score")
-            idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key="xml_idade")
-            protestos     = st.selectbox("Protestos ou dívidas públicas?", ["Não", "Sim"], key="xml_protestos")
-            faturamento   = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key="xml_fat")
+            for i, xml in enumerate(xml_files):
+            st.markdown(f"### 🧾 Nota {i+1}")
+
+            score_xml = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key=f"xml_score_{i}")
+            idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key=f"xml_idade_{i}")
+            protestos = st.selectbox("Protestos ou dívidas públicas?", ["Não", "Sim"], key=f"xml_protestos_{i}")
+            faturamento = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key=f"xml_fat_{i}")
+
+    # aqui você coloca o cálculo de risco, taxa_ia, taxa_cliente etc. baseado nos dados da nota i
+
 
             # Cálculo do risco total
             risco_score = round(1 / (1 + math.exp(-(600 - score_xml) / 50)), 3)
