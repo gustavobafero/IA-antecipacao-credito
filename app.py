@@ -603,7 +603,7 @@ def exibir_interface_cliente_cotacao(permissoes):
                         num = f"Parcela {p['nDup']}: " if p['nDup'] else ""
                         st.write(f"- {num}{p['dVenc']} → {p['vDup']}")
 
-            for i, xml in enumerate(xml_files):
+        for i, xml in enumerate(xml_files):
                 st.markdown(f"### 🧾 Nota {i+1}")
 
                 # Gera uma chave única baseada no nome do arquivo
