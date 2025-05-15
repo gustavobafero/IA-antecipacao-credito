@@ -571,7 +571,7 @@ def exibir_interface_cliente_cotacao(permissoes):
     xml_files = st.file_uploader("Upload de XMLs", type=["xml"], accept_multiple_files=True)
 
     if xml_files:
-        for xml_file in xml_files:
+        for i, xml in enumerate(xml_files):
             try:
                 tree = ET.parse(xml_file)
                 root = tree.getroot()
