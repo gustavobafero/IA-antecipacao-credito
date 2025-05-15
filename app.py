@@ -180,29 +180,9 @@ else:
                 st.markdown('</div>', unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"Erro ao processar {xml_file.name}: {e}")
+        st.markdown(f"**Valor total das notas:** R$ {valor_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
         valor_total_receber = valor_total * (1 - 2.2 / 100)
-
-        lista_taxas = [2.2, 2.4, 2.1]  # Substitua pelos valores reais calculados em loop
-
-        taxa_ia = sum(lista_taxas) / len(lista_taxas) if lista_taxas else 0.0
-
-        taxa_ia = 2.23  # valor calculado ou fixo
-        valor_total = 9840.00  # exemplo
-        valor_total_receber = 9623.52  # exemplo
-    
-        st.markdown(f"""
-        <div style='background-color:#E3F2FD; padding: 20px; border-radius: 10px; margin-top: 20px; text-align:center;'>
-            <p style='font-size:22px; font-weight:bold; margin-bottom:10px;'>📄 Valor total das notas:</p>
-            <p style='font-size:28px; color:#0D47A1; font-weight:bold;'>R$ {valor_total:,.2f}</p>
-            <p style='font-size:22px; font-weight:bold; margin-top:20px;'>📊 Taxa da IA aplicada:</p>
-            <p style='font-size:26px; color:#F57C00; font-weight:bold;'>{taxa_ia:.2f}%</p>
-            <p style='font-size:22px; font-weight:bold; margin-top:20px;'>💸 Valor total a receber:</p>
-            <p style='font-size:28px; color:#2E7D32; font-weight:bold;'>R$ {valor_total_receber:,.2f}</p>
-        </div>
-        """.replace(",", "X").replace(".", ",").replace("X", "."), unsafe_allow_html=True)
-
-
-
+        st.markdown(f"**Valor total a receber:** R$ {valor_total_receber:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
     else:
         st.info('Faça upload de um ou mais XMLs para começar a simulação.')
@@ -571,9 +551,9 @@ def exibir_interface_cliente_cotacao(permissoes):
     xml_files = st.file_uploader("Upload de XMLs", type=["xml"], accept_multiple_files=True)
 
     if xml_files:
-        for i, xml in enumerate(xml_files):
+        for xml_file in xml_files:
             try:
-                tree = ET.parse(xml)
+                tree = ET.parse(xml_file)
                 root = tree.getroot()
                 ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
 
@@ -588,35 +568,26 @@ def exibir_interface_cliente_cotacao(permissoes):
                     data_emissao = date_obj.strftime("%d/%m/%Y")
 
                 st.markdown("----")
-                st.subheader(f"🧾 Nota: {xml.name}")
+                st.subheader(f"🧾 Nota: {xml_file.name}")
                 st.write(f"Valor: {formatar_moeda(valor_nota)}")
                 st.write(f"CNPJ: {cnpj_dest}")
                 if data_emissao:
                     st.write(f"Data de emissão: {data_emissao}")
 
             except Exception as e:
-                st.error(f"Erro ao processar {xml.name}: {e}")
+                st.error(f"Erro ao processar {xml_file.name}: {e}")
 
-                if 'parcelas' in locals() and parcelas:
+                if parcelas:
                     st.markdown("**Parcelas e vencimentos:**")
                     for p in parcelas:
                         num = f"Parcela {p['nDup']}: " if p['nDup'] else ""
                         st.write(f"- {num}{p['dVenc']} → {p['vDup']}")
 
-        for i, xml in enumerate(xml_files):
-                st.markdown(f"### 🧾 Nota {i+1}")
-
-                # Gera uma chave única baseada no nome do arquivo
-        base_key = hashlib.md5(xml.name.encode()).hexdigest()[:8]
-
-        score_xml = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key=f"score_{base_key}")
-        idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key=f"idade_{base_key}")
-        protestos = st.selectbox("Protestos ou dívidas públicas?", ["Não", "Sim"], key=f"protestos_{base_key}")
-        faturamento = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key=f"faturamento_{base_key}")
-
-
-    # aqui você coloca o cálculo de risco, taxa_ia, taxa_cliente etc. baseado nos dados da nota i
-
+            st.markdown("### Dados de Crédito (manual)")
+            score_xml     = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key="xml_score")
+            idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key="xml_idade")
+            protestos     = st.selectbox("Protestos ou dívidas públicas?", ["Não", "Sim"], key="xml_protestos")
+            faturamento   = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key="xml_fat")
 
             # Cálculo do risco total
             risco_score = round(1 / (1 + math.exp(-(600 - score_xml) / 50)), 3)
