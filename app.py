@@ -596,15 +596,24 @@ def exibir_interface_cliente_cotacao(permissoes):
                         st.write(f"- {num}{p['dVenc']} → {p['vDup']}")
                         
             st.markdown("### Dados de Crédito (manual)")
-            chave_unica = xml_file.name.replace(".", "_").replace("-", "_")
-    
-            score_xml     = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key=f"score_{chave_unica}")
-            idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key=f"idade_{chave_unica}")
-            protestos     = st.selectbox("Protestos ou dívidas públicas?", ["Não", "Sim"], key=f"protestos_{chave_unica}")
-            faturamento   = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key=f"faturamento_{chave_unica}")
 
+# Cria uma chave única segura baseada no nome do arquivo XML
+            chave_unica = xml_file.name.replace(".", "_").replace("-", "_").replace(" ", "_")
 
-            # Cálculo do risco total
+            score_xml     = st.number_input(
+              "Score de Crédito (0 a 1000)", 0, 1000, 750, key=f"score_{chave_unica}"
+            )
+            idade_empresa = st.number_input(
+                "Idade da empresa (anos)", 0, 100, 5, key=f"idade_{chave_unica}"
+            )
+            protestos     = st.selectbox(
+                "Protestos ou dívidas públicas?", ["Não", "Sim"], key=f"protestos_{chave_unica}"
+            )
+            faturamento   = st.number_input(
+                "Último faturamento (R$)", min_value=0.0, format="%.2f", key=f"faturamento_{chave_unica}"
+            )
+
+# Cálculo do risco total
             risco_score = round(1 / (1 + math.exp(-(600 - score_xml) / 50)), 3)
             risco_idade = round(1 / (1 + math.exp(-(5 - idade_empresa) / 1)), 3)
             risco_protesto = 1 if protestos == "Sim" else 0
@@ -618,7 +627,9 @@ def exibir_interface_cliente_cotacao(permissoes):
                 2
             )
 
+# Taxa sugerida pela IA
             taxa_ia = round(risco_total * 0.1, 2)
+
             taxa_cliente = st.number_input(
                 "Defina a taxa de antecipação (%)",
                 min_value=0.0,
@@ -627,7 +638,8 @@ def exibir_interface_cliente_cotacao(permissoes):
                 value=taxa_ia,
                 format="%.2f",
                 key=f"taxa_{chave_unica}"
-            )
+            )    
+
 
 
             valor_receber = valor_nota * (1 - taxa_cliente/100)
