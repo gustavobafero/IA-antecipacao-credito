@@ -607,12 +607,12 @@ def exibir_interface_cliente_cotacao(permissoes):
                 st.markdown(f"### 🧾 Nota {i+1}")
 
                 # Gera uma chave única baseada no nome do arquivo
-            base_key = hashlib.md5(xml.name.encode()).hexdigest()[:8]
+        base_key = hashlib.md5(xml.name.encode()).hexdigest()[:8]
 
-            score_xml = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key=f"score_{base_key}")
-            idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key=f"idade_{base_key}")
-            protestos = st.selectbox("Protestos ou dívidas públicas?", ["Não", "Sim"], key=f"protestos_{base_key}")
-            faturamento = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key=f"faturamento_{base_key}")
+        score_xml = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key=f"score_{base_key}")
+        idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key=f"idade_{base_key}")
+        protestos = st.selectbox("Protestos ou dívidas públicas?", ["Não", "Sim"], key=f"protestos_{base_key}")
+        faturamento = st.number_input("Último faturamento (R$)", min_value=0.0, format="%.2f", key=f"faturamento_{base_key}")
 
 
     # aqui você coloca o cálculo de risco, taxa_ia, taxa_cliente etc. baseado nos dados da nota i
