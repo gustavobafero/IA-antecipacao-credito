@@ -573,7 +573,7 @@ def exibir_interface_cliente_cotacao(permissoes):
     if xml_files:
         for i, xml in enumerate(xml_files):
             try:
-                tree = ET.parse(xml_file)
+                tree = ET.parse(xml)
                 root = tree.getroot()
                 ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
 
@@ -588,7 +588,7 @@ def exibir_interface_cliente_cotacao(permissoes):
                     data_emissao = date_obj.strftime("%d/%m/%Y")
 
                 st.markdown("----")
-                st.subheader(f"🧾 Nota: {xml_file.name}")
+                st.subheader(f"🧾 Nota: {xml.name}")
                 st.write(f"Valor: {formatar_moeda(valor_nota)}")
                 st.write(f"CNPJ: {cnpj_dest}")
                 if data_emissao:
