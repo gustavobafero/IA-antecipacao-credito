@@ -603,7 +603,6 @@ def exibir_interface_cliente_cotacao(permissoes):
                         num = f"Parcela {p['nDup']}: " if p['nDup'] else ""
                         st.write(f"- {num}{p['dVenc']} → {p['vDup']}")
 
-            st.markdown("### Dados de Crédito (manual)")
             for i, xml in enumerate(xml_files):
             st.markdown(f"### 🧾 Nota {i+1}")
 
