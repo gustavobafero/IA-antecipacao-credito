@@ -597,7 +597,7 @@ def exibir_interface_cliente_cotacao(permissoes):
             except Exception as e:
                 st.error(f"Erro ao processar {xml.name}: {e}")
 
-                if parcelas:
+                if 'parcelas' in locals() and parcelas:
                     st.markdown("**Parcelas e vencimentos:**")
                     for p in parcelas:
                         num = f"Parcela {p['nDup']}: " if p['nDup'] else ""
