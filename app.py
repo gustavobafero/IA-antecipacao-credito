@@ -597,6 +597,7 @@ def exibir_interface_cliente_cotacao(permissoes):
                         
             st.markdown("### Dados de Crédito (manual)")
             chave_unica = xml_file.name.replace(".", "_").replace("-", "_")
+    
             score_xml     = st.number_input("Score de Crédito (0 a 1000)", 0, 1000, 750, key=f"score_{chave_unica}")
             idade_empresa = st.number_input("Idade da empresa (anos)", 0, 100, 5, key=f"idade_{chave_unica}")
             protestos     = st.selectbox("Protestos ou dívidas públicas?", ["Não", "Sim"], key=f"protestos_{chave_unica}")
@@ -624,8 +625,11 @@ def exibir_interface_cliente_cotacao(permissoes):
                 max_value=10.0,
                 step=0.1,
                 value=taxa_ia,
-                format="%.2f"
+                format="%.2f",
+                key=f"taxa_{chave_unica}"
             )
+
+
             valor_receber = valor_nota * (1 - taxa_cliente/100)
             st.metric("Você receberá", f"{formatar_moeda(valor_receber)}")
             st.write("Este cálculo não leva em consideração dados de concentração de carteira e eventuais riscos que não apareçam no Serasa")
